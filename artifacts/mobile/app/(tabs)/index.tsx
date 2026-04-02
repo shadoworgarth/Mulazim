@@ -48,7 +48,7 @@ export default function HomeScreen() {
         <Text style={styles.headerTitle}>دليل المضافات الغذائية</Text>
         <Text style={styles.headerSubtitle}>اختر التصنيف لعرض الأصناف</Text>
 
-        {/* Search */}
+        {/* Category Search */}
         <View style={styles.searchContainer}>
           <Feather name="search" size={18} color="#0e7c7c" />
           <TextInput
@@ -60,6 +60,21 @@ export default function HomeScreen() {
             textAlign="right"
           />
         </View>
+
+        {/* Additive Search Button */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.additiveSearchBtn,
+            { opacity: pressed ? 0.82 : 1 },
+          ]}
+          onPress={() => router.push("/additive-search")}
+        >
+          <Feather name="zap" size={16} color="#0e7c7c" />
+          <Text style={styles.additiveSearchBtnText}>
+            بحث عن مادة مضافة في جميع الأصناف
+          </Text>
+          <Feather name="arrow-left" size={14} color="#0e7c7c" />
+        </Pressable>
       </View>
 
       {/* Categories List */}
@@ -154,6 +169,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.light.text,
     padding: 0,
+    textAlign: "right",
+  },
+  additiveSearchBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0f4f4",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    gap: 8,
+    marginTop: 10,
+  },
+  additiveSearchBtnText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#0e7c7c",
     textAlign: "right",
   },
   listContent: {
