@@ -57,6 +57,10 @@ export default function RootLayout() {
               name="additive-search"
               options={{ title: "بحث عن مادة مضافة" }}
             />
+            <Stack.Screen
+              name="general-additives"
+              options={{ title: "المضافات العامة" }}
+            />
           </Stack>
         </GestureHandlerRootView>
       </ErrorBoundary>

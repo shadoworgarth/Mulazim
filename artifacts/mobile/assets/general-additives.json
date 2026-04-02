@@ -1,0 +1,1024 @@
+{
+  "table1": {
+    "title": "المضافات الغذائية المسموح باستخدامها في الأغذية بوجه عام مالم ينص على خلاف\r\nذلك وفقا لممارسات التصنيع الجيد",
+    "headers": {
+      "ins": "INS الرقم الدولي",
+      "name": "المضافات الغذائية"
+    },
+    "rows": [
+      {
+        "ins": "260",
+        "name": "Acetic acid, glacial"
+      },
+      {
+        "ins": "472a",
+        "name": "Acetic and fatty acid esters of glycerol"
+      },
+      {
+        "ins": "1422",
+        "name": "Acetylated distarch adipate"
+      },
+      {
+        "ins": "1414",
+        "name": "Acetylated distarch phosphate"
+      },
+      {
+        "ins": "1451",
+        "name": "Acetylated oxidized starch"
+      },
+      {
+        "ins": "1401",
+        "name": "Acid-treated starch"
+      },
+      {
+        "ins": "406",
+        "name": "Agar"
+      },
+      {
+        "ins": "400",
+        "name": "Alginic acid"
+      },
+      {
+        "ins": "1402",
+        "name": "Alkaline treated starch"
+      },
+      {
+        "ins": "1100(i)",
+        "name": "alpha-Amylase from Aspergillus oryzae var."
+      },
+      {
+        "ins": "1100(iv)",
+        "name": "alpha-Amylase from Bacillus megaterium expressed in Bacillus subtilis"
+      },
+      {
+        "ins": "1100(ii)",
+        "name": "alpha-Amylase from Bacillus stearothermophilus"
+      },
+      {
+        "ins": "1100(v)",
+        "name": "alpha-Amylase from Bacillus stearothermophilus expressed in Bacillus subtilis"
+      },
+      {
+        "ins": "1100(iii)",
+        "name": "alpha-Amylase from Bacillus subtilis"
+      },
+      {
+        "ins": "403",
+        "name": "Ammonium alginate"
+      },
+      {
+        "ins": "503(i)",
+        "name": "Ammonium carbonate"
+      },
+      {
+        "ins": "510",
+        "name": "Ammonium chloride"
+      },
+      {
+        "ins": "503(ii)",
+        "name": "Ammonium hydrogen carbonate"
+      },
+      {
+        "ins": "527",
+        "name": "Ammonium hydroxide"
+      },
+      {
+        "ins": "300",
+        "name": "Ascorbic acid, L-"
+      },
+      {
+        "ins": "162",
+        "name": "Beet red"
+      },
+      {
+        "ins": "1403",
+        "name": "Bleached starch"
+      },
+      {
+        "ins": "1101(iii)",
+        "name": "Bromelain"
+      },
+      {
+        "ins": "629",
+        "name": "Calcium 5'-guanylate"
+      },
+      {
+        "ins": "633",
+        "name": "Calcium 5'-inosinate"
+      },
+      {
+        "ins": "634",
+        "name": "Calcium 5'-ribonucleotides"
+      },
+      {
+        "ins": "263",
+        "name": "Calcium acetate"
+      },
+      {
+        "ins": "404",
+        "name": "Calcium alginate"
+      },
+      {
+        "ins": "302",
+        "name": "Calcium ascorbate"
+      },
+      {
+        "ins": "170(i)",
+        "name": "Calcium carbonate"
+      },
+      {
+        "ins": "509",
+        "name": "Calcium chloride"
+      },
+      {
+        "ins": "623",
+        "name": "Calcium di-L-glutamate"
+      },
+      {
+        "ins": "578",
+        "name": "Calcium gluconate"
+      },
+      {
+        "ins": "526",
+        "name": "Calcium hydroxide"
+      },
+      {
+        "ins": "327",
+        "name": "Calcium lactate"
+      },
+      {
+        "ins": "352(ii)",
+        "name": "Calcium malate, D, L-"
+      },
+      {
+        "ins": "529",
+        "name": "Calcium oxide"
+      },
+      {
+        "ins": "282",
+        "name": "Calcium propionate"
+      },
+      {
+        "ins": "552",
+        "name": "Calcium silicate"
+      },
+      {
+        "ins": "516",
+        "name": "Calcium sulfate"
+      },
+      {
+        "ins": "150a",
+        "name": "Caramel I – plain caramel"
+      },
+      {
+        "ins": "1100(vi)",
+        "name": "Carbohydrase from Bacillus licheniformis"
+      },
+      {
+        "ins": "290",
+        "name": "Carbon dioxide"
+      },
+      {
+        "ins": "410",
+        "name": "Carob bean gum"
+      },
+      {
+        "ins": "407",
+        "name": "Carrageenan"
+      },
+      {
+        "ins": "427",
+        "name": "Cassia gum"
+      },
+      {
+        "ins": "140",
+        "name": "Chlorophylls"
+      },
+      {
+        "ins": "330",
+        "name": "Citric acid"
+      },
+      {
+        "ins": "472c",
+        "name": "Citric and fatty acid esters of glycerol"
+      },
+      {
+        "ins": "468",
+        "name": "Cross-linked sodium carboxymethyl cellulose (Cross-linked-cellulose gum)"
+      },
+      {
+        "ins": "424",
+        "name": "Curdlan"
+      },
+      {
+        "ins": "457",
+        "name": "Cyclodextrin, alpha-"
+      },
+      {
+        "ins": "458",
+        "name": "Cyclodextrin, gamma-"
+      },
+      {
+        "ins": "1504(i)",
+        "name": "Cyclotetraglucose"
+      },
+      {
+        "ins": "1504(ii)",
+        "name": "Cyclotetraglucose syrup"
+      },
+      {
+        "ins": "1400",
+        "name": "Dextrins, roasted starch"
+      },
+      {
+        "ins": "628",
+        "name": "Dipotassium 5'-guanylate"
+      },
+      {
+        "ins": "627",
+        "name": "Disodium 5'-guanylate"
+      },
+      {
+        "ins": "631",
+        "name": "Disodium 5'-inosinate"
+      },
+      {
+        "ins": "635",
+        "name": "Disodium 5'-ribonucleotides"
+      },
+      {
+        "ins": "1412",
+        "name": "Distarch phosphate"
+      },
+      {
+        "ins": "315",
+        "name": "Erythorbic Acid (Isoascorbic acid)"
+      },
+      {
+        "ins": "968",
+        "name": "Erythritol"
+      },
+      {
+        "ins": "462",
+        "name": "Ethyl cellulose"
+      },
+      {
+        "ins": "467",
+        "name": "Ethyl hydroxyethyl cellulose"
+      },
+      {
+        "ins": "297",
+        "name": "Fumaric acid"
+      },
+      {
+        "ins": "418",
+        "name": "Gellan gum"
+      },
+      {
+        "ins": "575",
+        "name": "Glucono delta-lactone"
+      },
+      {
+        "ins": "1102",
+        "name": "Glucose oxidase"
+      },
+      {
+        "ins": "620",
+        "name": "Glutamic acid, L(+)-"
+      },
+      {
+        "ins": "422",
+        "name": "Glycerol"
+      },
+      {
+        "ins": "626",
+        "name": "Guanylic acid, 5'-"
+      },
+      {
+        "ins": "412",
+        "name": "Guar gum"
+      },
+      {
+        "ins": "414",
+        "name": "Gum arabic (Acacia gum)"
+      },
+      {
+        "ins": "419",
+        "name": "Gum ghatti"
+      },
+      {
+        "ins": "507",
+        "name": "Hydrochloric acid"
+      },
+      {
+        "ins": "463",
+        "name": "Hydroxypropyl cellulose"
+      },
+      {
+        "ins": "1442",
+        "name": "Hydroxypropyl distarch phosphate"
+      },
+      {
+        "ins": "464",
+        "name": "Hydroxypropyl methyl cellulose"
+      },
+      {
+        "ins": "1440",
+        "name": "Hydroxypropyl starch"
+      },
+      {
+        "ins": "630",
+        "name": "Inosinic acid, 5'-"
+      },
+      {
+        "ins": "953",
+        "name": "Isomalt (Hydrogenated isomaltulose)"
+      },
+      {
+        "ins": "416",
+        "name": "Karaya gum"
+      },
+      {
+        "ins": "425",
+        "name": "Konjac flour"
+      },
+      {
+        "ins": "270",
+        "name": "Lactic acid, L-, D- and DL-"
+      },
+      {
+        "ins": "472b",
+        "name": "Lactic and fatty acid esters of glycerol"
+      },
+      {
+        "ins": "966",
+        "name": "Lactitol"
+      },
+      {
+        "ins": "322(i)",
+        "name": "Lecithin"
+      },
+      {
+        "ins": "1104",
+        "name": "Lipases"
+      },
+      {
+        "ins": "161b(iii)",
+        "name": "Lutein esters from Tagetes erecta"
+      },
+      {
+        "ins": "160d(iii)",
+        "name": "Lycopene, Blakeslea trispora"
+      },
+      {
+        "ins": "160d(i)",
+        "name": "Lycopene, synthetic"
+      },
+      {
+        "ins": "160d(ii)",
+        "name": "Lycopene, tomato"
+      },
+      {
+        "ins": "504(i)",
+        "name": "Magnesium carbonate"
+      },
+      {
+        "ins": "511",
+        "name": "Magnesium chloride"
+      },
+      {
+        "ins": "625",
+        "name": "Magnesium di-L-glutamate"
+      },
+      {
+        "ins": "580",
+        "name": "Magnesium gluconate"
+      },
+      {
+        "ins": "528",
+        "name": "Magnesium hydroxide"
+      },
+      {
+        "ins": "504(ii)",
+        "name": "Magnesium hydroxide carbonate"
+      },
+      {
+        "ins": "329",
+        "name": "Magnesium lactate, DL-"
+      },
+      {
+        "ins": "530",
+        "name": "Magnesium oxide"
+      },
+      {
+        "ins": "553(i)",
+        "name": "Magnesium silicate, synthetic"
+      },
+      {
+        "ins": "470(iii)",
+        "name": "Magnesium stearate"
+      },
+      {
+        "ins": "518",
+        "name": "Magnesium sulfate"
+      },
+      {
+        "ins": "296",
+        "name": "Malic acid, DL-"
+      },
+      {
+        "ins": "965(i)",
+        "name": "Maltitol"
+      },
+      {
+        "ins": "965(ii)",
+        "name": "Maltitol syrup"
+      },
+      {
+        "ins": "421",
+        "name": "Mannitol"
+      },
+      {
+        "ins": "461",
+        "name": "Methyl cellulose"
+      },
+      {
+        "ins": "465",
+        "name": "Methyl ethyl cellulose"
+      },
+      {
+        "ins": "460(i)",
+        "name": "Microcrystalline cellulose (Cellulose gel)"
+      },
+      {
+        "ins": "471",
+        "name": "Mono- and di-glycerides of fatty acids"
+      },
+      {
+        "ins": "624",
+        "name": "Monoammonium L-glutamate"
+      },
+      {
+        "ins": "622",
+        "name": "Monopotassium L-glutamate"
+      },
+      {
+        "ins": "621",
+        "name": "Monosodium L-glutamate"
+      },
+      {
+        "ins": "1410",
+        "name": "Monostarch phosphate"
+      },
+      {
+        "ins": "941",
+        "name": "Nitrogen"
+      },
+      {
+        "ins": "942",
+        "name": "Nitrous oxide"
+      },
+      {
+        "ins": "423",
+        "name": "Octenyl succinic acid (OSA) modified gum arabic"
+      },
+      {
+        "ins": "1404",
+        "name": "Oxidized starch"
+      },
+      {
+        "ins": "1101(ii)",
+        "name": "Papain"
+      },
+      {
+        "ins": "440",
+        "name": "Pectins"
+      },
+      {
+        "ins": "1413",
+        "name": "Phosphated distarch phosphate"
+      },
+      {
+        "ins": "1200",
+        "name": "Polydextroses"
+      },
+      {
+        "ins": "964",
+        "name": "Polyglycitol syrup"
+      },
+      {
+        "ins": "1202",
+        "name": "Polyvinylpyrrolidone, insoluble"
+      },
+      {
+        "ins": "632",
+        "name": "Potassium 5’-inosinate"
+      },
+      {
+        "ins": "261(i)",
+        "name": "Potassium acetate"
+      },
+      {
+        "ins": "402",
+        "name": "Potassium alginate"
+      },
+      {
+        "ins": "501(i)",
+        "name": "Potassium carbonate"
+      },
+      {
+        "ins": "508",
+        "name": "Potassium chloride"
+      },
+      {
+        "ins": "332(i)",
+        "name": "Potassium dihydrogen citrate"
+      },
+      {
+        "ins": "577",
+        "name": "Potassium gluconate"
+      },
+      {
+        "ins": "501(ii)",
+        "name": "Potassium hydrogen carbonate"
+      },
+      {
+        "ins": "525",
+        "name": "Potassium hydroxide"
+      },
+      {
+        "ins": "326",
+        "name": "Potassium lactate"
+      },
+      {
+        "ins": "283",
+        "name": "Potassium propionate"
+      },
+      {
+        "ins": "515(i)",
+        "name": "Potassium sulfate"
+      },
+      {
+        "ins": "460(ii)",
+        "name": "Powdered cellulose"
+      },
+      {
+        "ins": "407a",
+        "name": "Processed eucheuma seaweed (PES)"
+      },
+      {
+        "ins": "280",
+        "name": "Propionic acid"
+      },
+      {
+        "ins": "1101(i)",
+        "name": "Protease from Aspergillus orizae var."
+      },
+      {
+        "ins": "1204",
+        "name": "Pullulan"
+      },
+      {
+        "ins": "470(i)",
+        "name": "Salts of myristic, palmitic and stearic acids with ammonia, calcium, potassium and sodium"
+      },
+      {
+        "ins": "470(ii)",
+        "name": "Salts of oleic acid with calcium, potassium and sodium"
+      },
+      {
+        "ins": "551",
+        "name": "Silicon dioxide, amorphous"
+      },
+      {
+        "ins": "262(i)",
+        "name": "Sodium acetate"
+      },
+      {
+        "ins": "401",
+        "name": "Sodium alginate"
+      },
+      {
+        "ins": "301",
+        "name": "Sodium ascorbate"
+      },
+      {
+        "ins": "500(i)",
+        "name": "Sodium carbonate"
+      },
+      {
+        "ins": "466",
+        "name": "Sodium carboxymethyl cellulose (Cellulose gum)"
+      },
+      {
+        "ins": "469",
+        "name": "Sodium carboxymethyl cellulose,enzymatically hydrolysed (Cellulose gum,enzymatically hydrolyzed)"
+      },
+      {
+        "ins": "331(i)",
+        "name": "Sodium dihydrogen citrate"
+      },
+      {
+        "ins": "350(ii)",
+        "name": "Sodium DL-malate"
+      },
+      {
+        "ins": "316",
+        "name": "Sodium erythorbate (Sodium isoascorbate)"
+      },
+      {
+        "ins": "365",
+        "name": "Sodium fumarates"
+      },
+      {
+        "ins": "576",
+        "name": "Sodium gluconate"
+      },
+      {
+        "ins": "500(ii)",
+        "name": "Sodium hydrogen carbonate"
+      },
+      {
+        "ins": "350(i)",
+        "name": "Sodium hydrogen DL-malate"
+      },
+      {
+        "ins": "514(ii)",
+        "name": "Sodium hydrogen sulfate"
+      },
+      {
+        "ins": "524",
+        "name": "Sodium hydroxide"
+      },
+      {
+        "ins": "325",
+        "name": "Sodium lactate"
+      },
+      {
+        "ins": "281",
+        "name": "Sodium propionate"
+      },
+      {
+        "ins": "500(iii)",
+        "name": "Sodium sesquicarbonate"
+      },
+      {
+        "ins": "514(i)",
+        "name": "Sodium sulfate"
+      },
+      {
+        "ins": "420(i)",
+        "name": "Sorbitol"
+      },
+      {
+        "ins": "420(ii)",
+        "name": "Sorbitol syrup"
+      },
+      {
+        "ins": "1420",
+        "name": "Starch acetate"
+      },
+      {
+        "ins": "1450",
+        "name": "Starch sodium octenyl succinate"
+      },
+      {
+        "ins": "1405",
+        "name": "Starches, enzyme treated"
+      },
+      {
+        "ins": "553(iii)",
+        "name": "Talc"
+      },
+      {
+        "ins": "437",
+        "name": "Tamarind seed polysaccharide"
+      },
+      {
+        "ins": "417",
+        "name": "Tara gum"
+      },
+      {
+        "ins": "957",
+        "name": "Thaumatin"
+      },
+      {
+        "ins": "413",
+        "name": "Tragacanth gum"
+      },
+      {
+        "ins": "1518",
+        "name": "Triacetin"
+      },
+      {
+        "ins": "380",
+        "name": "Triammonium citrate"
+      },
+      {
+        "ins": "333(iii)",
+        "name": "Tricalcium citrate"
+      },
+      {
+        "ins": "332(ii)",
+        "name": "Tripotassium citrate"
+      },
+      {
+        "ins": "331(iii)",
+        "name": "Trisodium citrate"
+      },
+      {
+        "ins": "415",
+        "name": "Xanthan gum"
+      },
+      {
+        "ins": "967",
+        "name": "Xylitol"
+      }
+    ]
+  },
+  "table2": {
+    "title": "المواد المضافة المسموح باستخدامها في الأغذية بوجه عام ما لم ينص على خلاف ذلك وفقا\r\nلممارسات التصنيع الجيد",
+    "headers": {
+      "ins": "الرقم الدولي INS",
+      "color": "اللون",
+      "food": "المواد الغذائية"
+    },
+    "rows": [
+      {
+        "ins": "173",
+        "color": "Aluminium",
+        "food": "غطاء خارجي لحلوى السكر لتزيين الكيك\r\nوالباستا"
+      },
+      {
+        "ins": "174",
+        "color": "Silver",
+        "food": "غطاء خارجي للحلويات"
+      },
+      {
+        "ins": "175",
+        "color": "Gold",
+        "food": "غطاء خارجي للحلويات"
+      },
+      {
+        "ins": "180",
+        "color": "Pigment Runine, Lithol Rubine BK",
+        "food": "تغطية الجبن"
+      },
+      {
+        "ins": "المواد الملونة الطبيعية المسموح باستخدامها في المواد الغذائية بصفة عامة",
+        "color": "",
+        "food": ""
+      },
+      {
+        "ins": "الرقم الدولي INS",
+        "color": "اللون",
+        "food": ""
+      },
+      {
+        "ins": "163",
+        "color": "Anthocyanins",
+        "food": ""
+      },
+      {
+        "ins": "163(ii)",
+        "color": "Blackcurrant extract",
+        "food": ""
+      },
+      {
+        "ins": "160b",
+        "color": "Annatto",
+        "food": ""
+      },
+      {
+        "ins": "160c",
+        "color": "Paprika extract",
+        "food": ""
+      },
+      {
+        "ins": "161b",
+        "color": "lutein",
+        "food": ""
+      },
+      {
+        "ins": "100(i)",
+        "color": "Curcumin",
+        "food": ""
+      },
+      {
+        "ins": "140",
+        "color": "Chlorophylls",
+        "food": ""
+      },
+      {
+        "ins": "150a",
+        "color": "Caramel I – plain caramel",
+        "food": ""
+      },
+      {
+        "ins": "150b",
+        "color": "Caustic suphtile caramel",
+        "food": ""
+      },
+      {
+        "ins": "134",
+        "color": "spirulina extract",
+        "food": ""
+      },
+      {
+        "ins": "المواد الغذائية المستثناة من إضافة المضافات العامة",
+        "color": "",
+        "food": ""
+      },
+      {
+        "ins": "المادة الغذائية",
+        "color": "رقم البند",
+        "food": ""
+      },
+      {
+        "ins": "الحليب السائل (ساده)",
+        "color": "1.1.1",
+        "food": ""
+      },
+      {
+        "ins": "الحليب السائل (ساده) أخرى",
+        "color": "1.1.2",
+        "food": ""
+      },
+      {
+        "ins": "اللبن السائل (ساده)",
+        "color": "1.1.3",
+        "food": ""
+      },
+      {
+        "ins": "الألبان المخمرة والمعاملة بالمنفحة (ساده)",
+        "color": "1.2",
+        "food": ""
+      },
+      {
+        "ins": "القشدة المعاملة بالبسترة (ساده)",
+        "color": "1.4.1",
+        "food": ""
+      },
+      {
+        "ins": "القشدة المعقمة والمعاملة بالحرارة فوق العالية (UHT)\r\n وقشدة الخفق والقشدة المخفوقة\r\n والقشدة مخفضة الدهن (ساده)",
+        "color": "1.4.2",
+        "food": ""
+      },
+      {
+        "ins": "جبن مصل الحليب",
+        "color": "1.6.3",
+        "food": ""
+      },
+      {
+        "ins": "جبن بروتين مصل الحليب",
+        "color": "1.6.6",
+        "food": ""
+      },
+      {
+        "ins": "مصل الحليب المجفف ومنتجاته باستثناء أجبان مصل الحليب",
+        "color": "1.8.2",
+        "food": ""
+      },
+      {
+        "ins": "الزيت والدهون غير الخالية اساسا من الماء",
+        "color": "2.1",
+        "food": ""
+      },
+      {
+        "ins": "الزبدة",
+        "color": "2.2.1",
+        "food": ""
+      },
+      {
+        "ins": "الفواكه الطازجة",
+        "color": "4.1.1.",
+        "food": ""
+      },
+      {
+        "ins": "الخضروات الطازجة (بما في ذلك الفطر والفطريات والجذور والدرنات والبقول\r\nوالبقوليات والصبار) والأعشاب البحرية والمكسرات والبذور",
+        "color": "4.2.1",
+        "food": ""
+      },
+      {
+        "ins": "الخضروات المجمدة \r\n(بما في ذلك الفطر والفطريات والجذور والدرنات \r\nوالبقول والبقوليات والصبار) \r\nوالأعشاب البحرية والمكسرات والبذور",
+        "color": "4.2.2.1",
+        "food": ""
+      },
+      {
+        "ins": "الخضروات المخللة (بما في ذلك الفطر والفطريات والجذور والدرنات\r\nوالبقول والبقوليات والصبار) ومنتجات الأعشاب البحرية، \r\nباستثناء منتجات فول الصويا المخمرة من الاصناف الغذائية 06.8.6 و 06.8.7 \r\nو 12.9.1و 12.9.2.1 و 12.9.2.3",
+        "color": "4.2.2.7",
+        "food": ""
+      },
+      {
+        "ins": "الحبوب الكاملة اوالمكسورة \r\nأو المقشرة وتشمل الأرز",
+        "color": "6.1",
+        "food": ""
+      },
+      {
+        "ins": "الدقيق والنشاء\r\n (يشمل مسحوق فول الصويا)",
+        "color": "6.2",
+        "food": ""
+      },
+      {
+        "ins": "المعكرونة والشعيرية الطازجة والمنتجات المماثلة",
+        "color": "6.4.1",
+        "food": ""
+      },
+      {
+        "ins": "المعكرونة والشعيرية المجففة والمنتجات المماثلة",
+        "color": "6.4.2",
+        "food": ""
+      },
+      {
+        "ins": "اللحوم والدواجن والطيور الطازجة",
+        "color": "8.1",
+        "food": ""
+      },
+      {
+        "ins": "الأسماك والمنتجات السمكية، \r\nبما في ذلك الرخويات والقشريات وشوكيات الجلد الطازجة",
+        "color": "9.1",
+        "food": ""
+      },
+      {
+        "ins": "الأسماك والمنتجات السمكية، \r\nبما في ذلك الرخويات والقشريات وشوكيات الجلد المصنعة",
+        "color": "9.2",
+        "food": ""
+      },
+      {
+        "ins": "لبيض الطازج",
+        "color": "10.1",
+        "food": ""
+      },
+      {
+        "ins": "منتجات البيض الطازج (السائل)",
+        "color": "10.2.1",
+        "food": ""
+      },
+      {
+        "ins": "منتجات البيض المجمدة",
+        "color": "10.2.2",
+        "food": ""
+      },
+      {
+        "ins": "السكر البني باستثناء منتجات الصنف الغذائي 11.1.3",
+        "color": "11.2",
+        "food": ""
+      },
+      {
+        "ins": "محلول وشراب السكر، أيضا السكر المقلوب (جزئيا) ، \r\nبما في ذلك الشعير والدبس، \r\nباستثناء منتجات الصنف الغذائي 11.1.3",
+        "color": "11.3",
+        "food": ""
+      },
+      {
+        "ins": "الشراب والسكريات الأخرى مثل (الزيلوز xylose) \r\n(والشراب القيقب Maple Syrup) \r\nوسكر التغطية (Sugar Toppings)",
+        "color": "11.4",
+        "food": ""
+      },
+      {
+        "ins": "العسل",
+        "color": "11.5",
+        "food": ""
+      },
+      {
+        "ins": "الملح وبدائل الملح",
+        "color": "12.1",
+        "food": ""
+      },
+      {
+        "ins": "الأعشاب والبهارات",
+        "color": "12.2.1",
+        "food": ""
+      },
+      {
+        "ins": "غذية الرضع وأغذية المتابعة\r\n والأغذية ذات االستخدامات الطبية الخاصة للرضع",
+        "color": "13.1",
+        "food": ""
+      },
+      {
+        "ins": "أغذية تكميلية للرضع وصغار الأطفال",
+        "color": "13.2",
+        "food": ""
+      },
+      {
+        "ins": "المياه",
+        "color": "14.1.1",
+        "food": ""
+      },
+      {
+        "ins": "عصير الفواكه والخضروات",
+        "color": "14.1.2",
+        "food": ""
+      },
+      {
+        "ins": "نكتار الفواكه والخضروات",
+        "color": "14.1.3",
+        "food": ""
+      },
+      {
+        "ins": "القهوة وبدائل القهوة والشاي وشاي الأعشاب \r\nومشروبات الحبوب الساخنة الأخرى باستثناء الكاكاو",
+        "color": "14.1.5",
+        "food": ""
+      }
+    ]
+  }
+}

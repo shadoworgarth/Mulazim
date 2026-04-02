@@ -84,6 +84,28 @@ export default function HomeScreen() {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         scrollEnabled={filtered.length > 0}
+        ListHeaderComponent={
+          <Pressable
+            style={({ pressed }) => [
+              styles.card,
+              styles.generalCard,
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
+            onPress={() => router.push("/general-additives")}
+          >
+            <View style={[styles.cardAccent, { backgroundColor: "#7c4e0e" }]} />
+            <View style={styles.cardContent}>
+              <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
+              <View style={styles.cardText}>
+                <Text style={styles.cardTitle}>المضافات العامة</Text>
+                <Text style={styles.cardCount}>182 مادة مضافة • 55 لون</Text>
+              </View>
+              <View style={[styles.categoryIcon, { backgroundColor: "#7c4e0e22" }]}>
+                <Feather name="star" size={20} color="#7c4e0e" />
+              </View>
+            </View>
+          </Pressable>
+        }
         renderItem={({ item, index }) => {
           const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
           return (
@@ -203,6 +225,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
+  },
+  generalCard: {
+    borderWidth: 1.5,
+    borderColor: "#7c4e0e33",
+    backgroundColor: "#fffaf6",
   },
   cardAccent: {
     width: 4,
