@@ -149,6 +149,9 @@ export default function HomeScreen() {
             </Pressable>
           );
         }}
+        ListFooterComponent={
+          <Text style={styles.footer}>اعداد وتصميم عبدالعزيز الدوسري</Text>
+        }
         ListEmptyComponent={
           <View style={styles.empty}>
             <Feather name="inbox" size={48} color={colors.light.mutedForeground} />
@@ -288,6 +291,13 @@ const styles = StyleSheet.create({
     color: colors.light.mutedForeground,
     textAlign: "right",
     marginTop: 2,
+  },
+  footer: {
+    textAlign: "center",
+    fontSize: 12,
+    color: colors.light.mutedForeground,
+    paddingTop: 20,
+    paddingBottom: 8,
   },
   empty: {
     alignItems: "center",
