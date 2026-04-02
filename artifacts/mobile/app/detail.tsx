@@ -1,0 +1,307 @@
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useEffect } from "react";
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+
+import appData from "@/constants/data";
+import colors from "@/constants/colors";
+
+function InfoRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoValue}>{value || "—"}</Text>
+      <View style={styles.infoLabelWrap}>
+        <Text style={styles.infoLabel}>{label}</Text>
+      </View>
+    </View>
+  );
+}
+
+export default function DetailScreen() {
+  const { categoryIndex, itemIndex } = useLocalSearchParams<{
+    categoryIndex: string;
+    itemIndex: string;
+  }>();
+  const navigation = useNavigation();
+
+  const catIdx = parseInt(categoryIndex ?? "0", 10);
+  const itemIdx = parseInt(itemIndex ?? "0", 10);
+  const category = appData[catIdx];
+  const item = category?.subItems[itemIdx];
+
+  useEffect(() => {
+    if (item) {
+      navigation.setOptions({
+        title: item.name.trim().slice(0, 30),
+      });
+    }
+  }, [item, navigation]);
+
+  if (!item || !item.data) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>لا تتوفر بيانات لهذا الصنف</Text>
+      </View>
+    );
+  }
+
+  const { row1, row2 } = item.data;
+
+  const additives = row2.D
+    ? row2.D
+        .split(/[\r\n]+/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+
+  return (
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { paddingBottom: Platform.OS === "web" ? 34 : 24 },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Item Name Banner */}
+      <View style={styles.nameBanner}>
+        <Text style={styles.itemName}>{item.name.trim()}</Text>
+        {row2.A ? (
+          <View style={styles.codeBadge}>
+            <Text style={styles.codeBadgeText}>{row2.A}</Text>
+          </View>
+        ) : null}
+      </View>
+
+      {/* Basic Info */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>المعلومات الأساسية</Text>
+        <View style={styles.card}>
+          {row1.B && row2.B ? (
+            <>
+              <InfoRow label={row1.B} value={row2.B} />
+              <View style={styles.divider} />
+            </>
+          ) : null}
+          {row1.C ? (
+            <View
+              style={[
+                styles.infoRow,
+                row2.C === "نعم" && styles.infoRowGreen,
+                row2.C === "لا" && styles.infoRowRed,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.infoValue,
+                  (row2.C === "نعم" || row2.C === "لا") && styles.infoValueBold,
+                ]}
+              >
+                {row2.C || "—"}
+              </Text>
+              <View style={styles.infoLabelWrap}>
+                <Text style={styles.infoLabel}>{row1.C}</Text>
+              </View>
+            </View>
+          ) : null}
+        </View>
+      </View>
+
+      {/* Additives */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>
+          {row1.D || "المواد المضافة المسموح بها"}
+        </Text>
+        {additives.length > 0 ? (
+          <View style={styles.card}>
+            {additives.map((additive, i) => (
+              <View
+                key={i}
+                style={[
+                  styles.additiveRow,
+                  i < additives.length - 1 && styles.additiveDivider,
+                ]}
+              >
+                <View style={styles.additiveDot} />
+                <Text style={styles.additiveText}>{additive}</Text>
+              </View>
+            ))}
+          </View>
+        ) : row2.D ? (
+          <View style={styles.card}>
+            <Text style={styles.noAddText}>{row2.D}</Text>
+          </View>
+        ) : (
+          <View style={styles.card}>
+            <Text style={styles.noAddText}>لا توجد مضافات مسجلة</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Category */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>التصنيف الرئيسي</Text>
+        <View style={styles.card}>
+          <Text style={styles.categoryText}>{category.name.trim()}</Text>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.light.mutedForeground,
+    textAlign: "center",
+  },
+  container: {
+    padding: 16,
+    gap: 16,
+  },
+  nameBanner: {
+    backgroundColor: "#0e7c7c",
+    borderRadius: 16,
+    padding: 18,
+    gap: 10,
+    alignItems: "flex-end",
+  },
+  itemName: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#ffffff",
+    textAlign: "right",
+    lineHeight: 28,
+  },
+  codeBadge: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  codeBadgeText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#ffffff",
+  },
+  section: {
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.light.mutedForeground,
+    textAlign: "right",
+    letterSpacing: 0.3,
+    paddingHorizontal: 4,
+    textTransform: "uppercase",
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.light.border,
+    marginHorizontal: 14,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    padding: 14,
+    gap: 12,
+  },
+  infoRowGreen: {
+    backgroundColor: "#f0faf5",
+  },
+  infoRowRed: {
+    backgroundColor: "#fff5f5",
+  },
+  infoLabelWrap: {
+    flexShrink: 0,
+    maxWidth: 160,
+  },
+  infoLabel: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: "#0e7c7c",
+    textAlign: "right",
+    backgroundColor: "#e0f4f4",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  infoValue: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.light.text,
+    textAlign: "right",
+    lineHeight: 20,
+  },
+  infoValueBold: {
+    fontWeight: "700",
+    fontSize: 15,
+  },
+  additiveRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    gap: 10,
+  },
+  additiveDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.light.border,
+  },
+  additiveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#0e7c7c",
+    marginTop: 6,
+    flexShrink: 0,
+  },
+  additiveText: {
+    flex: 1,
+    fontSize: 13,
+    color: colors.light.text,
+    textAlign: "right",
+    lineHeight: 20,
+  },
+  noAddText: {
+    fontSize: 14,
+    color: colors.light.mutedForeground,
+    textAlign: "right",
+    padding: 14,
+    lineHeight: 22,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: colors.light.text,
+    textAlign: "right",
+    padding: 14,
+    lineHeight: 22,
+  },
+});
