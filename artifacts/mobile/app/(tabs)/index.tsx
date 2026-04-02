@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   FlatList,
+  ImageBackground,
   Platform,
   Pressable,
   StatusBar,
@@ -12,6 +13,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const logoImage = require("../../assets/sfda-logo.png");
 
 import appData from "@/constants/data";
 import colors from "@/constants/colors";
@@ -36,14 +39,17 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0e7c7c" />
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       {/* Header */}
-      <View
+      <ImageBackground
+        source={logoImage}
         style={[
           styles.header,
           { paddingTop: Platform.OS === "web" ? 67 : insets.top + 12 },
         ]}
+        imageStyle={styles.headerImage}
+        resizeMode="contain"
       >
         <Text style={styles.headerTitle}>دليل المضافات الغذائية</Text>
         <Text style={styles.headerSubtitle}>اختر التصنيف لعرض الأصناف</Text>
@@ -75,7 +81,7 @@ export default function HomeScreen() {
           </Text>
           <Feather name="arrow-left" size={14} color="#0e7c7c" />
         </Pressable>
-      </View>
+      </ImageBackground>
 
       {/* Categories List */}
       <FlatList
@@ -160,22 +166,39 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
   },
   header: {
-    backgroundColor: "#0e7c7c",
+    backgroundColor: "#ffffff",
     paddingHorizontal: 20,
     paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e8e8",
+  },
+  headerImage: {
+    opacity: 0.22,
+    resizeMode: "contain",
+    left: 0,
+    bottom: 0,
+    top: 0,
+    width: "55%",
+    height: "100%",
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "#0b1e1e",
     textAlign: "right",
     marginBottom: 4,
+    textShadowColor: "rgba(0,0,0,0.55)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: "#b2d8d8",
+    color: "#152828",
     textAlign: "right",
     marginBottom: 14,
+    textShadowColor: "rgba(0,0,0,0.4)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 2,
   },
   searchContainer: {
     flexDirection: "row",
