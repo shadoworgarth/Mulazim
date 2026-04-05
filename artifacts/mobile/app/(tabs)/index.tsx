@@ -26,6 +26,7 @@ interface SubItemResult {
   categoryName: string;
   subItemIndex: number;
   subItemName: string;
+  hasData: boolean;
 }
 
 export default function HomeScreen() {
@@ -39,7 +40,13 @@ export default function HomeScreen() {
   const subItemResults: SubItemResult[] = q
     ? appData.flatMap((cat, catIdx) =>
         cat.subItems
-          .map((sub, subIdx) => ({ categoryIndex: catIdx, categoryName: cat.name, subItemIndex: subIdx, subItemName: sub.name }))
+          .map((sub, subIdx) => ({
+            categoryIndex: catIdx,
+            categoryName: cat.name,
+            subItemIndex: subIdx,
+            subItemName: sub.name,
+            hasData: !!sub.data,
+          }))
           .filter((r) => r.subItemName.includes(q) || r.categoryName.includes(q))
       )
     : [];
@@ -49,7 +56,16 @@ export default function HomeScreen() {
   };
 
   const handleSubItemResult = (result: SubItemResult) => {
-    router.push({ pathname: "/items", params: { categoryIndex: result.categoryIndex, highlightIndex: result.subItemIndex } });
+    if (result.hasData) {
+      // Go straight to the detail screen
+      router.push({
+        pathname: "/detail",
+        params: { categoryIndex: result.categoryIndex, itemIndex: result.subItemIndex },
+      });
+    } else {
+      // No detail data — open the parent category list
+      router.push({ pathname: "/items", params: { categoryIndex: result.categoryIndex } });
+    }
   };
 
   return (
@@ -109,18 +125,28 @@ export default function HomeScreen() {
             const color = CATEGORY_COLORS[item.categoryIndex % CATEGORY_COLORS.length];
             return (
               <Pressable
-                style={({ pressed }) => [styles.card, { opacity: pressed ? 0.85 : 1 }]}
+                style={({ pressed }) => [
+                  styles.card,
+                  !item.hasData && styles.cardDisabledResult,
+                  { opacity: pressed ? 0.85 : 1 },
+                ]}
                 onPress={() => handleSubItemResult(item)}
               >
-                <View style={[styles.cardAccent, { backgroundColor: color }]} />
+                <View style={[styles.cardAccent, { backgroundColor: item.hasData ? color : colors.light.muted }]} />
                 <View style={styles.cardContent}>
-                  <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
+                  <Feather
+                    name={item.hasData ? "chevron-left" : "list"}
+                    size={20}
+                    color={colors.light.mutedForeground}
+                  />
                   <View style={styles.cardText}>
-                    <Text style={styles.cardTitle} numberOfLines={2}>{item.subItemName.trim()}</Text>
+                    <Text style={[styles.cardTitle, !item.hasData && { color: colors.light.mutedForeground }]} numberOfLines={2}>
+                      {item.subItemName.trim()}
+                    </Text>
                     <Text style={styles.cardCount}>{item.categoryName.trim()}</Text>
                   </View>
-                  <View style={[styles.categoryIcon, { backgroundColor: color + "22" }]}>
-                    <Feather name="file-text" size={18} color={color} />
+                  <View style={[styles.categoryIcon, { backgroundColor: (item.hasData ? color : "#888") + "22" }]}>
+                    <Feather name={item.hasData ? "file-text" : "folder"} size={18} color={item.hasData ? color : "#888"} />
                   </View>
                 </View>
               </Pressable>
@@ -312,6 +338,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#7c4e0e33",
     backgroundColor: "#fffaf6",
+  },
+  cardDisabledResult: {
+    backgroundColor: "#f5f7f7",
   },
   cardAccent: {
     width: 4,
