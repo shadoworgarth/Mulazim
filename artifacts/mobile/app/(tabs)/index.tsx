@@ -21,20 +21,35 @@ import colors from "@/constants/colors";
 
 const CATEGORY_COLORS = colors.light.categoryColors;
 
+interface SubItemResult {
+  categoryIndex: number;
+  categoryName: string;
+  subItemIndex: number;
+  subItemName: string;
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
 
-  const filtered = search
-    ? appData.filter((cat) => cat.name.includes(search))
-    : appData;
+  const q = search.trim();
+
+  // When searching, build a flat list of matching sub-items across all categories
+  const subItemResults: SubItemResult[] = q
+    ? appData.flatMap((cat, catIdx) =>
+        cat.subItems
+          .map((sub, subIdx) => ({ categoryIndex: catIdx, categoryName: cat.name, subItemIndex: subIdx, subItemName: sub.name }))
+          .filter((r) => r.subItemName.includes(q) || r.categoryName.includes(q))
+      )
+    : [];
 
   const handleCategory = (index: number) => {
-    const realIndex = search
-      ? appData.findIndex((c) => c.name === filtered[index].name)
-      : index;
-    router.push({ pathname: "/items", params: { categoryIndex: realIndex } });
+    router.push({ pathname: "/items", params: { categoryIndex: index } });
+  };
+
+  const handleSubItemResult = (result: SubItemResult) => {
+    router.push({ pathname: "/items", params: { categoryIndex: result.categoryIndex, highlightIndex: result.subItemIndex } });
   };
 
   return (
@@ -59,7 +74,7 @@ export default function HomeScreen() {
           <Feather name="search" size={18} color="#0e7c7c" />
           <TextInput
             style={styles.searchInput}
-            placeholder="بحث في التصنيفات..."
+            placeholder="بحث في الأصناف والمنتجات..."
             placeholderTextColor="#9bb0b0"
             value={search}
             onChangeText={setSearch}
@@ -83,13 +98,51 @@ export default function HomeScreen() {
         </Pressable>
       </ImageBackground>
 
-      {/* Categories List */}
+      {/* Search Results (sub-items) */}
+      {q ? (
+        <FlatList
+          data={subItemResults}
+          keyExtractor={(_, i) => i.toString()}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => {
+            const color = CATEGORY_COLORS[item.categoryIndex % CATEGORY_COLORS.length];
+            return (
+              <Pressable
+                style={({ pressed }) => [styles.card, { opacity: pressed ? 0.85 : 1 }]}
+                onPress={() => handleSubItemResult(item)}
+              >
+                <View style={[styles.cardAccent, { backgroundColor: color }]} />
+                <View style={styles.cardContent}>
+                  <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
+                  <View style={styles.cardText}>
+                    <Text style={styles.cardTitle} numberOfLines={2}>{item.subItemName.trim()}</Text>
+                    <Text style={styles.cardCount}>{item.categoryName.trim()}</Text>
+                  </View>
+                  <View style={[styles.categoryIcon, { backgroundColor: color + "22" }]}>
+                    <Feather name="file-text" size={18} color={color} />
+                  </View>
+                </View>
+              </Pressable>
+            );
+          }}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <Feather name="search" size={48} color={colors.light.mutedForeground} />
+              <Text style={styles.emptyText}>لا توجد نتائج</Text>
+            </View>
+          }
+          ListHeaderComponent={
+            <Text style={styles.resultsCount}>{subItemResults.length} نتيجة</Text>
+          }
+        />
+      ) : (
+      /* Categories List */
       <FlatList
-        data={filtered}
+        data={appData}
         keyExtractor={(_, i) => i.toString()}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        scrollEnabled={filtered.length > 0}
         ListHeaderComponent={
           <Pressable
             style={({ pressed }) => [
@@ -159,6 +212,7 @@ export default function HomeScreen() {
           </View>
         }
       />
+      )}
     </View>
   );
 }
@@ -291,6 +345,12 @@ const styles = StyleSheet.create({
     color: colors.light.mutedForeground,
     textAlign: "right",
     marginTop: 2,
+  },
+  resultsCount: {
+    fontSize: 12,
+    color: colors.light.mutedForeground,
+    textAlign: "right",
+    paddingBottom: 8,
   },
   footer: {
     textAlign: "center",
