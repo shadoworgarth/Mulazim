@@ -112,7 +112,7 @@ export default function AdditiveSearchScreen() {
             value={query}
             onChangeText={setQuery}
             autoFocus
-            autoCapitalize="characters"
+            autoCapitalize="none"
             returnKeyType="search"
           />
           {query.length > 0 && (
