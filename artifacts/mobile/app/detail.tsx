@@ -1,7 +1,9 @@
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -34,6 +36,7 @@ export default function DetailScreen() {
     itemIndex: string;
   }>();
   const navigation = useNavigation();
+  const router = useRouter();
 
   const catIdx = parseInt(categoryIndex ?? "0", 10);
   const itemIdx = parseInt(itemIndex ?? "0", 10);
@@ -94,25 +97,33 @@ export default function DetailScreen() {
             </>
           ) : null}
           {row1.C ? (
-            <View
-              style={[
+            <Pressable
+              style={({ pressed }) => [
                 styles.infoRow,
                 row2.C === "نعم" && styles.infoRowGreen,
                 row2.C === "لا" && styles.infoRowRed,
+                row2.C === "نعم" && pressed && { opacity: 0.75 },
               ]}
+              onPress={() => row2.C === "نعم" && router.push("/general-additives")}
             >
-              <Text
-                style={[
-                  styles.infoValue,
-                  (row2.C === "نعم" || row2.C === "لا") && styles.infoValueBold,
-                ]}
-              >
-                {row2.C || "—"}
-              </Text>
+              <View style={styles.infoValueRow}>
+                <Text
+                  style={[
+                    styles.infoValue,
+                    (row2.C === "نعم" || row2.C === "لا") && styles.infoValueBold,
+                    row2.C === "نعم" && styles.infoValueLink,
+                  ]}
+                >
+                  {row2.C || "—"}
+                </Text>
+                {row2.C === "نعم" && (
+                  <Feather name="external-link" size={14} color="#0e7c7c" style={{ marginTop: 2 }} />
+                )}
+              </View>
               <View style={styles.infoLabelWrap}>
                 <Text style={styles.infoLabel}>{row1.C}</Text>
               </View>
-            </View>
+            </Pressable>
           ) : null}
         </View>
       </View>
@@ -253,8 +264,14 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 6,
   },
-  infoValue: {
+  infoValueRow: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 6,
+  },
+  infoValue: {
     fontSize: 14,
     color: colors.light.text,
     textAlign: "right",
@@ -263,6 +280,10 @@ const styles = StyleSheet.create({
   infoValueBold: {
     fontWeight: "700",
     fontSize: 15,
+  },
+  infoValueLink: {
+    color: "#0e7c7c",
+    textDecorationLine: "underline",
   },
   additiveRow: {
     flexDirection: "row",
