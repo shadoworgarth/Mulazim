@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 const PASSCODE_KEY = "app_passcode_hash";
+const UNLOCKED_KEY = "app_unlocked_with";
 const DEFAULT_PASSCODE = "2026";
 
 function simpleHash(code: string): string {
@@ -28,23 +29,32 @@ export function PasscodeProvider({ children }: { children: React.ReactNode }) {
   const [hasPasscode, setHasPasscode] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(PASSCODE_KEY).then(async (val) => {
-      if (!val) {
-        // Seed the default passcode on first launch
-        await AsyncStorage.setItem(PASSCODE_KEY, simpleHash(DEFAULT_PASSCODE));
-        setHasPasscode(true);
-        setIsLocked(true);
+    (async () => {
+      let storedHash = await AsyncStorage.getItem(PASSCODE_KEY);
+
+      if (!storedHash) {
+        storedHash = simpleHash(DEFAULT_PASSCODE);
+        await AsyncStorage.setItem(PASSCODE_KEY, storedHash);
+      }
+
+      setHasPasscode(true);
+
+      // Check if this device already unlocked with the current passcode
+      const unlockedWith = await AsyncStorage.getItem(UNLOCKED_KEY);
+      if (unlockedWith === storedHash) {
+        setIsLocked(false);
       } else {
-        setHasPasscode(true);
         setIsLocked(true);
       }
-    });
+    })();
   }, []);
 
   const unlock = useCallback(async (code: string): Promise<boolean> => {
     const stored = await AsyncStorage.getItem(PASSCODE_KEY);
     if (!stored) { setIsLocked(false); return true; }
     if (simpleHash(code) === stored) {
+      // Remember that this device unlocked with this passcode
+      await AsyncStorage.setItem(UNLOCKED_KEY, stored);
       setIsLocked(false);
       return true;
     }
@@ -52,13 +62,16 @@ export function PasscodeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setPasscode = useCallback(async (code: string) => {
-    await AsyncStorage.setItem(PASSCODE_KEY, simpleHash(code));
+    const newHash = simpleHash(code);
+    await AsyncStorage.setItem(PASSCODE_KEY, newHash);
+    // Also update the unlocked-with record so the current device stays unlocked
+    await AsyncStorage.setItem(UNLOCKED_KEY, newHash);
     setHasPasscode(true);
     setIsLocked(false);
   }, []);
 
   const clearPasscode = useCallback(async () => {
-    await AsyncStorage.removeItem(PASSCODE_KEY);
+    await AsyncStorage.multiRemove([PASSCODE_KEY, UNLOCKED_KEY]);
     setHasPasscode(false);
     setIsLocked(false);
   }, []);
