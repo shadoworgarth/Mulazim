@@ -2860,7 +2860,7 @@
     "name": "البيض ومنتجاته",
     "subItems": [
       {
-        "name": "لبيض الطازج",
+        "name": "البيض الطازج",
         "targetSheet": "10",
         "targetCell": "A2",
         "data": {
