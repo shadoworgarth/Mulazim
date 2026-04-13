@@ -271,7 +271,7 @@ export default function AdditiveSearchScreen() {
         ListHeaderComponent={
           query.trim().length >= 2 && results.length > 0 ? (
             <Text style={styles.resultCount}>
-              {results.length} نتيجة
+              {results.length} بند
             </Text>
           ) : query.trim().length >= 2 ? (
             <Text style={styles.resultCount}>لا توجد نتائج</Text>
