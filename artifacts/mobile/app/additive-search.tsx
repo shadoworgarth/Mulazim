@@ -270,9 +270,14 @@ export default function AdditiveSearchScreen() {
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           query.trim().length >= 2 && results.length > 0 ? (
-            <Text style={styles.resultCount}>
-              {results.length} بند
-            </Text>
+            <View style={styles.resultCountRow}>
+              <Text style={styles.resultCount}>{results.length} بند</Text>
+              {results.some((r) => r.kind === "general-match") && (
+                <View style={styles.generalGreenBadge}>
+                  <Text style={styles.generalGreenBadgeText}>مضاف عام</Text>
+                </View>
+              )}
+            </View>
           ) : query.trim().length >= 2 ? (
             <Text style={styles.resultCount}>لا توجد نتائج</Text>
           ) : null
@@ -316,9 +321,13 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, fontSize: 14, color: colors.light.text, padding: 0 },
   listContent: { padding: 16, paddingBottom: Platform.OS === "web" ? 34 : 24, gap: 10 },
+  resultCountRow: {
+    flexDirection: "row", alignItems: "center", justifyContent: "flex-end",
+    gap: 8, marginBottom: 4, paddingHorizontal: 4,
+  },
   resultCount: {
     fontSize: 12, fontWeight: "600", color: colors.light.mutedForeground,
-    textAlign: "right", marginBottom: 4, paddingHorizontal: 4,
+    textAlign: "right",
   },
   resultCard: {
     backgroundColor: "#ffffff", borderRadius: 14, padding: 14, gap: 8,
