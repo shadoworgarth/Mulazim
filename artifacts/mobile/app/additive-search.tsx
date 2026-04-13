@@ -190,8 +190,13 @@ export default function AdditiveSearchScreen() {
               {highlight(result.label, query.trim()) as any}
             </Text>
           </View>
-          <View style={styles.generalBadge}>
-            <Text style={styles.generalBadgeText}>المضافات العامة • INS {result.ins}</Text>
+          <View style={styles.generalBadgeRow}>
+            <View style={styles.generalGreenBadge}>
+              <Text style={styles.generalGreenBadgeText}>مضاف عام</Text>
+            </View>
+            <View style={styles.generalBadge}>
+              <Text style={styles.generalBadgeText}>INS {result.ins}</Text>
+            </View>
           </View>
           {result.detail ? (
             <View style={[styles.matchRow, { backgroundColor: "#fff8f0" }]}>
@@ -227,9 +232,6 @@ export default function AdditiveSearchScreen() {
       </Pressable>
     );
   };
-
-  const itemCount = results.filter((r) => r.kind === "item" || r.kind === "allows-general").length;
-  const generalCount = results.filter((r) => r.kind === "general-match").length;
 
   return (
     <View style={styles.container}>
@@ -269,7 +271,7 @@ export default function AdditiveSearchScreen() {
         ListHeaderComponent={
           query.trim().length >= 2 && results.length > 0 ? (
             <Text style={styles.resultCount}>
-              {itemCount} صنف • {generalCount} مادة عامة
+              {results.length} نتيجة
             </Text>
           ) : query.trim().length >= 2 ? (
             <Text style={styles.resultCount}>لا توجد نتائج</Text>
@@ -333,9 +335,17 @@ const styles = StyleSheet.create({
     paddingVertical: 3, alignSelf: "flex-end",
   },
   categoryBadgeText: { fontSize: 11, fontWeight: "500", color: "#0e7c7c", textAlign: "right" },
+  generalBadgeRow: {
+    flexDirection: "row", gap: 6, justifyContent: "flex-end",
+  },
+  generalGreenBadge: {
+    backgroundColor: "#1a7a4022", borderRadius: 6, paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  generalGreenBadgeText: { fontSize: 11, fontWeight: "700", color: "#1a7a40", textAlign: "right" },
   generalBadge: {
     backgroundColor: "#7c4e0e22", borderRadius: 6, paddingHorizontal: 8,
-    paddingVertical: 3, alignSelf: "flex-end",
+    paddingVertical: 3,
   },
   generalBadgeText: { fontSize: 11, fontWeight: "500", color: "#7c4e0e", textAlign: "right" },
   matchRow: {
