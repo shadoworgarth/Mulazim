@@ -3,7 +3,9 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 const PASSCODE_KEY = "app_passcode_hash";
 const UNLOCKED_KEY = "app_unlocked_with";
-const DEFAULT_PASSCODE = "2026";
+const PASSCODE_VERSION_KEY = "app_passcode_version";
+const DEFAULT_PASSCODE = "0000";
+const PASSCODE_VERSION = "2"; // bump this whenever the passcode is changed
 
 function simpleHash(code: string): string {
   let hash = 0;
@@ -30,22 +32,26 @@ export function PasscodeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      let storedHash = await AsyncStorage.getItem(PASSCODE_KEY);
+      const storedVersion = await AsyncStorage.getItem(PASSCODE_VERSION_KEY);
 
-      if (!storedHash) {
-        storedHash = simpleHash(DEFAULT_PASSCODE);
-        await AsyncStorage.setItem(PASSCODE_KEY, storedHash);
+      if (storedVersion !== PASSCODE_VERSION) {
+        // Passcode has been updated — force reset on all devices
+        const newHash = simpleHash(DEFAULT_PASSCODE);
+        await AsyncStorage.multiSet([
+          [PASSCODE_KEY, newHash],
+          [PASSCODE_VERSION_KEY, PASSCODE_VERSION],
+        ]);
+        await AsyncStorage.removeItem(UNLOCKED_KEY);
+        setHasPasscode(true);
+        setIsLocked(true);
+        return;
       }
 
+      const storedHash = await AsyncStorage.getItem(PASSCODE_KEY) ?? simpleHash(DEFAULT_PASSCODE);
       setHasPasscode(true);
 
-      // Check if this device already unlocked with the current passcode
       const unlockedWith = await AsyncStorage.getItem(UNLOCKED_KEY);
-      if (unlockedWith === storedHash) {
-        setIsLocked(false);
-      } else {
-        setIsLocked(true);
-      }
+      setIsLocked(unlockedWith !== storedHash);
     })();
   }, []);
 
