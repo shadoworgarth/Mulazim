@@ -12,8 +12,34 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import PasscodeLock from "@/components/PasscodeLock";
+import { PasscodeProvider, usePasscode } from "@/context/PasscodeContext";
 
 SplashScreen.preventAutoHideAsync();
+
+function AppContent() {
+  const { isLocked } = usePasscode();
+
+  if (isLocked) return <PasscodeLock />;
+
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: "#0e7c7c" },
+        headerTintColor: "#ffffff",
+        headerTitleStyle: { fontFamily: "Inter_600SemiBold", fontSize: 17 },
+        headerBackTitle: "رجوع",
+        contentStyle: { backgroundColor: "#f2f6f8" },
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="items" options={{ title: "الأصناف" }} />
+      <Stack.Screen name="detail" options={{ title: "تفاصيل الصنف" }} />
+      <Stack.Screen name="additive-search" options={{ title: "بحث عن مادة مضافة" }} />
+      <Stack.Screen name="general-additives" options={{ title: "المضافات العامة" }} />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -35,33 +61,9 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ErrorBoundary>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack
-            screenOptions={{
-              headerStyle: { backgroundColor: "#0e7c7c" },
-              headerTintColor: "#ffffff",
-              headerTitleStyle: { fontFamily: "Inter_600SemiBold", fontSize: 17 },
-              headerBackTitle: "رجوع",
-              contentStyle: { backgroundColor: "#f2f6f8" },
-            }}
-          >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="items"
-              options={{ title: "الأصناف" }}
-            />
-            <Stack.Screen
-              name="detail"
-              options={{ title: "تفاصيل الصنف" }}
-            />
-            <Stack.Screen
-              name="additive-search"
-              options={{ title: "بحث عن مادة مضافة" }}
-            />
-            <Stack.Screen
-              name="general-additives"
-              options={{ title: "المضافات العامة" }}
-            />
-          </Stack>
+          <PasscodeProvider>
+            <AppContent />
+          </PasscodeProvider>
         </GestureHandlerRootView>
       </ErrorBoundary>
     </SafeAreaProvider>
