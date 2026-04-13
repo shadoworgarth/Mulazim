@@ -271,10 +271,14 @@ export default function AdditiveSearchScreen() {
         ListHeaderComponent={
           query.trim().length >= 2 && results.length > 0 ? (
             <View style={styles.resultCountRow}>
-              <Text style={styles.resultCount}>{results.length} بند</Text>
+              <Text style={styles.resultCount}>
+                {results.filter((r) => r.kind !== "general-match").length} بند
+              </Text>
               {results.some((r) => r.kind === "general-match") && (
                 <View style={styles.generalGreenBadge}>
-                  <Text style={styles.generalGreenBadgeText}>مضاف عام</Text>
+                  <Text style={styles.generalGreenBadgeText}>
+                    {results.filter((r) => r.kind === "general-match").length} مضاف عام
+                  </Text>
                 </View>
               )}
             </View>
