@@ -90,7 +90,7 @@ export default function DetailScreen() {
       const resp = await fetch(`${API_BASE}/ocr`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: base64, mimeType: "image/jpeg" }),
+        body: JSON.stringify({ imageBase64: base64, mimeType: "image/jpeg", mode: "numbers" }),
       });
 
       const json = await resp.json();
