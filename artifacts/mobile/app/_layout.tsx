@@ -37,7 +37,6 @@ function AppContent() {
       <Stack.Screen name="detail" options={{ title: "تفاصيل الصنف" }} />
       <Stack.Screen name="additive-search" options={{ title: "بحث عن مادة مضافة" }} />
       <Stack.Screen name="general-additives" options={{ title: "المضافات العامة" }} />
-      <Stack.Screen name="scan-result" options={{ title: "نتائج المسح" }} />
     </Stack>
   );
 }
