@@ -67,15 +67,27 @@ function matchesQuery(text: string, q: string): boolean {
     }
   }
 
-  // 3. Roman numeral range: query contains "(i)" style → check "(i)-(iii)" ranges
-  const romanQ = q.match(/\(([ivx]+)\)/);
+  // 3. Roman numeral range: handles "172(ii)" → "172(i)-(iii)" and "(ii)" → any "(i)-(iii)"
+  const romanQ = q.match(/\(([ivx]+)\)$/);
   if (romanQ) {
     const qVal = romanToInt(romanQ[1]);
     if (qVal > 0) {
-      const romanRange = /\(([ivx]+)\)-\(([ivx]+)\)/g;
-      let m: RegExpExecArray | null;
-      while ((m = romanRange.exec(text)) !== null) {
-        if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
+      const prefix = q.slice(0, q.lastIndexOf("(")).trim();
+      if (prefix) {
+        // Specific: only look for ranges starting with the same prefix e.g. "172(i)-(iii)"
+        const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const specificRange = new RegExp(escaped + "\\(([ivx]+)\\)-\\(([ivx]+)\\)", "g");
+        let m: RegExpExecArray | null;
+        while ((m = specificRange.exec(text)) !== null) {
+          if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
+        }
+      } else {
+        // Generic: query is just "(ii)" → match any roman range
+        const genericRange = /\(([ivx]+)\)-\(([ivx]+)\)/g;
+        let m: RegExpExecArray | null;
+        while ((m = genericRange.exec(text)) !== null) {
+          if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
+        }
       }
     }
   }
