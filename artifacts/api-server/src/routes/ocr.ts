@@ -1,10 +1,6 @@
 import { Router } from "express";
-import express from "express";
 
 const router = Router();
-
-// Larger body limit for base64 images
-router.use(express.json({ limit: "10mb" }));
 
 router.post("/ocr", async (req, res) => {
   try {
