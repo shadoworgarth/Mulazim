@@ -13,20 +13,58 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import appData from "@/constants/data";
 import colors from "@/constants/colors";
 
-// ─── Parse all INS numbers out of a permitted additive line ───────────────────
+// ─── Expand a permitted-additive line into every individual INS number ─────────
+// "SORBATES 200-203"  → [200, 201, 202, 203]
+// "ASCORBIC ACID 300" → [300]
 function expandLine(line: string): number[] {
   const nums: number[] = [];
-  // Ranges like 200-203
-  for (const m of line.matchAll(/\b(\d+)-(\d+)\b/g)) {
-    for (let i = parseInt(m[1]); i <= parseInt(m[2]); i++) nums.push(i);
+  // Ranges first: "200-203"
+  const rangeRe = /(\d+)-(\d+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = rangeRe.exec(line)) !== null) {
+    const lo = parseInt(m[1], 10);
+    const hi = parseInt(m[2], 10);
+    for (let i = lo; i <= hi; i++) nums.push(i);
   }
-  // Standalone INS numbers (3-4 digits)
-  for (const m of line.matchAll(/\b(\d{3,4})\b/g)) {
-    const n = parseInt(m[1]);
+  // Standalone 3-4 digit numbers (not already covered by a range)
+  const standRe = /\b(\d{3,4})\b/g;
+  while ((m = standRe.exec(line)) !== null) {
+    const n = parseInt(m[1], 10);
     if (!nums.includes(n)) nums.push(n);
   }
   return nums;
 }
+
+// ─── Extract every E-number written in the OCR text ───────────────────────────
+// Handles "E200", "E 200", "e200", "(E211)", "E-211" etc.
+// Returns deduplicated array of integer INS codes.
+function extractENumbers(text: string): number[] {
+  const found: number[] = [];
+  // Match "E" (optional space or dash) followed by 3-4 digits
+  const re = /[Ee][\s-]?(\d{3,4})/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const n = parseInt(m[1], 10);
+    if (!found.includes(n)) found.push(n);
+  }
+  return found;
+}
+
+// ─── Key name words extracted from a permitted-additive line ──────────────────
+// "SORBATES 200-203"  → ["sorbates"]
+// "BENZOATES 210-213" → ["benzoates"]
+// "SULFUR DIOXIDE AND SULPHITES 220-228" → ["sulfur", "dioxide", "sulphites"]
+// Filters out numbers and short/generic filler words.
+const STOP_WORDS = new Set(["and", "the", "with", "from", "acid", "salt", "mono", "free"]);
+function nameTokens(line: string): string[] {
+  return line
+    .replace(/\d+[-\d]*/g, " ")   // strip numbers/ranges
+    .split(/[\s,/()]+/)
+    .map((w) => w.toLowerCase().replace(/[^a-z]/g, ""))
+    .filter((w) => w.length >= 5 && !STOP_WORDS.has(w));
+}
+
+type MatchResult = { line: string; how: "e-number" | "name"; detail: string };
 
 export default function ScanResultScreen() {
   const { catIdx, itemIdx, ocrText, confidence } = useLocalSearchParams<{
@@ -45,53 +83,62 @@ export default function ScanResultScreen() {
     navigation.setOptions({ title: "نتائج المسح" });
   }, [navigation]);
 
-  const { permitted, notPermitted, notFound, foundNumbers } = useMemo(() => {
+  const { allowed, notAllowed, nothingDetected } = useMemo(() => {
     if (!item?.data?.row2.D || !ocrText) {
-      return { permitted: [], notPermitted: [], notFound: [], foundNumbers: [] };
+      return { allowed: [], notAllowed: [], nothingDetected: true };
     }
 
-    const additiveLines = item.data.row2.D
+    const ocr = ocrText;
+    const ocrLower = ocr.toLowerCase();
+
+    // 1. Extract E-numbers present in the OCR text
+    const eNums = extractENumbers(ocr);
+    const eNumSet = new Set(eNums);
+
+    // 2. Build per-line data for every permitted additive
+    const lines = item.data.row2.D
       .split(/[\r\n]+/)
       .map((s) => s.trim())
       .filter(Boolean);
 
-    // Build map: INS number → additive line
+    // Build: permitted INS number → line (for "not allowed" check)
     const numToLine = new Map<number, string>();
-    for (const line of additiveLines) {
-      for (const n of expandLine(line)) numToLine.set(n, line);
-    }
+    const lineData = lines.map((line) => {
+      const nums = expandLine(line);
+      const tokens = nameTokens(line);
+      for (const n of nums) numToLine.set(n, line);
+      return { line, nums, tokens };
+    });
 
-    // Extract all E-numbers from the OCR text
-    const rawNums: number[] = [];
-    for (const m of ocrText.matchAll(/\bE\s*(\d{3,4})\b/gi)) {
-      rawNums.push(parseInt(m[1]));
-    }
-    // Also plain 3-4 digit numbers surrounded by spaces/punctuation
-    for (const m of ocrText.matchAll(/(?<![a-zA-Z])(\d{3,4})(?![a-zA-Z\d])/g)) {
-      const n = parseInt(m[1]);
-      if (!rawNums.includes(n)) rawNums.push(n);
-    }
-
+    // 3. For each permitted line, decide if it appears in the OCR
     const seenLines = new Set<string>();
-    const permitted: { line: string; matchedNum: number }[] = [];
-    const notPermitted: number[] = [];
+    const allowed: MatchResult[] = [];
 
-    for (const num of rawNums) {
-      const line = numToLine.get(num);
-      if (line) {
-        if (!seenLines.has(line)) {
-          seenLines.add(line);
-          permitted.push({ line, matchedNum: num });
-        }
-      } else {
-        if (!notPermitted.includes(num)) notPermitted.push(num);
+    for (const { line, nums, tokens } of lineData) {
+      if (seenLines.has(line)) continue;
+
+      // a) E-number match (most reliable)
+      const matchedNum = nums.find((n) => eNumSet.has(n));
+      if (matchedNum !== undefined) {
+        seenLines.add(line);
+        allowed.push({ line, how: "e-number", detail: `E${matchedNum}` });
+        continue;
+      }
+
+      // b) Name token match (fallback when label uses substance name only)
+      const matchedToken = tokens.find((t) => ocrLower.includes(t));
+      if (matchedToken) {
+        seenLines.add(line);
+        allowed.push({ line, how: "name", detail: matchedToken.toUpperCase() });
       }
     }
 
-    // Additives permitted but not detected in the scan
-    const notFound = additiveLines.filter((l) => !seenLines.has(l));
+    // 4. E-numbers in OCR that are NOT in the permitted list → alert
+    const notAllowed: number[] = eNums.filter((n) => !numToLine.has(n));
 
-    return { permitted, notPermitted, notFound, foundNumbers: rawNums };
+    const nothingDetected = allowed.length === 0 && notAllowed.length === 0;
+
+    return { allowed, notAllowed, nothingDetected };
   }, [item, ocrText]);
 
   if (!item) {
@@ -119,9 +166,16 @@ export default function ScanResultScreen() {
         <View style={styles.summaryRow}>
           <View style={styles.summaryChip}>
             <Text style={styles.summaryChipText}>
-              {foundNumbers.length} مادة مكتشفة
+              {allowed.length} مضاف مطابق
             </Text>
           </View>
+          {notAllowed.length > 0 && (
+            <View style={[styles.summaryChip, { backgroundColor: "#b91c1c" }]}>
+              <Text style={styles.summaryChipText}>
+                {notAllowed.length} غير مسموح
+              </Text>
+            </View>
+          )}
           {conf > 0 && (
             <View style={[styles.summaryChip, { backgroundColor: "rgba(255,255,255,0.15)" }]}>
               <Text style={styles.summaryChipText}>دقة {conf.toFixed(0)}%</Text>
@@ -130,22 +184,28 @@ export default function ScanResultScreen() {
         </View>
       </View>
 
-      {/* Permitted found in scan */}
-      {permitted.length > 0 && (
+      {/* Permitted additives found in the scan */}
+      {allowed.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>مضافات مسموح بها ✓</Text>
+          <Text style={styles.sectionTitle}>مضافات مسموح بها — موجودة في المنتج ✓</Text>
           <View style={styles.card}>
-            {permitted.map((r, i) => (
+            {allowed.map((r, i) => (
               <View
                 key={i}
-                style={[styles.resultRow, styles.resultGreen, i < permitted.length - 1 && styles.rowDivider]}
+                style={[
+                  styles.resultRow,
+                  styles.resultGreen,
+                  i < allowed.length - 1 && styles.rowDivider,
+                ]}
               >
                 <View style={styles.resultLeft}>
                   <Feather name="check-circle" size={16} color="#1a7a40" />
                 </View>
                 <View style={styles.resultRight}>
                   <Text style={[styles.resultLine, { color: "#1a7a40" }]}>{r.line}</Text>
-                  <Text style={styles.resultNum}>E{r.matchedNum}</Text>
+                  <Text style={styles.resultDetail}>
+                    {r.how === "e-number" ? `تطابق رقم ${r.detail}` : `تطابق اسم "${r.detail}"`}
+                  </Text>
                 </View>
               </View>
             ))}
@@ -153,22 +213,26 @@ export default function ScanResultScreen() {
         </View>
       )}
 
-      {/* Not permitted */}
-      {notPermitted.length > 0 && (
+      {/* E-numbers present in the scan but NOT permitted */}
+      {notAllowed.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>مضافات غير مسموح بها ✗</Text>
           <View style={styles.card}>
-            {notPermitted.map((num, i) => (
+            {notAllowed.map((num, i) => (
               <View
                 key={i}
-                style={[styles.resultRow, styles.resultRed, i < notPermitted.length - 1 && styles.rowDivider]}
+                style={[
+                  styles.resultRow,
+                  styles.resultRed,
+                  i < notAllowed.length - 1 && styles.rowDivider,
+                ]}
               >
                 <View style={styles.resultLeft}>
                   <Feather name="x-circle" size={16} color="#b91c1c" />
                 </View>
                 <View style={styles.resultRight}>
                   <Text style={[styles.resultLine, { color: "#b91c1c" }]}>E{num}</Text>
-                  <Text style={styles.resultNum}>غير موجود في قائمة المسموح به</Text>
+                  <Text style={styles.resultDetail}>غير موجود في قائمة المسموح به لهذا الصنف</Text>
                 </View>
               </View>
             ))}
@@ -176,24 +240,22 @@ export default function ScanResultScreen() {
         </View>
       )}
 
-      {/* Nothing detected */}
-      {foundNumbers.length === 0 && (
+      {/* Nothing detected at all */}
+      {nothingDetected && (
         <View style={styles.section}>
           <View style={styles.card}>
             <View style={styles.emptyState}>
               <Feather name="alert-circle" size={32} color={colors.light.mutedForeground} />
-              <Text style={styles.emptyText}>
-                لم يتم اكتشاف أي مواد مضافة في النص الممسوح
-              </Text>
+              <Text style={styles.emptyText}>لم يُكتشف أي رقم E في النص</Text>
               <Text style={styles.emptySubtext}>
-                تأكد من وضوح الصورة وأن قائمة المكونات مرئية بالكامل
+                تأكد من وضوح الصورة وأن أرقام المضافات مثل E200 مرئية
               </Text>
             </View>
           </View>
         </View>
       )}
 
-      {/* Raw OCR Text */}
+      {/* Raw OCR text for verification */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>النص المقروء من الصورة</Text>
         <View style={styles.card}>
@@ -215,7 +277,7 @@ const styles = StyleSheet.create({
   },
   summaryTitle: { fontSize: 16, fontWeight: "700", color: "#fff", textAlign: "right" },
   summaryItem: { fontSize: 12, color: "#b2e0e0", textAlign: "right" },
-  summaryRow: { flexDirection: "row", gap: 8, justifyContent: "flex-end" },
+  summaryRow: { flexDirection: "row", gap: 8, justifyContent: "flex-end", flexWrap: "wrap" },
   summaryChip: {
     backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 8,
     paddingHorizontal: 10, paddingVertical: 4,
@@ -224,7 +286,7 @@ const styles = StyleSheet.create({
   section: { gap: 8 },
   sectionTitle: {
     fontSize: 12, fontWeight: "600", color: colors.light.mutedForeground,
-    textAlign: "right", paddingHorizontal: 4, textTransform: "uppercase",
+    textAlign: "right", paddingHorizontal: 4,
   },
   card: {
     backgroundColor: "#fff", borderRadius: 14, overflow: "hidden",
@@ -235,10 +297,10 @@ const styles = StyleSheet.create({
   resultGreen: { backgroundColor: "#f0faf5" },
   resultRed: { backgroundColor: "#fff5f5" },
   rowDivider: { borderBottomWidth: 1, borderBottomColor: colors.light.border },
-  resultLeft: { paddingTop: 1 },
-  resultRight: { flex: 1, alignItems: "flex-end", gap: 2 },
+  resultLeft: { paddingTop: 2 },
+  resultRight: { flex: 1, alignItems: "flex-end", gap: 3 },
   resultLine: { fontSize: 13, fontWeight: "600", textAlign: "right", lineHeight: 20 },
-  resultNum: { fontSize: 11, color: colors.light.mutedForeground, textAlign: "right" },
+  resultDetail: { fontSize: 11, color: colors.light.mutedForeground, textAlign: "right" },
   emptyState: { alignItems: "center", padding: 24, gap: 10 },
   emptyText: { fontSize: 14, fontWeight: "600", color: colors.light.text, textAlign: "center" },
   emptySubtext: { fontSize: 12, color: colors.light.mutedForeground, textAlign: "center", lineHeight: 18 },
