@@ -47,6 +47,42 @@ type AllowsGeneralResult = {
 
 type SearchResult = ItemResult | GeneralMatchResult | AllowsGeneralResult;
 
+// ─── Range-aware matching ──────────────────────────────────────────────────────
+const ROMAN: Record<string, number> = {
+  i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8,
+};
+function romanToInt(r: string): number { return ROMAN[r.toLowerCase()] ?? 0; }
+
+function matchesQuery(text: string, q: string): boolean {
+  // 1. Direct substring match
+  if (text.includes(q)) return true;
+
+  // 2. Numeric range: query is a plain number → check "X-Y" ranges in text
+  const queryNum = Number(q);
+  if (Number.isInteger(queryNum) && queryNum > 0) {
+    const numRange = /\b(\d+)-(\d+)\b/g;
+    let m: RegExpExecArray | null;
+    while ((m = numRange.exec(text)) !== null) {
+      if (queryNum >= Number(m[1]) && queryNum <= Number(m[2])) return true;
+    }
+  }
+
+  // 3. Roman numeral range: query contains "(i)" style → check "(i)-(iii)" ranges
+  const romanQ = q.match(/\(([ivx]+)\)/);
+  if (romanQ) {
+    const qVal = romanToInt(romanQ[1]);
+    if (qVal > 0) {
+      const romanRange = /\(([ivx]+)\)-\(([ivx]+)\)/g;
+      let m: RegExpExecArray | null;
+      while ((m = romanRange.exec(text)) !== null) {
+        if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 // ─── Highlight helper ─────────────────────────────────────────────────────────
 function highlight(text: string, query: string): React.ReactNode {
   if (!query.trim()) return <Text style={styles.matchText}>{text}</Text>;
@@ -80,13 +116,13 @@ export default function AdditiveSearchScreen() {
       category.subItems.forEach((item, itemIndex) => {
         if (!item.data?.row2.D) return;
         const additivesText = item.data.row2.D.toLowerCase();
-        if (!additivesText.includes(q)) return;
+        if (!matchesQuery(additivesText, q)) return;
 
         const lines = item.data.row2.D
           .split(/[\r\n]+/)
           .map((s) => s.trim())
           .filter(Boolean);
-        const matchedLine = lines.find((l) => l.toLowerCase().includes(q)) ?? item.data!.row2.D.slice(0, 80);
+        const matchedLine = lines.find((l) => matchesQuery(l.toLowerCase(), q)) ?? item.data!.row2.D.slice(0, 80);
 
         found.push({ kind: "item", categoryIndex, categoryName: category.name.trim(), itemIndex, item, matchedAdditive: matchedLine });
         itemResultKeys.add(`${categoryIndex}-${itemIndex}`);
