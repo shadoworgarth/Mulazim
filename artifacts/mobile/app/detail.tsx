@@ -1,10 +1,7 @@
 import { Feather } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
-  ActivityIndicator,
-  Alert,
   Platform,
   Pressable,
   ScrollView,
@@ -15,10 +12,6 @@ import {
 
 import appData from "@/constants/data";
 import colors from "@/constants/colors";
-import { API_BASE } from "@/constants/api";
-
-const SCAN_CAT = 13;
-const SCAN_ITEM = 4;
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -43,68 +36,10 @@ export default function DetailScreen() {
   const itemIdx = parseInt(itemIndex ?? "0", 10);
   const category = appData[catIdx];
   const item = category?.subItems[itemIdx];
-  const canScan = catIdx === SCAN_CAT && itemIdx === SCAN_ITEM;
-
-  const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
     if (item) navigation.setOptions({ title: item.name.trim().slice(0, 30) });
   }, [item, navigation]);
-
-  async function handleScan(source: "camera" | "gallery") {
-    try {
-      let result: ImagePicker.ImagePickerResult;
-      if (source === "camera") {
-        const perm = await ImagePicker.requestCameraPermissionsAsync();
-        if (!perm.granted) {
-          Alert.alert("إذن مرفوض", "يرجى السماح بالوصول إلى الكاميرا من الإعدادات");
-          return;
-        }
-        result = await ImagePicker.launchCameraAsync({ quality: 0.7, base64: true });
-      } else {
-        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!perm.granted) {
-          Alert.alert("إذن مرفوض", "يرجى السماح بالوصول إلى معرض الصور من الإعدادات");
-          return;
-        }
-        result = await ImagePicker.launchImageLibraryAsync({ quality: 0.7, base64: true });
-      }
-
-      if (result.canceled || !result.assets?.[0]?.base64) return;
-
-      setScanning(true);
-      const resp = await fetch(`${API_BASE}/ocr`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: result.assets[0].base64, mimeType: "image/jpeg" }),
-      });
-
-      const json = await resp.json();
-      if (!resp.ok) throw new Error(json.error ?? "فشل تحليل الصورة");
-
-      router.push({
-        pathname: "/scan-result",
-        params: {
-          catIdx: String(catIdx),
-          itemIdx: String(itemIdx),
-          codesJson: JSON.stringify(json.codes ?? []),
-        },
-      });
-    } catch (err: any) {
-      Alert.alert("خطأ", err?.message ?? "فشل الاتصال بالخادم");
-    } finally {
-      setScanning(false);
-    }
-  }
-
-  function showScanOptions() {
-    if (Platform.OS === "web") { handleScan("gallery"); return; }
-    Alert.alert("مسح قائمة المكونات", "اختر مصدر الصورة", [
-      { text: "الكاميرا", onPress: () => handleScan("camera") },
-      { text: "المعرض", onPress: () => handleScan("gallery") },
-      { text: "إلغاء", style: "cancel" },
-    ]);
-  }
 
   if (!item || !item.data) {
     return (
@@ -136,22 +71,6 @@ export default function DetailScreen() {
           </View>
         ) : null}
       </View>
-
-      {/* Scan button — only for fruit juice item */}
-      {canScan && (
-        <Pressable
-          style={({ pressed }) => [styles.scanButton, pressed && { opacity: 0.8 }]}
-          onPress={showScanOptions}
-          disabled={scanning}
-        >
-          {scanning
-            ? <ActivityIndicator color="#fff" size="small" />
-            : <Feather name="camera" size={18} color="#fff" />}
-          <Text style={styles.scanButtonText}>
-            {scanning ? "جارٍ تحليل الصورة..." : "مسح قائمة المكونات"}
-          </Text>
-        </Pressable>
-      )}
 
       {/* Basic Info */}
       <View style={styles.section}>
@@ -237,12 +156,6 @@ const styles = StyleSheet.create({
   itemName: { fontSize: 18, fontWeight: "700", color: "#ffffff", textAlign: "right", lineHeight: 28 },
   codeBadge: { backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
   codeBadgeText: { fontSize: 13, fontWeight: "600", color: "#ffffff" },
-  scanButton: {
-    backgroundColor: "#1a5276", borderRadius: 12,
-    flexDirection: "row", alignItems: "center", justifyContent: "center",
-    gap: 10, paddingVertical: 13, paddingHorizontal: 20,
-  },
-  scanButtonText: { color: "#fff", fontSize: 15, fontWeight: "700" },
   section: { gap: 8 },
   sectionTitle: {
     fontSize: 12, fontWeight: "600", color: colors.light.mutedForeground,
