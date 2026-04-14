@@ -33,18 +33,22 @@ function expandLine(line: string): number[] {
   return nums;
 }
 
-// ─── Extract all 3-4 digit codes from the OCR text ────────────────────────────
-// In numbers-only mode the OCR output is almost entirely INS/E-codes, so we
-// accept both "E211" and bare "211".  We cap at 1599 to skip years and volumes.
+// ─── Extract only strict E-prefixed codes from full OCR text ──────────────────
+// We require the "E" prefix so that:
+//   "100%" is never extracted   (no E before it)
+//   "a" misread as "8" is ignored  (no E context)
+//   "E211", "E 211", "E-211", "(E211)" → all captured
+// This is the only reliable way to distinguish additive codes from noise when
+// the full text is read by the neural-net OCR engine (no whitelist).
 function extractCodes(text: string): number[] {
   const found: number[] = [];
-  const re = /\d{3,4}/g;
+  // Allow optional space or dash between E and the digits, and optional
+  // trailing letter like "E150a" → treat as 150.
+  const re = /[Ee][\s\-]?(\d{3,4})/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
-    const n = parseInt(m[0], 10);
-    if (n >= 100 && n <= 1599 && !found.includes(n)) {
-      found.push(n);
-    }
+    const n = parseInt(m[1], 10);
+    if (!found.includes(n)) found.push(n);
   }
   return found;
 }

@@ -26,19 +26,14 @@ router.post("/ocr", async (req, res) => {
       errorHandler: () => {},
     });
 
-    if (mode === "numbers") {
-      // Restrict Tesseract to only recognise digits + "E" so it focuses
-      // entirely on INS / E-numbers and ignores prose text.
-      // PSM 11 = sparse text: pick up characters anywhere on the page.
-      await worker.setParameters({
-        tessedit_pageseg_mode: "11" as any,
-        tessedit_char_whitelist: "Ee0123456789 ,()-/.",
-      } as any);
-    } else {
-      await worker.setParameters({
-        tessedit_pageseg_mode: "3" as any,
-      });
-    }
+    // PSM 11 = sparse text: find characters anywhere on the page without
+    // assuming a reading order.  No character whitelist — the whitelist
+    // causes the neural-net engine to forcibly map non-digit glyphs to
+    // the nearest digit (e.g. "a"→"8", "%"→"3"), which creates false codes.
+    // We extract only strict E-prefixed patterns in post-processing instead.
+    await worker.setParameters({
+      tessedit_pageseg_mode: "11" as any,
+    });
 
     const buffer = Buffer.from(imageBase64, "base64");
     const { data } = await worker.recognize(buffer);
