@@ -49,7 +49,14 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
         if (!map.has(String(n))) map.set(String(n), line);
       }
     }
-    const nums = [...line.matchAll(/\b(\d{3,4})\b/g)];
+    // Codes with letter suffix e.g. 160a, 150c → stored as "160a", "150c"
+    const withSuffix = [...line.matchAll(/\b(\d{3,4}[a-z])(?:\([ivx]+\))?/gi)];
+    for (const m of withSuffix) {
+      const key = m[1].toLowerCase();
+      if (!map.has(key)) map.set(key, line);
+    }
+    // Plain numbers not followed by a letter
+    const nums = [...line.matchAll(/\b(\d{3,4})\b(?![a-z])/gi)];
     for (const m of nums) {
       if (!map.has(m[1])) map.set(m[1], line);
     }

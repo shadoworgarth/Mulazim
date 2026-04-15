@@ -703,6 +703,10 @@
         "name": "Thaumatin"
       },
       {
+        "ins": "171",
+        "name": "Titanium dioxide"
+      },
+      {
         "ins": "413",
         "name": "Tragacanth gum"
       },
@@ -780,7 +784,7 @@
         "food": ""
       },
       {
-        "ins": "163(iii)",
+        "ins": "163(ii)",
         "color": "Blackcurrant extract",
         "food": ""
       },

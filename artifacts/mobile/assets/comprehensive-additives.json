@@ -68,6 +68,14 @@
     "name": "Caustic suphtile caramel"
   },
   {
+    "ins": "150c",
+    "name": "CARAMEL III - AMMONIA CARAMEL"
+  },
+  {
+    "ins": "150d",
+    "name": "CARAMEL IV - SULFITE AMMONIA CARAMEL"
+  },
+  {
     "ins": "150",
     "name": "CARAMEL III - AMMONIA CARAMEL"
   },
@@ -92,24 +100,16 @@
     "name": "Lycopene, tomato"
   },
   {
-    "ins": "160a(i)",
-    "name": "Beta-carotenes, synthetic"
-  },
-  {
-    "ins": "160a(ii)",
-    "name": "Carotenes, Beta-, Vegetable"
-  },
-  {
-    "ins": "160a(iii)",
-    "name": "Beta-carotenes, Blakeslea trispora"
-  },
-  {
     "ins": "160b",
     "name": "Annatto"
   },
   {
     "ins": "160c",
     "name": "Paprika extract"
+  },
+  {
+    "ins": "160a",
+    "name": "CAROTENES, BETA-, VEGETABLE"
   },
   {
     "ins": "161b(iii)",
@@ -120,6 +120,14 @@
     "name": "lutein"
   },
   {
+    "ins": "161h",
+    "name": "ZEAXANTHIN, SYNTHETIC"
+  },
+  {
+    "ins": "161g",
+    "name": "CANTHAXANTHIN"
+  },
+  {
     "ins": "162",
     "name": "Beet red"
   },
@@ -128,7 +136,7 @@
     "name": "Anthocyanins"
   },
   {
-    "ins": "163(iii)",
+    "ins": "163(ii)",
     "name": "Blackcurrant extract"
   },
   {
@@ -138,6 +146,10 @@
   {
     "ins": "170",
     "name": "CALCIUM CARBONATE"
+  },
+  {
+    "ins": "171",
+    "name": "Titanium dioxide"
   },
   {
     "ins": "172",
@@ -588,6 +600,10 @@
     "name": "ASCORBYL ESTERS"
   },
   {
+    "ins": "307a",
+    "name": "TOCOPHEROLS"
+  },
+  {
     "ins": "310",
     "name": "PROPYL GALLATE"
   },
@@ -1024,8 +1040,16 @@
     "name": "Lactic and fatty acid esters of glycerol"
   },
   {
+    "ins": "472e",
+    "name": "DIACETYLTARTARIC AND FATTY ACID ESTERS OF GLYCEROL"
+  },
+  {
     "ins": "473",
     "name": "SUCROSE ESTERS OF FATTY ACIDS"
+  },
+  {
+    "ins": "473a",
+    "name": "SUCROSE OLIGOESTERS, TYPE I AND TYPE II"
   },
   {
     "ins": "474",
@@ -1360,6 +1384,10 @@
     "name": "ETHYL MALTOL"
   },
   {
+    "ins": "900a",
+    "name": "POLYDIMETHYLSILOXANE"
+  },
+  {
     "ins": "901",
     "name": "BEESWAX"
   },
@@ -1376,12 +1404,28 @@
     "name": "SHELLAC, BLEACHED"
   },
   {
+    "ins": "905c",
+    "name": "MICROCRYSTALLINE WAX"
+  },
+  {
+    "ins": "905d",
+    "name": "MINERAL OIL, HIGH VISCOSITY"
+  },
+  {
+    "ins": "905e",
+    "name": "MINERAL OIL, MEDIUM VISCOSITY"
+  },
+  {
     "ins": "907",
     "name": "HYDROGENATED POLY-"
   },
   {
     "ins": "925",
     "name": "CHLORINE"
+  },
+  {
+    "ins": "927a",
+    "name": "AZODICARBONAMIDE"
   },
   {
     "ins": "928",
@@ -1422,6 +1466,14 @@
   {
     "ins": "957",
     "name": "Thaumatin"
+  },
+  {
+    "ins": "960a",
+    "name": "STEVIOL GLYCOSIDES"
+  },
+  {
+    "ins": "960b",
+    "name": "STEVIOL GLYCOSIDES"
   },
   {
     "ins": "961",
