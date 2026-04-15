@@ -264,7 +264,7 @@ export default function OtpAuthScreen() {
         {step === "email" && (
           <Pressable onPress={() => { setStep("admin"); setError(""); }} style={styles.adminLink}>
             <Feather name="settings" size={12} color="#6a9f9f" />
-            <Text style={styles.adminLinkText}>دخول المشرف</Text>
+            <Text style={styles.adminLinkText}>admin login</Text>
           </Pressable>
         )}
       </ScrollView>
