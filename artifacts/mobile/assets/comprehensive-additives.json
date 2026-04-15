@@ -267,30 +267,6 @@
     "funcClass": "Acidity regulator,Anticaking agent, Raising agent"
   },
   {
-    "ins": "204",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "205",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "206",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "207",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "208",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "209",
-    "name": "SORBATES"
-  },
-  {
     "ins": "210",
     "name": "Benzoic acid",
     "funcClass": "Preservative"
@@ -316,25 +292,9 @@
     "funcClass": "Acidity regulator"
   },
   {
-    "ins": "215",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "216",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "217",
-    "name": "SORBATES"
-  },
-  {
     "ins": "218",
     "name": "Methyl para-hydroxybenzoate",
     "funcClass": "Acidity regulator"
-  },
-  {
-    "ins": "219",
-    "name": "SORBATES"
   },
   {
     "ins": "220",
@@ -362,26 +322,6 @@
     "name": "Potassium sulfite"
   },
   {
-    "ins": "226",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "227",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "228",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "229",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "230",
-    "name": "SORBATES"
-  },
-  {
     "ins": "231",
     "name": "ortho-Phenylphenol",
     "funcClass": "Preservative"
@@ -390,10 +330,6 @@
     "ins": "232",
     "name": "Sodium ortho-phenylphenol",
     "funcClass": "Preservative"
-  },
-  {
-    "ins": "233",
-    "name": "SORBATES"
   },
   {
     "ins": "234",
@@ -406,28 +342,8 @@
     "funcClass": "Preservative"
   },
   {
-    "ins": "236",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "237",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "238",
-    "name": "SORBATES"
-  },
-  {
     "ins": "239",
     "name": "HEXAMETHYLENE TETRAMINE"
-  },
-  {
-    "ins": "240",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "241",
-    "name": "SORBATES"
   },
   {
     "ins": "242",
@@ -440,86 +356,14 @@
     "funcClass": "Preservative"
   },
   {
-    "ins": "244",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "245",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "246",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "247",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "248",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "249",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "250",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "251",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "252",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "253",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "254",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "255",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "256",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "257",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "258",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "259",
-    "name": "SORBATES"
-  },
-  {
     "ins": "260",
     "name": "Acetic acid, glacial",
     "funcClass": "Acidity regulator, Preservative"
   },
   {
-    "ins": "261",
-    "name": "SORBATES"
-  },
-  {
     "ins": "261(i)",
     "name": "Potassium acetate",
     "funcClass": "Acidity regulator, Preservative"
-  },
-  {
-    "ins": "262",
-    "name": "SORBATES"
   },
   {
     "ins": "262(i)",
@@ -532,73 +376,9 @@
     "funcClass": "Acidity regulator, Preservative, Sequestrant"
   },
   {
-    "ins": "263",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "264",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "265",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "266",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "267",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "268",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "269",
-    "name": "SORBATES"
-  },
-  {
     "ins": "270",
     "name": "Lactic acid,",
     "funcClass": "Acidity regulator"
-  },
-  {
-    "ins": "271",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "272",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "273",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "274",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "275",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "276",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "277",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "278",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "279",
-    "name": "SORBATES"
   },
   {
     "ins": "280",
@@ -616,57 +396,9 @@
     "funcClass": "Acidity regulator, Flour treatment agent"
   },
   {
-    "ins": "283",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "284",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "285",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "286",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "287",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "288",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "289",
-    "name": "SORBATES"
-  },
-  {
     "ins": "290",
     "name": "Carbon dioxide",
     "funcClass": "Carbonating agent, Foaming agent, Packaging gas, Preservative, Propellant"
-  },
-  {
-    "ins": "291",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "292",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "293",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "294",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "295",
-    "name": "SORBATES"
   },
   {
     "ins": "296",
@@ -677,14 +409,6 @@
     "ins": "297",
     "name": "Fumaric acid",
     "funcClass": "Colour retention agent"
-  },
-  {
-    "ins": "298",
-    "name": "SORBATES"
-  },
-  {
-    "ins": "299",
-    "name": "SORBATES"
   },
   {
     "ins": "300",
