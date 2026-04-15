@@ -8,11 +8,14 @@ import {
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import OtpAuthScreen from "@/components/OtpAuthScreen";
 import PasscodeLock from "@/components/PasscodeLock";
+import { OtpAuthProvider, useOtpAuth } from "@/context/OtpAuthContext";
 import { PasscodeProvider, usePasscode } from "@/context/PasscodeContext";
 
 SplashScreen.preventAutoHideAsync();
@@ -42,6 +45,28 @@ function AppContent() {
   );
 }
 
+function AuthGate() {
+  const { isVerified, checkDone } = useOtpAuth();
+
+  if (!checkDone) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#0a5f5f", alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
+  }
+
+  if (!isVerified) {
+    return <OtpAuthScreen />;
+  }
+
+  return (
+    <PasscodeProvider>
+      <AppContent />
+    </PasscodeProvider>
+  );
+}
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -62,9 +87,9 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ErrorBoundary>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <PasscodeProvider>
-            <AppContent />
-          </PasscodeProvider>
+          <OtpAuthProvider>
+            <AuthGate />
+          </OtpAuthProvider>
         </GestureHandlerRootView>
       </ErrorBoundary>
     </SafeAreaProvider>
