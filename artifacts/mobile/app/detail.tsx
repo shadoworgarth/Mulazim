@@ -22,10 +22,17 @@ type AdditiveEntry = { ins: string; name: string };
 type Badge = AdditiveEntry;
 type VerifyResult = Badge & { permitted: boolean; reason: string };
 
+// Valid INS number: starts with a digit (filters out Arabic header/section rows in table2)
+const isValidIns = (ins: string) => /^\d/.test(String(ins));
+
 // Combined autocomplete database from general-additives tables
 const GA_DB: AdditiveEntry[] = [
-  ...(generalAdditives as any).table1.rows.map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.name })),
-  ...(generalAdditives as any).table2.rows.map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.color })),
+  ...(generalAdditives as any).table1.rows
+    .filter((r: any) => isValidIns(r.ins))
+    .map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.name })),
+  ...(generalAdditives as any).table2.rows
+    .filter((r: any) => isValidIns(r.ins) && r.color)
+    .map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.color })),
 ];
 
 function buildPermittedMap(additives: string[]): Map<string, string> {
