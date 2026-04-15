@@ -31,6 +31,29 @@ const generalInsSet = new Set<string>([
   ...generalData.table2.rows.map((r) => r.ins.toLowerCase()),
 ]);
 
+// ── Named additive families from Table 1 ──────────────────────────────────────
+// When any member of a family matches, all members are shown as a chooser card.
+const FAMILY_GROUPS: { name: string; codes: string[] }[] = [
+  { name: "SORBATES",                       codes: ["200","201","202","203"] },
+  { name: "BENZOATES",                      codes: ["210","211","212","213"] },
+  { name: "PARABENS",                       codes: ["214","218"] },
+  { name: "SULFITES",                       codes: ["220","221","222","223","224","225"] },
+  { name: "PHENYLPHENOLS",                  codes: ["231","232"] },
+  { name: "PROPIONATES",                    codes: ["280","281","282"] },
+  { name: "ASCORBATES",                     codes: ["300","301","302"] },
+  { name: "ASCORBYL ESTERS",                codes: ["304","305"] },
+  { name: "LACTATES",                       codes: ["325","326","327","329"] },
+  { name: "ALGINATES",                      codes: ["400","401","402","403","404","405"] },
+  { name: "POLYSORBATES",                   codes: ["432","433","434","435","436"] },
+  { name: "SORBITAN ESTERS OF FATTY ACIDS", codes: ["491","492","493","494","495"] },
+  { name: "GLUCONATES",                     codes: ["575","576","577","578"] },
+];
+
+// Reverse map: INS code → index in FAMILY_GROUPS
+const CODE_TO_FAMILY = new Map<string, number>(
+  FAMILY_GROUPS.flatMap((fg, i) => fg.codes.map((c) => [c, i] as [string, number]))
+);
+
 // ─── Result types ─────────────────────────────────────────────────────────────
 type ItemResult = {
   kind: "item";
@@ -299,22 +322,58 @@ export default function AdditiveSearchScreen() {
       }
     });
 
-    // Group by base code — multi-member families become a single badge chooser card
+    // Family expansion: when any family member matched, pull in the rest
+    const triggeredFamilies = new Set<number>();
+    for (const m of compMatches) {
+      const fi = CODE_TO_FAMILY.get(m.ins);
+      if (fi !== undefined) triggeredFamilies.add(fi);
+    }
+    for (const fi of triggeredFamilies) {
+      for (const code of FAMILY_GROUPS[fi].codes) {
+        if (!seenIns.has(code)) {
+          const entry = comprehensiveData.find((e) => e.ins === code);
+          if (entry) {
+            seenIns.add(entry.ins);
+            compMatches.push({
+              kind: "comprehensive-match",
+              ins: entry.ins,
+              name: entry.name,
+              funcClass: entry.funcClass,
+              isGeneral: generalInsSet.has(entry.ins.toLowerCase()),
+            });
+          }
+        }
+      }
+    }
+
+    // Group: named families use family key; roman-numeral sub-codes use base prefix
     const groupMap = new Map<string, ComprehensiveMatchResult[]>();
     for (const m of compMatches) {
-      const base = m.ins.toLowerCase().replace(/\s*\([ivx]+\)$/i, "");
-      if (!groupMap.has(base)) groupMap.set(base, []);
-      groupMap.get(base)!.push(m);
+      const fi = CODE_TO_FAMILY.get(m.ins);
+      const groupKey = fi !== undefined
+        ? `__family__${fi}`
+        : m.ins.toLowerCase().replace(/\s*\([ivx]+\)$/i, "");
+      if (!groupMap.has(groupKey)) groupMap.set(groupKey, []);
+      groupMap.get(groupKey)!.push(m);
     }
     const compCards: SearchResult[] = [];
-    for (const [base, members] of groupMap) {
+    for (const [groupKey, members] of groupMap) {
       if (members.length >= 2) {
+        const isFamilyGroup = groupKey.startsWith("__family__");
+        const fi = isFamilyGroup ? parseInt(groupKey.replace("__family__", ""), 10) : -1;
+        const sortedMembers = isFamilyGroup
+          ? [...members].sort(
+              (a, b) =>
+                FAMILY_GROUPS[fi].codes.indexOf(a.ins) -
+                FAMILY_GROUPS[fi].codes.indexOf(b.ins)
+            )
+          : members;
         compCards.push({
           kind: "similar-group",
-          baseCode: base,
-          baseName: members[0].name,
-          funcClass: members[0].funcClass,
-          members,
+          baseCode: isFamilyGroup ? FAMILY_GROUPS[fi].name : members[0].ins,
+          baseName: isFamilyGroup ? FAMILY_GROUPS[fi].name : members[0].name,
+          funcClass: sortedMembers[0].funcClass,
+          members: sortedMembers,
         });
       } else {
         compCards.push(members[0]);
@@ -460,7 +519,7 @@ export default function AdditiveSearchScreen() {
           <View style={styles.resultHeader}>
             <Feather name="git-branch" size={16} color="#0e5f5f" />
             <Text style={[styles.resultItemName, { color: colors.light.text, flex: 1 }]} numberOfLines={2}>
-              {result.members[0].name.split(",")[0]}
+              {result.baseName.split(",")[0]}
             </Text>
             <View style={styles.groupCountBadge}>
               <Text style={styles.groupCountText}>{result.members.length}</Text>
