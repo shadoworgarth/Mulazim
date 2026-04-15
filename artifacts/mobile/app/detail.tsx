@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -13,25 +13,31 @@ import {
 
 import appData from "@/constants/data";
 import colors from "@/constants/colors";
+import generalAdditives from "@/assets/general-additives.json";
 
 const CHECK_CAT = 13;
 const CHECK_ITEM = 4;
 
-type CheckResult = { raw: string; code: string; permitted: boolean; line: string };
+type AdditiveEntry = { ins: string; name: string };
+type Badge = AdditiveEntry;
+type VerifyResult = Badge & { permitted: boolean; reason: string };
+
+// Combined autocomplete database from general-additives tables
+const GA_DB: AdditiveEntry[] = [
+  ...(generalAdditives as any).table1.rows.map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.name })),
+  ...(generalAdditives as any).table2.rows.map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.color })),
+];
 
 function buildPermittedMap(additives: string[]): Map<string, string> {
   const map = new Map<string, string>();
   for (const line of additives) {
-    // Expand numeric ranges like 200-203 or 200–203
     const ranges = [...line.matchAll(/(\d{3,4})\s*[-–]\s*(\d{3,4})/g)];
     for (const m of ranges) {
-      const from = parseInt(m[1]);
-      const to = parseInt(m[2]);
+      const from = parseInt(m[1]), to = parseInt(m[2]);
       for (let n = from; n <= to; n++) {
         if (!map.has(String(n))) map.set(String(n), line);
       }
     }
-    // Extract all standalone 3-4 digit numbers
     const nums = [...line.matchAll(/\b(\d{3,4})\b/g)];
     for (const m of nums) {
       if (!map.has(m[1])) map.set(m[1], line);
@@ -40,22 +46,7 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
   return map;
 }
 
-type ParsedCode = { display: string; key: string };
-
-function parseUserInput(input: string): ParsedCode[] {
-  // Match optional E prefix + 3-4 digits + optional letter suffix (e.g. 160a, E160a, 330, E211)
-  const matches = [...input.matchAll(/E?(\d{3,4})[a-z]?/gi)];
-  const seen = new Set<string>();
-  const result: ParsedCode[] = [];
-  for (const m of matches) {
-    const key = m[1];
-    if (!seen.has(key)) {
-      seen.add(key);
-      result.push({ key, display: "E" + m[0].replace(/^E/i, "").toUpperCase() });
-    }
-  }
-  return result;
-}
+const GA_SET = new Set(GA_DB.map(a => a.ins));
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -67,6 +58,186 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     </View>
   );
 }
+
+// ── Checker component ────────────────────────────────────────────────────────
+
+function AdditiveChecker({
+  additives,
+  itemAllowsGeneral,
+}: {
+  additives: string[];
+  itemAllowsGeneral: boolean;
+}) {
+  const [query, setQuery] = useState("");
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [results, setResults] = useState<VerifyResult[] | null>(null);
+
+  const trimmed = query.trim().toLowerCase();
+
+  const suggestions = useMemo<AdditiveEntry[]>(() => {
+    if (trimmed.length < 1) return [];
+    const q = trimmed.replace(/^e/, "");
+    const available = GA_DB.filter(a => !badges.some(b => b.ins === a.ins));
+    const exact    = available.filter(a => a.ins === q);
+    const starts   = available.filter(a => a.ins !== q && a.ins.startsWith(q));
+    const contains = available.filter(a => !a.ins.startsWith(q) && (a.ins.includes(q) || a.name.toLowerCase().includes(q)));
+    const ordered  = [...exact, ...starts, ...contains].slice(0, 6);
+    // Fallback manual-add if nothing found and input looks like a number
+    if (ordered.length === 0 && /^\d{3,4}[a-z]?$/.test(q)) {
+      if (!badges.some(b => b.ins === q)) {
+        ordered.push({ ins: q, name: "— رقم غير موجود في القاعدة —" });
+      }
+    }
+    return ordered;
+  }, [trimmed, badges]);
+
+  function addBadge(entry: AdditiveEntry) {
+    setBadges(prev => [...prev, entry]);
+    setQuery("");
+    setResults(null);
+  }
+
+  function removeBadge(ins: string) {
+    setBadges(prev => prev.filter(b => b.ins !== ins));
+    setResults(null);
+  }
+
+  function handleVerify() {
+    const permMap = buildPermittedMap(additives);
+    const res: VerifyResult[] = badges.map(badge => {
+      const key = badge.ins.replace(/[a-z]$/, "");
+      const inItem = permMap.has(badge.ins) || permMap.has(key);
+      const inGeneral = itemAllowsGeneral && (GA_SET.has(badge.ins) || GA_SET.has(key));
+      const permitted = inItem || inGeneral;
+      const reason = inItem
+        ? permMap.get(badge.ins) || permMap.get(key) || ""
+        : inGeneral ? "مضاف عام مسموح به (GMP)" : "";
+      return { ...badge, permitted, reason };
+    });
+    setResults(res);
+  }
+
+  function handleReset() {
+    setBadges([]);
+    setQuery("");
+    setResults(null);
+  }
+
+  return (
+    <View style={styles.checkerWrap}>
+      {/* Hint */}
+      <Text style={styles.checkerHint}>
+        ابحث عن رقم المادة المضافة أو اسمها وأضفها، ثم اضغط تحقق
+      </Text>
+
+      {/* Badges */}
+      {badges.length > 0 && (
+        <View style={styles.badgesRow}>
+          {badges.map(b => (
+            <Pressable
+              key={b.ins}
+              style={({ pressed }) => [styles.badge, pressed && { opacity: 0.7 }]}
+              onPress={() => removeBadge(b.ins)}
+            >
+              <Text style={styles.badgeText}>E{b.ins.toUpperCase()}</Text>
+              <Feather name="x" size={12} color="#0e7c7c" />
+            </Pressable>
+          ))}
+        </View>
+      )}
+
+      {/* Search input */}
+      <View style={styles.searchRow}>
+        <TextInput
+          style={styles.searchInput}
+          value={query}
+          onChangeText={t => { setQuery(t); setResults(null); }}
+          placeholder="مثال: 440 أو pectins"
+          placeholderTextColor="#aaa"
+          textAlign="right"
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="search"
+        />
+        <Feather name="search" size={18} color="#999" style={styles.searchIcon} />
+      </View>
+
+      {/* Suggestions */}
+      {suggestions.length > 0 && (
+        <View style={styles.suggestionsWrap}>
+          {suggestions.map((s, i) => (
+            <View
+              key={s.ins}
+              style={[styles.suggestionRow, i < suggestions.length - 1 && styles.suggestionDivider]}
+            >
+              <Pressable
+                style={({ pressed }) => [styles.addBtn, pressed && { opacity: 0.7 }]}
+                onPress={() => addBadge(s)}
+              >
+                <Feather name="plus" size={16} color="#fff" />
+              </Pressable>
+              <View style={styles.suggestionText}>
+                <Text style={styles.suggestionName} numberOfLines={1}>{s.name}</Text>
+                <Text style={styles.suggestionIns}>E{s.ins.toUpperCase()}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Action buttons */}
+      {badges.length > 0 && (
+        <View style={styles.actionRow}>
+          <Pressable
+            style={({ pressed }) => [styles.resetBtn, pressed && { opacity: 0.7 }]}
+            onPress={handleReset}
+          >
+            <Text style={styles.resetBtnText}>مسح الكل</Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [styles.verifyBtn, pressed && { opacity: 0.8 }]}
+            onPress={handleVerify}
+          >
+            <Feather name="check-circle" size={16} color="#fff" />
+            <Text style={styles.verifyBtnText}>تحقق ({badges.length})</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* Results */}
+      {results && results.length > 0 && (
+        <View style={styles.resultsWrap}>
+          <Text style={styles.resultsTitle}>نتائج التحقق</Text>
+          {results.map((r, i) => (
+            <View
+              key={i}
+              style={[styles.resultRow, r.permitted ? styles.resultGreen : styles.resultRed]}
+            >
+              <View style={styles.resultLeft}>
+                <Feather
+                  name={r.permitted ? "check-circle" : "x-circle"}
+                  size={20}
+                  color={r.permitted ? "#1a7a4a" : "#b91c1c"}
+                />
+                <Text style={[styles.resultStatus, r.permitted ? styles.statusGreen : styles.statusRed]}>
+                  {r.permitted ? "مسموح" : "غير مسموح"}
+                </Text>
+              </View>
+              <View style={styles.resultRight}>
+                <Text style={styles.resultCode}>E{r.ins.toUpperCase()} — {r.name}</Text>
+                {r.reason ? (
+                  <Text style={styles.resultReason} numberOfLines={2}>{r.reason}</Text>
+                ) : null}
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ── Main screen ──────────────────────────────────────────────────────────────
 
 export default function DetailScreen() {
   const { categoryIndex, itemIndex } = useLocalSearchParams<{
@@ -82,10 +253,6 @@ export default function DetailScreen() {
   const item = category?.subItems[itemIdx];
   const showChecker = catIdx === CHECK_CAT && itemIdx === CHECK_ITEM;
 
-  const [inputText, setInputText] = useState("");
-  const [results, setResults] = useState<CheckResult[]>([]);
-  const [checked, setChecked] = useState(false);
-
   useEffect(() => {
     if (item) navigation.setOptions({ title: item.name.trim().slice(0, 30) });
   }, [item, navigation]);
@@ -100,26 +267,8 @@ export default function DetailScreen() {
 
   const { row1, row2 } = item.data;
   const additives = row2.D
-    ? row2.D.split(/[\r\n]+/).map(s => s.trim()).filter(Boolean)
+    ? row2.D.split(/[\r\n]+/).map((s: string) => s.trim()).filter(Boolean)
     : [];
-
-  function handleCheck() {
-    const parsed = parseUserInput(inputText);
-    if (parsed.length === 0) return;
-    const map = buildPermittedMap(additives);
-    const res: CheckResult[] = parsed.map(({ key, display }) => {
-      const line = map.get(key) ?? "";
-      return { raw: display, code: key, permitted: !!line, line };
-    });
-    setResults(res);
-    setChecked(true);
-  }
-
-  function handleReset() {
-    setInputText("");
-    setResults([]);
-    setChecked(false);
-  }
 
   return (
     <ScrollView
@@ -128,6 +277,7 @@ export default function DetailScreen() {
         { paddingBottom: Platform.OS === "web" ? 34 : 24 },
       ]}
       showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
     >
       {/* Name Banner */}
       <View style={styles.nameBanner}>
@@ -139,79 +289,15 @@ export default function DetailScreen() {
         ) : null}
       </View>
 
-      {/* E-Number Checker — only for the test item */}
+      {/* Additive Checker — test item only */}
       {showChecker && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>التحقق من المواد المضافة</Text>
-          <View style={[styles.card, { padding: 14, gap: 12 }]}>
-            <Text style={styles.checkerHint}>
-              أدخل أرقام E الموجودة على المنتج مفصولة بمسافة أو فاصلة
-            </Text>
-            <TextInput
-              style={styles.checkerInput}
-              value={inputText}
-              onChangeText={t => { setInputText(t); setChecked(false); setResults([]); }}
-              placeholder="مثال: E211  E202  E330  150"
-              placeholderTextColor="#aaa"
-              textAlign="right"
-              multiline
-              autoCapitalize="none"
-              autoCorrect={false}
+          <View style={styles.card}>
+            <AdditiveChecker
+              additives={additives}
+              itemAllowsGeneral={row2.C === "نعم"}
             />
-            <View style={styles.checkerButtons}>
-              {checked && (
-                <Pressable
-                  style={({ pressed }) => [styles.resetButton, pressed && { opacity: 0.7 }]}
-                  onPress={handleReset}
-                >
-                  <Text style={styles.resetButtonText}>مسح</Text>
-                </Pressable>
-              )}
-              <Pressable
-                style={({ pressed }) => [
-                  styles.checkButton,
-                  !inputText.trim() && styles.checkButtonDisabled,
-                  pressed && { opacity: 0.8 },
-                ]}
-                onPress={handleCheck}
-                disabled={!inputText.trim()}
-              >
-                <Feather name="check-circle" size={16} color="#fff" />
-                <Text style={styles.checkButtonText}>تحقق</Text>
-              </Pressable>
-            </View>
-
-            {/* Results */}
-            {results.length > 0 && (
-              <View style={styles.resultsWrap}>
-                {results.map((r, i) => (
-                  <View
-                    key={i}
-                    style={[
-                      styles.resultRow,
-                      r.permitted ? styles.resultRowGreen : styles.resultRowRed,
-                    ]}
-                  >
-                    <View style={styles.resultLeft}>
-                      <Feather
-                        name={r.permitted ? "check-circle" : "x-circle"}
-                        size={18}
-                        color={r.permitted ? "#1a7a4a" : "#b91c1c"}
-                      />
-                      <Text style={[styles.resultStatus, r.permitted ? styles.statusGreen : styles.statusRed]}>
-                        {r.permitted ? "مسموح" : "غير مسموح"}
-                      </Text>
-                    </View>
-                    <View style={styles.resultRight}>
-                      <Text style={styles.resultCode}>{r.raw}</Text>
-                      {r.permitted && r.line ? (
-                        <Text style={styles.resultName} numberOfLines={2}>{r.line}</Text>
-                      ) : null}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
           </View>
         </View>
       )}
@@ -261,7 +347,7 @@ export default function DetailScreen() {
         <Text style={styles.sectionTitle}>{row1.D || "المواد المضافة المسموح بها"}</Text>
         {additives.length > 0 ? (
           <View style={styles.card}>
-            {additives.map((additive, i) => (
+            {additives.map((additive: string, i: number) => (
               <View key={i} style={[styles.additiveRow, i < additives.length - 1 && styles.additiveDivider]}>
                 <View style={styles.additiveDot} />
                 <Text style={styles.additiveText}>{additive}</Text>
@@ -330,37 +416,67 @@ const styles = StyleSheet.create({
   noAddText: { fontSize: 14, color: colors.light.mutedForeground, textAlign: "right", padding: 14, lineHeight: 22 },
   categoryText: { fontSize: 14, color: colors.light.text, textAlign: "right", padding: 14, lineHeight: 22 },
 
+  // Checker
+  checkerWrap: { padding: 14, gap: 12 },
   checkerHint: { fontSize: 13, color: colors.light.mutedForeground, textAlign: "right", lineHeight: 20 },
-  checkerInput: {
-    borderWidth: 1, borderColor: colors.light.border, borderRadius: 10,
-    padding: 12, fontSize: 15, color: colors.light.text,
-    minHeight: 48, textAlignVertical: "top",
+  badgesRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" },
+  badge: {
+    flexDirection: "row", alignItems: "center", gap: 5,
+    backgroundColor: "#e0f4f4", borderRadius: 20,
+    paddingVertical: 5, paddingHorizontal: 10,
+    borderWidth: 1, borderColor: "#b2e0e0",
   },
-  checkerButtons: { flexDirection: "row", justifyContent: "flex-start", gap: 10 },
-  checkButton: {
+  badgeText: { fontSize: 13, fontWeight: "700", color: "#0e7c7c" },
+  searchRow: {
+    flexDirection: "row", alignItems: "center",
+    borderWidth: 1, borderColor: colors.light.border, borderRadius: 10, overflow: "hidden",
+  },
+  searchInput: {
+    flex: 1, padding: 11, fontSize: 15, color: colors.light.text,
+  },
+  searchIcon: { paddingHorizontal: 10 },
+  suggestionsWrap: {
+    borderWidth: 1, borderColor: colors.light.border, borderRadius: 10, overflow: "hidden",
+  },
+  suggestionRow: {
+    flexDirection: "row", alignItems: "center", padding: 10, gap: 10,
+    backgroundColor: "#fafafa",
+  },
+  suggestionDivider: { borderBottomWidth: 1, borderBottomColor: colors.light.border },
+  addBtn: {
+    width: 30, height: 30, borderRadius: 15,
+    backgroundColor: "#0e7c7c", alignItems: "center", justifyContent: "center",
+    flexShrink: 0,
+  },
+  suggestionText: { flex: 1, alignItems: "flex-end", gap: 1 },
+  suggestionName: { fontSize: 13, color: colors.light.text, textAlign: "right" },
+  suggestionIns: { fontSize: 11, color: colors.light.mutedForeground, fontWeight: "600" },
+  actionRow: { flexDirection: "row", gap: 10, justifyContent: "flex-end" },
+  resetBtn: {
+    borderWidth: 1, borderColor: colors.light.border, borderRadius: 10,
+    paddingVertical: 10, paddingHorizontal: 16,
+  },
+  resetBtnText: { fontSize: 14, color: colors.light.mutedForeground },
+  verifyBtn: {
     backgroundColor: "#0e7c7c", borderRadius: 10,
     flexDirection: "row", alignItems: "center", gap: 8,
-    paddingVertical: 11, paddingHorizontal: 20,
+    paddingVertical: 10, paddingHorizontal: 20,
   },
-  checkButtonDisabled: { backgroundColor: "#aac9c9" },
-  checkButtonText: { color: "#fff", fontSize: 15, fontWeight: "700" },
-  resetButton: {
-    borderWidth: 1, borderColor: colors.light.border, borderRadius: 10,
-    paddingVertical: 11, paddingHorizontal: 16,
-  },
-  resetButtonText: { fontSize: 14, color: colors.light.mutedForeground },
+  verifyBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
   resultsWrap: { gap: 8 },
+  resultsTitle: { fontSize: 13, fontWeight: "700", color: colors.light.text, textAlign: "right" },
   resultRow: {
     borderRadius: 10, padding: 12,
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10,
+    flexDirection: "row", alignItems: "center", gap: 10,
+    borderWidth: 1,
   },
-  resultRowGreen: { backgroundColor: "#f0faf5", borderWidth: 1, borderColor: "#bbf0d9" },
-  resultRowRed: { backgroundColor: "#fff5f5", borderWidth: 1, borderColor: "#fecaca" },
-  resultLeft: { flexDirection: "row", alignItems: "center", gap: 6 },
+  resultGreen: { backgroundColor: "#f0faf5", borderColor: "#bbf0d9" },
+  resultRed: { backgroundColor: "#fff5f5", borderColor: "#fecaca" },
+  resultLeft: { flexDirection: "row", alignItems: "center", gap: 6, flexShrink: 0 },
   resultStatus: { fontSize: 13, fontWeight: "700" },
   statusGreen: { color: "#1a7a4a" },
   statusRed: { color: "#b91c1c" },
   resultRight: { flex: 1, alignItems: "flex-end", gap: 2 },
-  resultCode: { fontSize: 15, fontWeight: "700", color: colors.light.text, textAlign: "right" },
-  resultName: { fontSize: 12, color: colors.light.mutedForeground, textAlign: "right", lineHeight: 18 },
+  resultCode: { fontSize: 13, fontWeight: "700", color: colors.light.text, textAlign: "right" },
+  resultReason: { fontSize: 11, color: colors.light.mutedForeground, textAlign: "right", lineHeight: 16 },
 });
