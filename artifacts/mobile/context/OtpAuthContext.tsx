@@ -10,6 +10,7 @@ type OtpAuthContextType = {
   checkDone: boolean;
   requestOtp: (email: string) => Promise<void>;
   verifyOtp: (email: string, otp: string) => Promise<void>;
+  adminLogin: (password: string) => Promise<void>;
 };
 
 const OtpAuthContext = createContext<OtpAuthContextType | null>(null);
@@ -80,8 +81,20 @@ export function OtpAuthProvider({ children }: { children: React.ReactNode }) {
     setIsVerified(true);
   }
 
+  async function adminLogin(password: string) {
+    const res = await fetch(`${API_BASE}/auth/admin-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.token) throw new Error(data.error ?? "كلمة المرور غير صحيحة");
+    await storeToken(data.token);
+    setIsVerified(true);
+  }
+
   return (
-    <OtpAuthContext.Provider value={{ isVerified, checkDone, requestOtp, verifyOtp }}>
+    <OtpAuthContext.Provider value={{ isVerified, checkDone, requestOtp, verifyOtp, adminLogin }}>
       {children}
     </OtpAuthContext.Provider>
   );

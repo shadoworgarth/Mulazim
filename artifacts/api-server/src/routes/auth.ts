@@ -180,6 +180,44 @@ router.post("/auth/verify-otp", async (req, res) => {
   }
 });
 
+// POST /api/auth/admin-login
+router.post("/auth/admin-login", async (req, res) => {
+  try {
+    const { password } = req.body as { password?: string };
+    if (!password) {
+      return res.status(400).json({ error: "كلمة المرور مطلوبة" });
+    }
+
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      return res.status(503).json({ error: "دخول المشرف غير مُفعَّل" });
+    }
+
+    // Timing-safe comparison to prevent timing attacks
+    const inputBuf = Buffer.from(password);
+    const correctBuf = Buffer.from(adminPassword);
+    const match =
+      inputBuf.length === correctBuf.length &&
+      crypto.timingSafeEqual(inputBuf, correctBuf);
+
+    if (!match) {
+      return res.status(401).json({ error: "كلمة المرور غير صحيحة" });
+    }
+
+    const token = generateToken();
+    await db.insert(deviceTokens).values({
+      token,
+      email: "admin",
+      deviceId: "admin",
+    });
+
+    return res.json({ success: true, token });
+  } catch (err) {
+    console.error("admin-login error:", err);
+    return res.status(500).json({ error: "حدث خطأ، حاول مجدداً" });
+  }
+});
+
 // POST /api/auth/check-device
 router.post("/auth/check-device", async (req, res) => {
   try {

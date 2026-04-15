@@ -16,20 +16,23 @@ import { useOtpAuth } from "@/context/OtpAuthContext";
 
 const ALLOWED_DOMAIN = "sfda.gov.sa";
 
-type Step = "email" | "otp";
+type Step = "email" | "otp" | "admin";
 
 export default function OtpAuthScreen() {
   const insets = useSafeAreaInsets();
-  const { requestOtp, verifyOtp } = useOtpAuth();
+  const { requestOtp, verifyOtp, adminLogin } = useOtpAuth();
 
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const [adminPass, setAdminPass] = useState("");
+  const [showAdminPass, setShowAdminPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const otpRef = useRef<TextInput>(null);
+  const adminPassRef = useRef<TextInput>(null);
 
   function validateEmail(e: string) {
     const trimmed = e.trim().toLowerCase();
@@ -70,9 +73,23 @@ export default function OtpAuthScreen() {
     }
   }
 
+  async function handleAdminLogin() {
+    setError("");
+    if (!adminPass) { setError("أدخل كلمة المرور"); return; }
+    setLoading(true);
+    try {
+      await adminLogin(adminPass);
+    } catch (e: any) {
+      setError(e.message ?? "كلمة المرور غير صحيحة");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function handleBack() {
     setStep("email");
     setOtp("");
+    setAdminPass("");
     setError("");
     setSuccess("");
   }
@@ -98,7 +115,7 @@ export default function OtpAuthScreen() {
 
         {/* Card */}
         <View style={styles.card}>
-          {step === "email" ? (
+          {step === "email" && (
             <>
               <Text style={styles.cardTitle}>تسجيل الدخول</Text>
               <Text style={styles.cardDesc}>
@@ -135,7 +152,9 @@ export default function OtpAuthScreen() {
                 }
               </Pressable>
             </>
-          ) : (
+          )}
+
+          {step === "otp" && (
             <>
               <Pressable style={styles.backRow} onPress={handleBack}>
                 <Feather name="arrow-right" size={18} color="#0e7c7c" />
@@ -190,11 +209,64 @@ export default function OtpAuthScreen() {
               </Pressable>
             </>
           )}
+
+          {step === "admin" && (
+            <>
+              <Pressable style={styles.backRow} onPress={handleBack}>
+                <Feather name="arrow-right" size={18} color="#0e7c7c" />
+                <Text style={styles.backText}>رجوع</Text>
+              </Pressable>
+
+              <Text style={styles.cardTitle}>دخول المشرف</Text>
+              <Text style={styles.cardDesc}>أدخل كلمة مرور المشرف للدخول مباشرةً</Text>
+
+              <View style={styles.inputWrap}>
+                <Pressable onPress={() => setShowAdminPass(p => !p)} style={styles.inputIcon}>
+                  <Feather name={showAdminPass ? "eye-off" : "eye"} size={18} color="#9bb0b0" />
+                </Pressable>
+                <TextInput
+                  ref={adminPassRef}
+                  style={styles.input}
+                  value={adminPass}
+                  onChangeText={t => { setAdminPass(t); setError(""); }}
+                  placeholder="كلمة المرور"
+                  placeholderTextColor="#aac8c8"
+                  secureTextEntry={!showAdminPass}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="done"
+                  onSubmitEditing={handleAdminLogin}
+                  textAlign="right"
+                />
+              </View>
+
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+              <Pressable
+                style={({ pressed }) => [styles.btn, loading && styles.btnDisabled, pressed && { opacity: 0.85 }]}
+                onPress={handleAdminLogin}
+                disabled={loading}
+              >
+                {loading
+                  ? <ActivityIndicator color="#fff" />
+                  : <Text style={styles.btnText}>دخول</Text>
+                }
+              </Pressable>
+            </>
+          )}
         </View>
 
         <Text style={styles.footerNote}>
           هذا التطبيق مخصص للاستخدام الداخلي لموظفي هيئة الغذاء والدواء السعودية فقط
         </Text>
+
+        {/* Admin login link — subtle, at the very bottom */}
+        {step === "email" && (
+          <Pressable onPress={() => { setStep("admin"); setError(""); }} style={styles.adminLink}>
+            <Feather name="settings" size={12} color="#6a9f9f" />
+            <Text style={styles.adminLinkText}>دخول المشرف</Text>
+          </Pressable>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -243,4 +315,9 @@ const styles = StyleSheet.create({
   footerNote: {
     fontSize: 12, color: "#b2d8d8", textAlign: "center", lineHeight: 18, paddingHorizontal: 8,
   },
+  adminLink: {
+    flexDirection: "row", alignItems: "center", justifyContent: "center",
+    gap: 5, paddingVertical: 8,
+  },
+  adminLinkText: { fontSize: 12, color: "#6a9f9f" },
 });
