@@ -192,6 +192,18 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
       if (!map.has(key)) map.set(key, line);
     }
 
+    // 3b. Abbreviated letter lists: "307a, b, c" → also store "307b", "307c"
+    const abbrevLists = [...line.matchAll(/\b(\d{3,4})([a-z])(?:,\s*([a-z]))+/gi)];
+    for (const m of abbrevLists) {
+      const base = m[1];
+      const fullMatch = m[0]; // e.g. "307a, b, c"
+      const letters = [...fullMatch.matchAll(/[a-z]/gi)].map(x => x[0].toLowerCase());
+      for (const letter of letters) {
+        const key = `${base}${letter}`;
+        if (!map.has(key)) map.set(key, line);
+      }
+    }
+
     // 4. Plain numbers not followed by a letter OR an opening paren.
     //    We exclude "470(ii)" here — only a standalone "470" or range-expanded
     //    entry should act as a wildcard for all sub-codes.
@@ -265,39 +277,49 @@ function AdditiveChecker({
       let familyReason = "";
       let inFamily = false;
       if (!inItem && !inGeneral) {
-        // Check all lookup keys for family membership
+        // Family-aware: only fires when ≥2 family members appear in the permitted
+        // list, confirming the whole family was listed (not just one specific member).
         for (const k of keys) {
           const fi = CODE_TO_FAMILY.get(k);
           if (fi !== undefined) {
             const family = FAMILY_GROUPS[fi];
-            // Find which sibling is in the permitted map
+            let siblingCount = 0;
+            let matchLine = "";
             for (const sibling of family.codes) {
               const sibKeys = insLookupKeys(sibling);
-              if (sibKeys.some(sk => permMap.has(sk))) {
-                const matchLine = sibKeys.map(sk => permMap.get(sk)).find(Boolean) || "";
-                familyReason = `${family.name}: ${matchLine}`;
-                inFamily = true;
-                break;
+              const hit = sibKeys.find(sk => permMap.has(sk));
+              if (hit) {
+                siblingCount++;
+                if (!matchLine) matchLine = permMap.get(hit) || "";
+                if (siblingCount >= 2) break;
               }
             }
-            if (inFamily) break;
+            if (siblingCount >= 2) {
+              familyReason = `${family.name}: ${matchLine}`;
+              inFamily = true;
+              break;
+            }
           }
         }
-        // Also check general set via family siblings
+        // Also check general set via family siblings (≥2 siblings in general set)
         if (!inFamily && itemAllowsGeneral) {
           for (const k of keys) {
             const fi = CODE_TO_FAMILY.get(k);
             if (fi !== undefined) {
               const family = FAMILY_GROUPS[fi];
+              let sibCount = 0;
               for (const sibling of family.codes) {
                 const sibKeys = insLookupKeys(sibling);
                 if (sibKeys.some(sk => GA_GENERAL_SET.has(sk))) {
-                  familyReason = `${family.name} — مضاف عام مسموح به (GMP)`;
-                  inFamily = true;
-                  break;
+                  sibCount++;
+                  if (sibCount >= 2) break;
                 }
               }
-              if (inFamily) break;
+              if (sibCount >= 2) {
+                familyReason = `${family.name} — مضاف عام مسموح به (GMP)`;
+                inFamily = true;
+                break;
+              }
             }
           }
         }
