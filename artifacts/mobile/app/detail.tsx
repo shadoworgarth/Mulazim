@@ -37,6 +37,38 @@ const GA_GENERAL_SET = new Set<string>([
     .map((r: any) => String(r.ins).toLowerCase()),
 ]);
 
+/**
+ * Given an INS code in any format, return all lookup key variants to check
+ * against the permitted map or general set.
+ *
+ * Examples:
+ *   "341(i)"   → ["341(i)", "341"]          base number covers range entries
+ *   "307b"     → ["307b", "307"]            strip letter suffix
+ *   "307b(ii)" → ["307b(ii)", "307b", "307"] both
+ *   "440"      → ["440"]
+ */
+function insLookupKeys(ins: string): string[] {
+  const norm = ins.toLowerCase().trim();
+  const keys = new Set<string>([norm]);
+
+  // Case: roman numeral suffix  e.g. "341(i)" or "307b(ii)"
+  const romanM = norm.match(/^(\d{3,4}[a-z]?)\(([ivx]+)\)$/i);
+  if (romanM) {
+    const base = romanM[1]; // "341" or "307b"
+    keys.add(base);
+    const noLetter = base.replace(/[a-z]$/, ""); // "307b" → "307"
+    if (noLetter !== base) keys.add(noLetter);
+  }
+
+  // Case: letter suffix only  e.g. "307b"
+  const letterM = norm.match(/^(\d{3,4})[a-z]$/i);
+  if (letterM) {
+    keys.add(letterM[1]); // "307"
+  }
+
+  return Array.from(keys);
+}
+
 function buildPermittedMap(additives: string[]): Map<string, string> {
   const map = new Map<string, string>();
   for (const line of additives) {
@@ -113,12 +145,12 @@ function AdditiveChecker({
   function handleVerify() {
     const permMap = buildPermittedMap(additives);
     const res: VerifyResult[] = badges.map(badge => {
-      const key = badge.ins.replace(/[a-z]$/, "");
-      const inItem = permMap.has(badge.ins) || permMap.has(key);
-      const inGeneral = itemAllowsGeneral && (GA_GENERAL_SET.has(badge.ins) || GA_GENERAL_SET.has(key));
+      const keys = insLookupKeys(badge.ins);
+      const inItem = keys.some(k => permMap.has(k));
+      const inGeneral = itemAllowsGeneral && keys.some(k => GA_GENERAL_SET.has(k));
       const permitted = inItem || inGeneral;
       const reason = inItem
-        ? permMap.get(badge.ins) || permMap.get(key) || ""
+        ? keys.map(k => permMap.get(k)).find(Boolean) || ""
         : inGeneral ? "مضاف عام مسموح به (GMP)" : "";
       return { ...badge, permitted, reason };
     });
