@@ -1,47 +1,55 @@
 [
   {
+    "ins": "45(iii)",
+    "name": "Glycerol ester of wood rosin"
+  },
+  {
     "ins": "100(i)",
     "name": "Curcumin"
   },
   {
-    "ins": "100",
-    "name": "CURCUMIN"
+    "ins": "101(i)",
+    "name": "Riboflavin, synthetic"
   },
   {
-    "ins": "101",
-    "name": "RIBOFLAVINS"
+    "ins": "101(ii)",
+    "name": "Riboflavin 5'-phosphate, sodium"
+  },
+  {
+    "ins": "101(iii)",
+    "name": "Riboflavin from Bacillus subtilis"
   },
   {
     "ins": "102",
-    "name": "TARTRAZINE"
+    "name": "Tartrazine"
   },
   {
     "ins": "110",
-    "name": "SUNSET YELLOW FCF"
+    "name": "Sunset yellow"
   },
   {
     "ins": "120",
-    "name": "CARMINES"
+    "name": "Carmines"
   },
   {
     "ins": "122",
-    "name": "AZORUBINE (CARMOISINE)"
+    "name": "Azorubine (Carmoisine)"
   },
   {
     "ins": "127",
-    "name": "ERYTHROSINE"
+    "name": "Erythrosine"
   },
   {
     "ins": "129",
-    "name": "ALLURA RED AC"
+    "name": "Allura"
   },
   {
     "ins": "132",
-    "name": "INDIGOTINE (INDIGO CARMINE)"
+    "name": "Indigotine (Indigo carmine)"
   },
   {
     "ins": "133",
-    "name": "BRILLIANT BLUE FCF"
+    "name": "Brilliant blue"
   },
   {
     "ins": "134",
@@ -52,44 +60,72 @@
     "name": "Chlorophylls"
   },
   {
-    "ins": "141",
-    "name": "CHLOROPHYLLS AND CHLOROPHYLLINS, COPPER COMPLEXES"
+    "ins": "141(i)",
+    "name": "Chlorophylls, copper complexes"
+  },
+  {
+    "ins": "141(ii)",
+    "name": "Chlorophyllin coppercomplexes, potassium and sodium salts"
   },
   {
     "ins": "143",
-    "name": "FAST GREEN FCF"
-  },
-  {
-    "ins": "150a",
-    "name": "Caramel I – plain caramel"
-  },
-  {
-    "ins": "150b",
-    "name": "Caustic suphtile caramel"
-  },
-  {
-    "ins": "150c",
-    "name": "CARAMEL III - AMMONIA CARAMEL"
-  },
-  {
-    "ins": "150d",
-    "name": "CARAMEL IV - SULFITE AMMONIA CARAMEL"
+    "name": "Fast green"
   },
   {
     "ins": "150",
-    "name": "CARAMEL III - AMMONIA CARAMEL"
+    "name": "CARAMEL II - SULFITE CARAMEL"
+  },
+  {
+    "ins": "150a",
+    "name": "CARAMEL I - PLAIN CARAMEL"
+  },
+  {
+    "ins": "150b",
+    "name": "Caramel"
+  },
+  {
+    "ins": "150c",
+    "name": "Caramel"
+  },
+  {
+    "ins": "150d",
+    "name": "Caramel"
   },
   {
     "ins": "151",
-    "name": "BRILLIANT BLACK (BLACK PN)"
+    "name": "Brilliant black (Black"
   },
   {
     "ins": "155",
-    "name": "BROWN HT"
+    "name": "Brown"
   },
   {
-    "ins": "160d(iii)",
-    "name": "Lycopene, Blakeslea trispora"
+    "ins": "160a(i)",
+    "name": "beta-Carotenes, synthetic"
+  },
+  {
+    "ins": "160a(ii)",
+    "name": "beta-Carotenes, vegetable"
+  },
+  {
+    "ins": "160a(iii)",
+    "name": "beta-Carotenes, Blakeslea trispora"
+  },
+  {
+    "ins": "160b",
+    "name": "Annatto"
+  },
+  {
+    "ins": "160b(i)",
+    "name": "ANNATTO EXTRACTS, BIXIN-BASED"
+  },
+  {
+    "ins": "160b(ii)",
+    "name": "Annatto extracts, norbixin-based"
+  },
+  {
+    "ins": "160c",
+    "name": "Paprika extract"
   },
   {
     "ins": "160d(i)",
@@ -100,32 +136,40 @@
     "name": "Lycopene, tomato"
   },
   {
-    "ins": "160b",
-    "name": "Annatto"
+    "ins": "160d(iii)",
+    "name": "Lycopene, Blakeslea trispora"
   },
   {
-    "ins": "160c",
-    "name": "Paprika extract"
+    "ins": "160e",
+    "name": "beta-apo-8'-Carotenal"
   },
   {
-    "ins": "160a",
-    "name": "CAROTENES, BETA-, VEGETABLE"
+    "ins": "160f",
+    "name": "Ethyl ester of beta-apo-8'-carotenic acid"
   },
   {
-    "ins": "161b(iii)",
-    "name": "Lutein esters from Tagetes erecta"
+    "ins": "161",
+    "name": "CANTHAXANTHIN"
   },
   {
     "ins": "161b",
     "name": "lutein"
   },
   {
-    "ins": "161h",
-    "name": "ZEAXANTHIN, SYNTHETIC"
+    "ins": "161b(i)",
+    "name": "Lutein from"
+  },
+  {
+    "ins": "161b(iii)",
+    "name": "Lutein esters from Tagetes erecta"
   },
   {
     "ins": "161g",
-    "name": "CANTHAXANTHIN"
+    "name": "Canthaxanthin"
+  },
+  {
+    "ins": "161h(i)",
+    "name": "Zeaxanthin, synthetic"
   },
   {
     "ins": "162",
@@ -137,19 +181,23 @@
   },
   {
     "ins": "163(ii)",
-    "name": "Blackcurrant extract"
+    "name": "Grape skin extract"
   },
   {
     "ins": "170(i)",
     "name": "Calcium carbonate"
   },
   {
-    "ins": "170",
-    "name": "CALCIUM CARBONATE"
+    "ins": "172(i)",
+    "name": "Iron oxide, black"
   },
   {
-    "ins": "172",
-    "name": "IRON OXIDES"
+    "ins": "172(ii)",
+    "name": "Iron oxide, red"
+  },
+  {
+    "ins": "172(iii)",
+    "name": "Iron oxide, yellow"
   },
   {
     "ins": "173",
@@ -169,19 +217,19 @@
   },
   {
     "ins": "200",
-    "name": "SORBATES"
+    "name": "Sorbic acid"
   },
   {
     "ins": "201",
-    "name": "SORBATES"
+    "name": "Sodium sorbate"
   },
   {
     "ins": "202",
-    "name": "SORBATES"
+    "name": "Potassium sorbate"
   },
   {
     "ins": "203",
-    "name": "SORBATES"
+    "name": "Calcium sorbate"
   },
   {
     "ins": "204",
@@ -209,23 +257,23 @@
   },
   {
     "ins": "210",
-    "name": "BENZOATES"
+    "name": "Benzoic acid"
   },
   {
     "ins": "211",
-    "name": "BENZOATES"
+    "name": "Sodium benzoate"
   },
   {
     "ins": "212",
-    "name": "BENZOATES"
+    "name": "Potassium benzoate"
   },
   {
     "ins": "213",
-    "name": "BENZOATES"
+    "name": "Calcium benzoate"
   },
   {
     "ins": "214",
-    "name": "HYDROXYBENZOATES, PARA-"
+    "name": "Ethyl para-hydroxybenzoate"
   },
   {
     "ins": "215",
@@ -241,7 +289,7 @@
   },
   {
     "ins": "218",
-    "name": "HYDROXYBENZOATES, PARA-"
+    "name": "Methyl para-hydroxybenzoate"
   },
   {
     "ins": "219",
@@ -249,27 +297,27 @@
   },
   {
     "ins": "220",
-    "name": "SULFITES"
+    "name": "Sulfur dioxide"
   },
   {
     "ins": "221",
-    "name": "SULFITES"
+    "name": "Sodium sulfite"
   },
   {
     "ins": "222",
-    "name": "SULFITES"
+    "name": "Sodium hydrogen sulfite"
   },
   {
     "ins": "223",
-    "name": "SULFITES"
+    "name": "Sodium metabisulfite"
   },
   {
     "ins": "224",
-    "name": "SULFITES"
+    "name": "Potassium metabisulfite"
   },
   {
     "ins": "225",
-    "name": "SULFITES"
+    "name": "Potassium sulfite"
   },
   {
     "ins": "226",
@@ -293,11 +341,11 @@
   },
   {
     "ins": "231",
-    "name": "ORTHO-PHENYLPHENOLS"
+    "name": "ortho-Phenylphenol"
   },
   {
     "ins": "232",
-    "name": "ORTHO-PHENYLPHENOLS"
+    "name": "Sodium ortho-phenylphenol"
   },
   {
     "ins": "233",
@@ -305,11 +353,11 @@
   },
   {
     "ins": "234",
-    "name": "NISIN"
+    "name": "Nisin"
   },
   {
     "ins": "235",
-    "name": "NATAMYCIN (PIMARICIN)"
+    "name": "Natamycin (Pimaricin)"
   },
   {
     "ins": "236",
@@ -337,11 +385,11 @@
   },
   {
     "ins": "242",
-    "name": "SORBATES"
+    "name": "Dimethyl dicarbonate"
   },
   {
     "ins": "243",
-    "name": "LAURIC ARGINATE ETHYL ESTER"
+    "name": "Lauric arginate ethyl ester"
   },
   {
     "ins": "244",
@@ -412,11 +460,15 @@
     "name": "Acetic acid, glacial"
   },
   {
+    "ins": "261",
+    "name": "SORBATES"
+  },
+  {
     "ins": "261(i)",
     "name": "Potassium acetate"
   },
   {
-    "ins": "261",
+    "ins": "262",
     "name": "SORBATES"
   },
   {
@@ -424,12 +476,12 @@
     "name": "Sodium acetate"
   },
   {
-    "ins": "262",
-    "name": "SODIUM DIACETATE"
+    "ins": "262(ii)",
+    "name": "Sodium diacetate"
   },
   {
     "ins": "263",
-    "name": "Calcium acetate"
+    "name": "SORBATES"
   },
   {
     "ins": "264",
@@ -457,7 +509,7 @@
   },
   {
     "ins": "270",
-    "name": "Lactic acid, L-, D- and DL-"
+    "name": "Lactic acid,"
   },
   {
     "ins": "271",
@@ -509,7 +561,7 @@
   },
   {
     "ins": "283",
-    "name": "Potassium propionate"
+    "name": "SORBATES"
   },
   {
     "ins": "284",
@@ -561,7 +613,7 @@
   },
   {
     "ins": "296",
-    "name": "Malic acid, DL-"
+    "name": "Malic acid,"
   },
   {
     "ins": "297",
@@ -577,7 +629,7 @@
   },
   {
     "ins": "300",
-    "name": "Ascorbic acid, L-"
+    "name": "Ascorbic acid,"
   },
   {
     "ins": "301",
@@ -589,27 +641,39 @@
   },
   {
     "ins": "304",
-    "name": "ASCORBYL ESTERS"
+    "name": "Ascorbyl palmitate"
   },
   {
     "ins": "305",
-    "name": "ASCORBYL ESTERS"
+    "name": "Ascorbyl stearate"
   },
   {
-    "ins": "307a",
+    "ins": "307",
     "name": "TOCOPHEROLS"
   },
   {
+    "ins": "307a",
+    "name": "d-alpha-Tocopherol"
+  },
+  {
+    "ins": "307b",
+    "name": "Tocopherol concentrate, mixed"
+  },
+  {
+    "ins": "307c",
+    "name": "dl-alpha-Tocopherol"
+  },
+  {
     "ins": "310",
-    "name": "PROPYL GALLATE"
+    "name": "Propyl gallate"
   },
   {
     "ins": "314",
-    "name": "GUAIAC RESIN"
+    "name": "Guaiac resin"
   },
   {
     "ins": "315",
-    "name": "Erythorbic Acid (Isoascorbic acid)"
+    "name": "ERYTHORBIC ACID (ISOASCORBIC ACID)"
   },
   {
     "ins": "316",
@@ -617,23 +681,19 @@
   },
   {
     "ins": "319",
-    "name": "TERTIARY BUTYLHYDROQUINONE"
+    "name": "Tertiary butylhydroquinone (TBHQ)"
   },
   {
     "ins": "320",
-    "name": "BUTYLATED HYDROXYANISOLE"
+    "name": "Butylated hydroxyanisole (BHA)"
   },
   {
     "ins": "321",
-    "name": "BUTYLATED HYDROXYTOLUENE"
+    "name": "Butylated hydroxytoluene (BHT)"
   },
   {
     "ins": "322(i)",
     "name": "Lecithin"
-  },
-  {
-    "ins": "322",
-    "name": "LECITHIN"
   },
   {
     "ins": "325",
@@ -664,10 +724,6 @@
     "name": "Trisodium citrate"
   },
   {
-    "ins": "331",
-    "name": "TRISODIUM CITRATE"
-  },
-  {
     "ins": "332(i)",
     "name": "Potassium dihydrogen citrate"
   },
@@ -676,24 +732,16 @@
     "name": "Tripotassium citrate"
   },
   {
-    "ins": "332",
-    "name": "POTASSIUM DIHYDROGEN CITRATE"
-  },
-  {
     "ins": "333(iii)",
     "name": "Tricalcium citrate"
   },
   {
-    "ins": "333",
-    "name": "TRICALCIUM CITRATE"
-  },
-  {
     "ins": "334",
-    "name": "TARTRATES"
+    "name": "L(+)-Tartaric acidSodium"
   },
   {
-    "ins": "335",
-    "name": "TARTRATES"
+    "ins": "335(ii)",
+    "name": "L(+)-tartrate"
   },
   {
     "ins": "337",
@@ -701,39 +749,75 @@
   },
   {
     "ins": "338",
-    "name": "PHOSPHATES"
+    "name": "Phosphoric acid"
   },
   {
     "ins": "339",
-    "name": "PHOSPHATES"
+    "name": "Sodium phosphates"
   },
   {
-    "ins": "340",
-    "name": "PHOSPHATES"
+    "ins": "339(i)",
+    "name": "Sodium dihydrogen phosphate"
   },
   {
-    "ins": "341",
-    "name": "PHOSPHATES"
+    "ins": "339(ii)",
+    "name": "Disodium hydrogen phosphate"
   },
   {
-    "ins": "342",
-    "name": "PHOSPHATES"
+    "ins": "339(iii)",
+    "name": "Trisodium phosphate"
   },
   {
-    "ins": "343",
-    "name": "PHOSPHATES"
+    "ins": "340(i)",
+    "name": "Potassium dihydrogen phosphate"
   },
   {
-    "ins": "350(ii)",
-    "name": "Sodium DL-malate"
+    "ins": "340(ii)",
+    "name": "Dipotassium hydrogen phosphate"
+  },
+  {
+    "ins": "340(iii)",
+    "name": "Tripotassium phosphate"
+  },
+  {
+    "ins": "341(i)",
+    "name": "Calcium dihydrogen phosphate"
+  },
+  {
+    "ins": "341(ii)",
+    "name": "Calcium hydrogen phosphate"
+  },
+  {
+    "ins": "341(iii)",
+    "name": "Tricalcium phosphate"
+  },
+  {
+    "ins": "342(i)",
+    "name": "Ammonium dihydrogen phosphate"
+  },
+  {
+    "ins": "342(ii)",
+    "name": "Diammonium hydrogen phosphate"
+  },
+  {
+    "ins": "343(i)",
+    "name": "Magnesium dihydrogen phosphate"
+  },
+  {
+    "ins": "343(ii)",
+    "name": "Magnesium hydrogen phosphate"
+  },
+  {
+    "ins": "343(iii)",
+    "name": "Trimagnesium phosphate"
   },
   {
     "ins": "350(i)",
     "name": "Sodium hydrogen DL-malate"
   },
   {
-    "ins": "350",
-    "name": "SODIUM DL-MALATE"
+    "ins": "350(ii)",
+    "name": "Sodium"
   },
   {
     "ins": "352(ii)",
@@ -741,7 +825,7 @@
   },
   {
     "ins": "355",
-    "name": "ADIPATES"
+    "name": "Adipic acid"
   },
   {
     "ins": "365",
@@ -753,19 +837,19 @@
   },
   {
     "ins": "381",
-    "name": "FERRIC AMMONIUM CITRATE"
+    "name": "Ferric ammonium citrate"
   },
   {
     "ins": "384",
-    "name": "ISOPROPYL CITRATES"
+    "name": "Isopropyl citrates"
   },
   {
     "ins": "385",
-    "name": "ETHYLENE DIAMINE TETRA ACETATES"
+    "name": "Calcium disodium EDTA"
   },
   {
     "ins": "386",
-    "name": "ETHYLENE DIAMINE TETRA ACETATES"
+    "name": "Disodium EDTA"
   },
   {
     "ins": "388",
@@ -781,7 +865,7 @@
   },
   {
     "ins": "400",
-    "name": "Alginic acid"
+    "name": "ALGINIC ACID"
   },
   {
     "ins": "401",
@@ -801,11 +885,11 @@
   },
   {
     "ins": "405",
-    "name": "PROPYLENE GLYCOL ALGINATE"
+    "name": "Propylene glycol alginate"
   },
   {
     "ins": "406",
-    "name": "Agar"
+    "name": "AGAR"
   },
   {
     "ins": "407",
@@ -829,7 +913,7 @@
   },
   {
     "ins": "414",
-    "name": "Gum arabic (Acacia gum)"
+    "name": "Gum 101rabic (Acacia gum)"
   },
   {
     "ins": "415",
@@ -873,7 +957,7 @@
   },
   {
     "ins": "424",
-    "name": "Curdlan"
+    "name": "CURDLAN"
   },
   {
     "ins": "425",
@@ -885,31 +969,31 @@
   },
   {
     "ins": "430",
-    "name": "POLYOXYETHYLENE STEARATES"
+    "name": "Polyoxyethylene (8) stearate"
   },
   {
     "ins": "431",
-    "name": "POLYOXYETHYLENE STEARATES"
+    "name": "Polyoxyethylene (40) stearate"
   },
   {
     "ins": "432",
-    "name": "POLYSORBATES"
+    "name": "Polyoxyethylene (20) sorbitan monolaurate"
   },
   {
     "ins": "433",
-    "name": "POLYSORBATES"
+    "name": "Polyoxyethylene (20) sorbitan monooleate"
   },
   {
     "ins": "434",
-    "name": "POLYSORBATES"
+    "name": "Polyoxyethylene (20) sorbitan monopalmitate"
   },
   {
     "ins": "435",
-    "name": "POLYSORBATES"
+    "name": "Polyoxyethylene (20) sorbitan monostearate"
   },
   {
     "ins": "436",
-    "name": "POLYSORBATES"
+    "name": "Polyoxyethylene (20) sorbitan tristearate"
   },
   {
     "ins": "437",
@@ -921,27 +1005,83 @@
   },
   {
     "ins": "442",
-    "name": "AMMONIUM SALTS OF PHOSPHATIDIC ACID"
+    "name": "Ammonium salts of phosphatidic acid"
   },
   {
     "ins": "444",
-    "name": "SUCROSE ACETATE ISOBUTYRATE"
+    "name": "Sucrose acetate isobutyrate"
   },
   {
-    "ins": "445",
+    "ins": "445(iii)",
     "name": "GLYCEROL ESTER OF WOOD ROSIN"
   },
   {
     "ins": "450",
-    "name": "PHOSPHATES"
+    "name": "Diphosphates"
   },
   {
-    "ins": "451",
-    "name": "PHOSPHATES"
+    "ins": "450(i)",
+    "name": "Disodium diphosphate"
+  },
+  {
+    "ins": "450(ii)",
+    "name": "Trisodium diphosphate"
+  },
+  {
+    "ins": "450(iii)",
+    "name": "Tetrasodium diphosphate"
+  },
+  {
+    "ins": "450(iv)",
+    "name": "Dipotassium diphosphate"
+  },
+  {
+    "ins": "450(ix)",
+    "name": "Magnesium dihydrogen diphosphate"
+  },
+  {
+    "ins": "450(v)",
+    "name": "Tetrapotassium diphosphate"
+  },
+  {
+    "ins": "450(vi)",
+    "name": "Dicalcium diphosphate"
+  },
+  {
+    "ins": "450(vii)",
+    "name": "Calcium dihydrogen diphosphate"
+  },
+  {
+    "ins": "451(i)",
+    "name": "Pentasodium triphosphate"
+  },
+  {
+    "ins": "451(ii)",
+    "name": "Pentapotassium triphosphate"
   },
   {
     "ins": "452",
-    "name": "PHOSPHATES"
+    "name": "Polyphosphates"
+  },
+  {
+    "ins": "452(i)",
+    "name": "Sodium polyphosphate"
+  },
+  {
+    "ins": "452(ii)",
+    "name": "Potassium polyphosphate"
+  },
+  {
+    "ins": "452(iii)",
+    "name": "Sodium calcium polyphosphate"
+  },
+  {
+    "ins": "452(iv)",
+    "name": "Ammonium polyphosphates"
+  },
+  {
+    "ins": "452(v)",
+    "name": "Ammonium polyphosphates, glass"
   },
   {
     "ins": "457",
@@ -953,7 +1093,7 @@
   },
   {
     "ins": "459",
-    "name": "CYCLODEXTRIN, BETA-"
+    "name": "Cyclodextrin, beta-"
   },
   {
     "ins": "460(i)",
@@ -962,10 +1102,6 @@
   {
     "ins": "460(ii)",
     "name": "Powdered cellulose"
-  },
-  {
-    "ins": "460",
-    "name": "MICROCRYSTALLINE CELLULOSE (CELLULOSE GEL)"
   },
   {
     "ins": "461",
@@ -1004,10 +1140,6 @@
     "name": "Sodium carboxymethyl cellulose,enzymatically hydrolysed (Cellulose gum,enzymatically hydrolyzed)"
   },
   {
-    "ins": "470(iii)",
-    "name": "Magnesium stearate"
-  },
-  {
     "ins": "470(i)",
     "name": "Salts of myristic, palmitic and stearic acids with ammonia, calcium, potassium and sodium"
   },
@@ -1016,92 +1148,96 @@
     "name": "Salts of oleic acid with calcium, potassium and sodium"
   },
   {
-    "ins": "470",
-    "name": "SALTS OF MYRISTIC, PALMITIC AND STEARIC ACIDS WITH AMMONIA, CALCIUM, POTASSIUM AND SODIUM"
+    "ins": "470(iii)",
+    "name": "Magnesium stearate"
   },
   {
     "ins": "471",
     "name": "Mono- and di-glycerides of fatty acids"
   },
   {
-    "ins": "472a",
-    "name": "Acetic and fatty acid esters of glycerol"
+    "ins": "472",
+    "name": "ACETIC AND FATTY ACID ESTERS OF GLYCEROL"
   },
   {
-    "ins": "472c",
-    "name": "Citric and fatty acid esters of glycerol"
+    "ins": "472a",
+    "name": "Acetic and fatty acid esters of glycerol"
   },
   {
     "ins": "472b",
     "name": "Lactic and fatty acid esters of glycerol"
   },
   {
+    "ins": "472c",
+    "name": "Citric and fatty acid esters of glycerol"
+  },
+  {
     "ins": "472e",
-    "name": "DIACETYLTARTARIC AND FATTY ACID ESTERS OF GLYCEROL"
+    "name": "Diacetyltartaric and fatty acid esters of glycerol"
   },
   {
     "ins": "473",
-    "name": "SUCROSE ESTERS OF FATTY ACIDS"
+    "name": "Sucrose esters of fatty acids"
   },
   {
     "ins": "473a",
-    "name": "SUCROSE OLIGOESTERS, TYPE I AND TYPE II"
+    "name": "Sucrose"
   },
   {
     "ins": "474",
-    "name": "SUCROGLYCERIDES"
+    "name": "Sucroglycerides"
   },
   {
     "ins": "475",
-    "name": "POLYGLYCEROL ESTERS OF FATTY ACIDS"
+    "name": "Polyglycerol esters of fatty acids"
   },
   {
     "ins": "476",
-    "name": "POLYGLYCEROL ESTERS OF INTERESTERIFIED RICINOLEIC ACID"
+    "name": "Polyglycerol esters of interesterified ricinoleic acid"
   },
   {
     "ins": "477",
-    "name": "PROPYLENE GLYCOL ESTERS OF FATTY ACIDS"
+    "name": "Propylene glycol esters of fatty acids"
   },
   {
     "ins": "479",
-    "name": "THERMALLY OXIDIZED SOYA BEAN OIL INTERACTED WITH MONO- AND DIGLYCERIDES OF FATTY ACIDS"
+    "name": "Thermally oxidized soya bean oil interacted with mono- and diglycerides of fatty acids"
   },
   {
     "ins": "480",
-    "name": "DIOCTYL SODIUM SULFOSUCCINATE"
+    "name": "Dioctyl sodium sulfosuccinate"
   },
   {
-    "ins": "481",
-    "name": "STEAROYL LACTYLATES"
+    "ins": "481(i)",
+    "name": "Sodium stearoyl lactylate"
   },
   {
-    "ins": "482",
-    "name": "STEAROYL LACTYLATES"
+    "ins": "482(i)",
+    "name": "Calcium stearoyl lactylate"
   },
   {
     "ins": "484",
-    "name": "STEARYL CITRATE"
+    "name": "Stearyl citrate"
   },
   {
     "ins": "491",
-    "name": "SORBITAN ESTERS OF FATTY ACIDS"
+    "name": "Sorbitan monostearate"
   },
   {
     "ins": "492",
-    "name": "SORBITAN ESTERS OF FATTY ACIDS"
+    "name": "Sorbitan tristearate"
   },
   {
     "ins": "493",
-    "name": "SORBITAN ESTERS OF FATTY ACIDS"
+    "name": "Sorbitan monolaurate"
   },
   {
     "ins": "494",
-    "name": "SORBITAN ESTERS OF FATTY ACIDS"
+    "name": "Sorbitan monooleate"
   },
   {
     "ins": "495",
-    "name": "SORBITAN ESTERS OF FATTY ACIDS"
+    "name": "Sorbitan monopalmitate"
   },
   {
     "ins": "500(i)",
@@ -1116,20 +1252,12 @@
     "name": "Sodium sesquicarbonate"
   },
   {
-    "ins": "500",
-    "name": "SODIUM CARBONATE"
-  },
-  {
     "ins": "501(i)",
     "name": "Potassium carbonate"
   },
   {
     "ins": "501(ii)",
     "name": "Potassium hydrogen carbonate"
-  },
-  {
-    "ins": "501",
-    "name": "POTASSIUM CARBONATE"
   },
   {
     "ins": "503(i)",
@@ -1140,20 +1268,12 @@
     "name": "Ammonium hydrogen carbonate"
   },
   {
-    "ins": "503",
-    "name": "AMMONIUM CARBONATE"
-  },
-  {
     "ins": "504(i)",
     "name": "Magnesium carbonate"
   },
   {
     "ins": "504(ii)",
     "name": "Magnesium hydroxide carbonate"
-  },
-  {
-    "ins": "504",
-    "name": "MAGNESIUM CARBONATE"
   },
   {
     "ins": "507",
@@ -1177,15 +1297,15 @@
   },
   {
     "ins": "512",
-    "name": "STANNOUS CHLORIDE"
-  },
-  {
-    "ins": "514(ii)",
-    "name": "Sodium hydrogen sulfate"
+    "name": "Stannous chloride"
   },
   {
     "ins": "514(i)",
     "name": "Sodium sulfate"
+  },
+  {
+    "ins": "514(ii)",
+    "name": "Sodium hydrogen sulfate"
   },
   {
     "ins": "515(i)",
@@ -1201,7 +1321,7 @@
   },
   {
     "ins": "523",
-    "name": "ALUMINIUM AMMONIUM SULFATE"
+    "name": "Aluminium ammonium sulfate"
   },
   {
     "ins": "524",
@@ -1233,27 +1353,31 @@
   },
   {
     "ins": "535",
-    "name": "FERROCYANIDES"
+    "name": "Sodium ferrocyanide"
   },
   {
     "ins": "536",
-    "name": "FERROCYANIDES"
+    "name": "Potassium ferrocyanide"
   },
   {
     "ins": "538",
-    "name": "FERROCYANIDES"
+    "name": "Calcium ferrocyanide"
   },
   {
     "ins": "539",
     "name": "SULFITES"
   },
   {
-    "ins": "541",
+    "ins": "541(i)",
+    "name": "Sodium aluminium phosphate, acidic"
+  },
+  {
+    "ins": "541(ii)",
     "name": "SODIUM ALUMINIUM PHOSPHATES"
   },
   {
     "ins": "542",
-    "name": "PHOSPHATES"
+    "name": "Bone phosphate"
   },
   {
     "ins": "551",
@@ -1272,12 +1396,16 @@
     "name": "Talc"
   },
   {
-    "ins": "553",
-    "name": "MAGNESIUM SILICATE, SYNTHETIC"
+    "ins": "554",
+    "name": "Sodium aluminium silicate"
   },
   {
-    "ins": "554",
-    "name": "SODIUM ALUMINO SILICATE"
+    "ins": "556",
+    "name": "Calcium aluminium silicate"
+  },
+  {
+    "ins": "559",
+    "name": "Aluminium silicate"
   },
   {
     "ins": "575",
@@ -1305,19 +1433,19 @@
   },
   {
     "ins": "585",
-    "name": "FERROUS LACTATE"
+    "name": "Ferrous lactate"
   },
   {
     "ins": "620",
-    "name": "Glutamic acid, L(+)-"
+    "name": "Glutamic acid,"
   },
   {
     "ins": "621",
-    "name": "Monosodium L-glutamate"
+    "name": "Monosodium"
   },
   {
     "ins": "622",
-    "name": "Monopotassium L-glutamate"
+    "name": "Monopotassium"
   },
   {
     "ins": "623",
@@ -1325,7 +1453,7 @@
   },
   {
     "ins": "624",
-    "name": "Monoammonium L-glutamate"
+    "name": "Monoammonium"
   },
   {
     "ins": "625",
@@ -1333,27 +1461,27 @@
   },
   {
     "ins": "626",
-    "name": "Guanylic acid, 5'-"
+    "name": "Guanylic acid, 5’-"
   },
   {
     "ins": "627",
-    "name": "Disodium 5'-guanylate"
+    "name": "Disodium 5’-guanylate"
   },
   {
     "ins": "628",
-    "name": "Dipotassium 5'-guanylate"
+    "name": "Dipotassium 5’-guanylate"
   },
   {
     "ins": "629",
-    "name": "Calcium 5'-guanylate"
+    "name": "Calcium 5’-guanylate"
   },
   {
     "ins": "630",
-    "name": "Inosinic acid, 5'-"
+    "name": "Inosinic acid, 5’-"
   },
   {
     "ins": "631",
-    "name": "Disodium 5'-inosinate"
+    "name": "Disodium 5’-inosinate"
   },
   {
     "ins": "632",
@@ -1361,67 +1489,79 @@
   },
   {
     "ins": "633",
-    "name": "Calcium 5'-inosinate"
+    "name": "Calcium 5’-inosinate"
   },
   {
     "ins": "634",
-    "name": "Calcium 5'-ribonucleotides"
+    "name": "Calcium 5’-ribonucleotides"
   },
   {
     "ins": "635",
-    "name": "Disodium 5'-ribonucleotides"
+    "name": "Disodium 5’-ribonucleotides"
   },
   {
     "ins": "636",
-    "name": "MALTOL"
+    "name": "Maltol"
   },
   {
     "ins": "637",
-    "name": "ETHYL MALTOL"
+    "name": "Ethyl maltol"
   },
   {
-    "ins": "900a",
+    "ins": "900",
     "name": "POLYDIMETHYLSILOXANE"
   },
   {
+    "ins": "900a",
+    "name": "Polydimethylsiloxane"
+  },
+  {
     "ins": "901",
-    "name": "BEESWAX"
+    "name": "Beeswax"
   },
   {
     "ins": "902",
-    "name": "CANDELILLA WAX"
+    "name": "Candelilla wax"
   },
   {
     "ins": "903",
-    "name": "CARNAUBA WAX"
+    "name": "Carnauba wax"
   },
   {
     "ins": "904",
-    "name": "SHELLAC, BLEACHED"
+    "name": "Shellac, bleached"
   },
   {
-    "ins": "905c",
-    "name": "MICROCRYSTALLINE WAX"
-  },
-  {
-    "ins": "905d",
+    "ins": "905",
     "name": "MINERAL OIL, HIGH VISCOSITY"
   },
   {
+    "ins": "905c(i)",
+    "name": "Microcrystalline wax"
+  },
+  {
+    "ins": "905d",
+    "name": "Mineral oil, high viscosity"
+  },
+  {
     "ins": "905e",
-    "name": "MINERAL OIL, MEDIUM VISCOSITY"
+    "name": "Mineral oil, medium viscosity"
   },
   {
     "ins": "907",
-    "name": "HYDROGENATED POLY-"
+    "name": "Hydrogenated poly-1-decenes"
   },
   {
     "ins": "925",
     "name": "CHLORINE"
   },
   {
-    "ins": "927a",
+    "ins": "927",
     "name": "AZODICARBONAMIDE"
+  },
+  {
+    "ins": "927a",
+    "name": "Azodicarbonamide"
   },
   {
     "ins": "928",
@@ -1429,7 +1569,7 @@
   },
   {
     "ins": "941",
-    "name": "Nitrogen"
+    "name": "NITROGEN"
   },
   {
     "ins": "942",
@@ -1441,19 +1581,31 @@
   },
   {
     "ins": "951",
-    "name": "ASPARTAME"
+    "name": "Aspartame"
   },
   {
     "ins": "953",
     "name": "Isomalt (Hydrogenated isomaltulose)"
   },
   {
-    "ins": "954",
-    "name": "SACCHARINS"
+    "ins": "954(i)",
+    "name": "Saccharin"
+  },
+  {
+    "ins": "954(ii)",
+    "name": "Calcium saccharin"
+  },
+  {
+    "ins": "954(iii)",
+    "name": "Sodium saccharin"
+  },
+  {
+    "ins": "954(iv)",
+    "name": "Potassium saccharin"
   },
   {
     "ins": "955",
-    "name": "SUCRALOSE (TRICHLOROGALACTOSUCROSE)"
+    "name": "Sucralose (Trichlorogalactosucrose)"
   },
   {
     "ins": "956",
@@ -1465,19 +1617,19 @@
   },
   {
     "ins": "960a",
-    "name": "STEVIOL GLYCOSIDES"
+    "name": "Steviol glycosides"
   },
   {
-    "ins": "960b",
-    "name": "STEVIOL GLYCOSIDES"
+    "ins": "960b(i)",
+    "name": "Rebaudioside A"
   },
   {
     "ins": "961",
-    "name": "NEOTAME"
+    "name": "Neotame"
   },
   {
     "ins": "962",
-    "name": "ASPARTAME-ACESULFAME SALT"
+    "name": "Aspartame-acesulfame salt"
   },
   {
     "ins": "964",
@@ -1504,52 +1656,48 @@
     "name": "Erythritol"
   },
   {
-    "ins": "999",
-    "name": "QUILLAIA EXTRACTS"
+    "ins": "999(i)",
+    "name": "Quillaia extract type"
+  },
+  {
+    "ins": "999(ii)",
+    "name": "IQuillaia extract type 2"
   },
   {
     "ins": "1100(i)",
-    "name": "alpha-Amylase from Aspergillus oryzae var."
-  },
-  {
-    "ins": "1100(iv)",
-    "name": "alpha-Amylase from Bacillus megaterium expressed in Bacillus subtilis"
+    "name": "alpha-Amylase from"
   },
   {
     "ins": "1100(ii)",
     "name": "alpha-Amylase from Bacillus stearothermophilus"
   },
   {
+    "ins": "1100(iii)",
+    "name": "alpha-Amylase from"
+  },
+  {
+    "ins": "1100(iv)",
+    "name": "alpha-Amylase from Bacillus megaterium expressed in Bacillus subtilis"
+  },
+  {
     "ins": "1100(v)",
     "name": "alpha-Amylase from Bacillus stearothermophilus expressed in Bacillus subtilis"
   },
   {
-    "ins": "1100(iii)",
-    "name": "alpha-Amylase from Bacillus subtilis"
-  },
-  {
     "ins": "1100(vi)",
-    "name": "Carbohydrase from Bacillus licheniformis"
+    "name": "Carbohydrase from"
   },
   {
-    "ins": "1100",
-    "name": "ALPHA AMYLASE FROM ASPERGILLUS ORYZAE VAR."
-  },
-  {
-    "ins": "1101(iii)",
-    "name": "Bromelain"
+    "ins": "1101(i)",
+    "name": "Protease from"
   },
   {
     "ins": "1101(ii)",
     "name": "Papain"
   },
   {
-    "ins": "1101(i)",
-    "name": "Protease from Aspergillus orizae var."
-  },
-  {
-    "ins": "1101",
-    "name": "PROTEASE FROM ASPERGILLUS ORYZAE VAR."
+    "ins": "1101(iii)",
+    "name": "BROMELAIN"
   },
   {
     "ins": "1102",
@@ -1561,7 +1709,7 @@
   },
   {
     "ins": "1105",
-    "name": "LYSOZYME"
+    "name": "Lysozyme"
   },
   {
     "ins": "1200",
@@ -1569,7 +1717,7 @@
   },
   {
     "ins": "1201",
-    "name": "POLYVINYLPYRROLIDONE"
+    "name": "Polyvinylpyrrolidone"
   },
   {
     "ins": "1202",
@@ -1637,15 +1785,15 @@
   },
   {
     "ins": "1450",
-    "name": "Starch sodium octenyl succinate"
+    "name": "STARCH SODIUM OCTENYL SUCCINATE"
   },
   {
     "ins": "1451",
-    "name": "Acetylated oxidized starch"
+    "name": "ACETYLATED OXIDIZED STARCH"
   },
   {
     "ins": "1503",
-    "name": "CASTOR OIL"
+    "name": "Castor oil"
   },
   {
     "ins": "1504(i)",
@@ -1657,7 +1805,7 @@
   },
   {
     "ins": "1505",
-    "name": "TRIETHYL CITRATE"
+    "name": "Triethyl citrate"
   },
   {
     "ins": "1518",
@@ -1665,10 +1813,166 @@
   },
   {
     "ins": "1520",
-    "name": "PROPYLENE GLYCOL"
+    "name": "Propylene glycol"
   },
   {
     "ins": "1521",
-    "name": "POLYETHYLENE GLYCOL"
+    "name": "Polyethylene glycol"
+  },
+  {
+    "ins": "أغذيةتكميليةللرضعوصغارالأطفال",
+    "name": "13.2"
+  },
+  {
+    "ins": "الأسماكوالمنتجاتالسمكية،بمافيذلكالرخوياتوالقشرياتوشوكياتالجلدالطازجة",
+    "name": "9.1"
+  },
+  {
+    "ins": "الأسماكوالمنتجاتالسمكية،بمافيذلكالرخوياتوالقشرياتوشوكياتالجلدالمصنعة",
+    "name": "9.2"
+  },
+  {
+    "ins": "الأعشابوالبهارات",
+    "name": "12.2.1"
+  },
+  {
+    "ins": "الألبانالمخمرةوالمعاملةبالمنفحة(ساده)",
+    "name": "1.2"
+  },
+  {
+    "ins": "الحبوبالكاملةاوالمكسورةأوالمقشرةوتشملالأرز",
+    "name": "6.1"
+  },
+  {
+    "ins": "الحليبالسائل(ساده)",
+    "name": "1.1.1"
+  },
+  {
+    "ins": "الحليبالسائل(ساده)أخرى",
+    "name": "1.1.2"
+  },
+  {
+    "ins": "الخضرواتالطازجة(بمافيذلكالفطروالفطرياتوالجذوروالدرناتوالبقولوالبقولياتوالصبار)والأعشابالبحريةوالمكسراتوالبذور",
+    "name": "4.2.1"
+  },
+  {
+    "ins": "الخضرواتالمجمدة(بمافيذلكالفطروالفطرياتوالجذوروالدرناتوالبقولوالبقولياتوالصبار)والأعشابالبحريةوالمكسراتوالبذور",
+    "name": "4.2.2.1"
+  },
+  {
+    "ins": "الخضرواتالمخللة(بمافيذلكالفطروالفطرياتوالجذوروالدرناتوالبقولوالبقولياتوالصبار)ومنتجاتالأعشابالبحرية،باستثناءمنتجاتفولالصوياالمخمرةمنالاصنافالغذائية06.8.6و06.8.7و12.9.1و12.9.2.1و12.9.2.3",
+    "name": "4.2.2.7"
+  },
+  {
+    "ins": "الدقيقوالنشاء(يشملمسحوقفولالصويا)",
+    "name": "6.2"
+  },
+  {
+    "ins": "الرقمالدوليins",
+    "name": "اللون"
+  },
+  {
+    "ins": "الزبدة",
+    "name": "2.2.1"
+  },
+  {
+    "ins": "الزيتوالدهونغيرالخاليةاساسامنالماء",
+    "name": "2.1"
+  },
+  {
+    "ins": "السكرالبنيباستثناءمنتجاتالصنفالغذائي11.1.3",
+    "name": "11.2"
+  },
+  {
+    "ins": "الشرابوالسكرياتالأخرىمثل(الزيلوزxylose)(والشرابالقيقبmaplesyrup)وسكرالتغطية(sugartoppings)",
+    "name": "11.4"
+  },
+  {
+    "ins": "العسل",
+    "name": "11.5"
+  },
+  {
+    "ins": "الفواكهالطازجة",
+    "name": "4.1.1."
+  },
+  {
+    "ins": "القشدةالمعاملةبالبسترة(ساده)",
+    "name": "1.4.1"
+  },
+  {
+    "ins": "القشدةالمعقمةوالمعاملةبالحرارةفوقالعالية(uht)وقشدةالخفقوالقشدةالمخفوقةوالقشدةمخفضةالدهن(ساده)",
+    "name": "1.4.2"
+  },
+  {
+    "ins": "القهوةوبدائلالقهوةوالشايوشايالأعشابومشروباتالحبوبالساخنةالأخرىباستثناءالكاكاو",
+    "name": "14.1.5"
+  },
+  {
+    "ins": "اللبنالسائل(ساده)",
+    "name": "1.1.3"
+  },
+  {
+    "ins": "اللحوموالدواجنوالطيورالطازجة",
+    "name": "8.1"
+  },
+  {
+    "ins": "المادةالغذائية",
+    "name": "رقم البند"
+  },
+  {
+    "ins": "المعكرونةوالشعيريةالطازجةوالمنتجاتالمماثلة",
+    "name": "6.4.1"
+  },
+  {
+    "ins": "المعكرونةوالشعيريةالمجففةوالمنتجاتالمماثلة",
+    "name": "6.4.2"
+  },
+  {
+    "ins": "الملحوبدائلالملح",
+    "name": "12.1"
+  },
+  {
+    "ins": "المياه",
+    "name": "14.1.1"
+  },
+  {
+    "ins": "جبنبروتينمصلالحليب",
+    "name": "1.6.6"
+  },
+  {
+    "ins": "جبنمصلالحليب",
+    "name": "1.6.3"
+  },
+  {
+    "ins": "عصيرالفواكهوالخضروات",
+    "name": "14.1.2"
+  },
+  {
+    "ins": "غذيةالرضعوأغذيةالمتابعةوالأغذيةذاتاالستخداماتالطبيةالخاصةللرضع",
+    "name": "13.1"
+  },
+  {
+    "ins": "لبيضالطازج",
+    "name": "10.1"
+  },
+  {
+    "ins": "محلولوشرابالسكر،أيضاالسكرالمقلوب(جزئيا)،بمافيذلكالشعيروالدبس،باستثناءمنتجاتالصنفالغذائي11.1.3",
+    "name": "11.3"
+  },
+  {
+    "ins": "مصلالحليبالمجففومنتجاتهباستثناءأجبانمصلالحليب",
+    "name": "1.8.2"
+  },
+  {
+    "ins": "منتجاتالبيضالطازج(السائل)",
+    "name": "10.2.1"
+  },
+  {
+    "ins": "منتجاتالبيضالمجمدة",
+    "name": "10.2.2"
+  },
+  {
+    "ins": "نكتارالفواكهوالخضروات",
+    "name": "14.1.3"
   }
 ]
