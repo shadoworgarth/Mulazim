@@ -69,6 +69,76 @@ function insLookupKeys(ins: string): string[] {
   return Array.from(keys);
 }
 
+// ── Family groups — all members always share the same permitted items ──────────
+const FAMILY_GROUPS: { name: string; codes: string[] }[] = [
+  { name: "ASCORBYL ESTERS",
+    codes: ["304","305"] },
+  { name: "BENZOATES",
+    codes: ["210","211","212","213"] },
+  { name: "CAROTENOIDS",
+    codes: ["160a(i)","160a(ii)","160a(iii)",
+            "160b","160b(i)","160b(ii)",
+            "160c",
+            "160d(i)","160d(ii)","160d(iii)",
+            "160e","160f"] },
+  { name: "CHLOROPHYLLS AND CHLOROPHYLLINS",
+    codes: ["140","141(i)","141(ii)"] },
+  { name: "ETHYLENE DIAMINE TETRA ACETATES",
+    codes: ["385","386"] },
+  { name: "FERROCYANIDES",
+    codes: ["535","536","538"] },
+  { name: "HYDROXYBENZOATES, PARA (PARABENS)",
+    codes: ["214","218"] },
+  { name: "IRON OXIDES AND HYDROXIDES",
+    codes: ["172(i)","172(ii)","172(iii)"] },
+  { name: "ORTHO-PHENYLPHENOLS",
+    codes: ["231","232"] },
+  { name: "PHOSPHATES",
+    codes: ["338",
+            "339","339(i)","339(ii)","339(iii)",
+            "340(i)","340(ii)","340(iii)",
+            "341(i)","341(ii)","341(iii)",
+            "342(i)","342(ii)",
+            "343(i)","343(ii)","343(iii)",
+            "450","450(i)","450(ii)","450(iii)","450(iv)","450(v)","450(vi)","450(vii)","450(ix)",
+            "451(i)","451(ii)",
+            "452","452(i)","452(ii)","452(iii)","452(iv)","452(v)",
+            "542"] },
+  { name: "POLYOXYETHYLENE STEARATES",
+    codes: ["430","431"] },
+  { name: "POLYSORBATES",
+    codes: ["432","433","434","435","436"] },
+  { name: "QUILLAIA EXTRACTS",
+    codes: ["999(i)","999(ii)"] },
+  { name: "RIBOFLAVINS",
+    codes: ["101(i)","101(ii)","101(iii)"] },
+  { name: "SACCHARINS",
+    codes: ["954(i)","954(ii)","954(iii)","954(iv)"] },
+  { name: "SODIUM ALUMINIUM PHOSPHATES",
+    codes: ["541(i)","541(ii)"] },
+  { name: "SORBATES",
+    codes: ["200","201","202","203"] },
+  { name: "SORBITAN ESTERS OF FATTY ACIDS",
+    codes: ["491","492","493","494","495"] },
+  { name: "STEAROYL LACTYLATES",
+    codes: ["481(i)","482(i)"] },
+  { name: "STEVIOL GLYCOSIDES",
+    codes: ["960a","960b(i)"] },
+  { name: "SULFITES",
+    codes: ["220","221","222","223","224","225"] },
+  { name: "TARTRATES",
+    codes: ["334","335(ii)","337"] },
+  { name: "THIODIPROPIONATES",
+    codes: ["388","389"] },
+  { name: "TOCOPHEROLS",
+    codes: ["307","307a","307b","307c"] },
+];
+
+// Reverse map: lowercase INS code → family index
+const CODE_TO_FAMILY = new Map<string, number>(
+  FAMILY_GROUPS.flatMap((fg, i) => fg.codes.map((c) => [c.toLowerCase(), i] as [string, number]))
+);
+
 const ROMAN_ORDER = ["i","ii","iii","iv","v","vi","vii","viii","ix","x"];
 function romanToIdx(r: string): number { return ROMAN_ORDER.indexOf(r.toLowerCase()); }
 
@@ -183,12 +253,62 @@ function AdditiveChecker({
     const permMap = buildPermittedMap(additives);
     const res: VerifyResult[] = badges.map(badge => {
       const keys = insLookupKeys(badge.ins);
+
+      // 1. Direct lookup in this item's permitted list
       const inItem = keys.some(k => permMap.has(k));
       const inGeneral = itemAllowsGeneral && keys.some(k => GA_GENERAL_SET.has(k));
-      const permitted = inItem || inGeneral;
+
+      // 2. Family-aware lookup: if badge belongs to a family, check if any
+      //    sibling member appears in the permitted list (they always share items)
+      let familyReason = "";
+      let inFamily = false;
+      if (!inItem && !inGeneral) {
+        // Check all lookup keys for family membership
+        for (const k of keys) {
+          const fi = CODE_TO_FAMILY.get(k);
+          if (fi !== undefined) {
+            const family = FAMILY_GROUPS[fi];
+            // Find which sibling is in the permitted map
+            for (const sibling of family.codes) {
+              const sibKeys = insLookupKeys(sibling);
+              if (sibKeys.some(sk => permMap.has(sk))) {
+                const matchLine = sibKeys.map(sk => permMap.get(sk)).find(Boolean) || "";
+                familyReason = `${family.name}: ${matchLine}`;
+                inFamily = true;
+                break;
+              }
+            }
+            if (inFamily) break;
+          }
+        }
+        // Also check general set via family siblings
+        if (!inFamily && itemAllowsGeneral) {
+          for (const k of keys) {
+            const fi = CODE_TO_FAMILY.get(k);
+            if (fi !== undefined) {
+              const family = FAMILY_GROUPS[fi];
+              for (const sibling of family.codes) {
+                const sibKeys = insLookupKeys(sibling);
+                if (sibKeys.some(sk => GA_GENERAL_SET.has(sk))) {
+                  familyReason = `${family.name} — مضاف عام مسموح به (GMP)`;
+                  inFamily = true;
+                  break;
+                }
+              }
+              if (inFamily) break;
+            }
+          }
+        }
+      }
+
+      const permitted = inItem || inGeneral || inFamily;
       const reason = inItem
         ? keys.map(k => permMap.get(k)).find(Boolean) || ""
-        : inGeneral ? "مضاف عام مسموح به (GMP)" : "";
+        : inGeneral
+          ? "مضاف عام مسموح به (GMP)"
+          : inFamily
+            ? familyReason
+            : "";
       return { ...badge, permitted, reason };
     });
     setResults(res);
