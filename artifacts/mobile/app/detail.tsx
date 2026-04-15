@@ -185,8 +185,10 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
       if (!map.has(key)) map.set(key, line);
     }
 
-    // 3. Codes with letter suffix e.g. 160a, 150c → stored as "160a", "150c"
-    const withSuffix = [...line.matchAll(/\b(\d{3,4}[a-z])(?:\([ivx]+\))?/gi)];
+    // 3. Codes with letter suffix e.g. 160a, 307b → stored as "160a", "307b"
+    //    Only when NOT immediately followed by a roman numeral suffix,
+    //    so "160a(ii)" does NOT store "160a" as a wildcard base.
+    const withSuffix = [...line.matchAll(/\b(\d{3,4}[a-z])(?!\([ivx]+\))/gi)];
     for (const m of withSuffix) {
       const key = m[1].toLowerCase();
       if (!map.has(key)) map.set(key, line);

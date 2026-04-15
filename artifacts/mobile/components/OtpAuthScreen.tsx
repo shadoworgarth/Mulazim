@@ -256,10 +256,6 @@ export default function OtpAuthScreen() {
           )}
         </View>
 
-        <Text style={styles.footerNote}>
-          هذا التطبيق مخصص للاستخدام الداخلي لموظفي هيئة الغذاء والدواء السعودية فقط
-        </Text>
-
         {/* Admin login link — subtle, at the very bottom */}
         {step === "email" && (
           <Pressable onPress={() => { setStep("admin"); setError(""); }} style={styles.adminLink}>
