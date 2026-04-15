@@ -1,51 +1,63 @@
 [
   {
     "ins": "45(iii)",
-    "name": "Glycerol ester of wood rosin"
+    "name": "Glycerol ester of wood rosin",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "100(i)",
-    "name": "Curcumin"
+    "name": "Curcumin",
+    "funcClass": "Colour"
   },
   {
     "ins": "101(i)",
-    "name": "Riboflavin, synthetic"
+    "name": "Riboflavin, synthetic",
+    "funcClass": "Emulsifier, Foaming agent"
   },
   {
     "ins": "101(ii)",
-    "name": "Riboflavin 5'-phosphate, sodium"
+    "name": "Riboflavin 5'-phosphate, sodium",
+    "funcClass": "Emulsifier, Foaming agent"
   },
   {
     "ins": "101(iii)",
-    "name": "Riboflavin from Bacillus subtilis"
+    "name": "Riboflavin from Bacillus subtilis",
+    "funcClass": "Emulsifier, Foaming agent"
   },
   {
     "ins": "102",
-    "name": "Tartrazine"
+    "name": "Tartrazine",
+    "funcClass": "Colour"
   },
   {
     "ins": "110",
-    "name": "Sunset yellow"
+    "name": "Sunset yellow",
+    "funcClass": "Colour"
   },
   {
     "ins": "120",
-    "name": "Carmines"
+    "name": "Carmines",
+    "funcClass": "Colour"
   },
   {
     "ins": "122",
-    "name": "Azorubine (Carmoisine)"
+    "name": "Azorubine (Carmoisine)",
+    "funcClass": "Colour"
   },
   {
     "ins": "127",
-    "name": "Erythrosine"
+    "name": "Erythrosine",
+    "funcClass": "Colour"
   },
   {
     "ins": "129",
-    "name": "Allura"
+    "name": "Allura",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "132",
-    "name": "Indigotine (Indigo carmine)"
+    "name": "Indigotine (Indigo carmine)",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "133",
@@ -61,15 +73,18 @@
   },
   {
     "ins": "141(i)",
-    "name": "Chlorophylls, copper complexes"
+    "name": "Chlorophylls, copper complexes",
+    "funcClass": "Anticaking agent, Carrier, Emulsifier, Glazing agent"
   },
   {
     "ins": "141(ii)",
-    "name": "Chlorophyllin coppercomplexes, potassium and sodium salts"
+    "name": "Chlorophyllin coppercomplexes, potassium and sodium salts",
+    "funcClass": "Anticaking agent, Carrier, Emulsifier, Glazing agent"
   },
   {
     "ins": "143",
-    "name": "Fast green"
+    "name": "Fast green",
+    "funcClass": "Colour"
   },
   {
     "ins": "150",
@@ -85,31 +100,38 @@
   },
   {
     "ins": "150c",
-    "name": "Caramel"
+    "name": "Caramel",
+    "funcClass": "Colour"
   },
   {
     "ins": "150d",
-    "name": "Caramel"
+    "name": "Caramel",
+    "funcClass": "Colour"
   },
   {
     "ins": "151",
-    "name": "Brilliant black (Black"
+    "name": "Brilliant black (Black",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "155",
-    "name": "Brown"
+    "name": "Brown",
+    "funcClass": "Colour"
   },
   {
     "ins": "160a(i)",
-    "name": "beta-Carotenes, synthetic"
+    "name": "beta-Carotenes, synthetic",
+    "funcClass": "Colour"
   },
   {
     "ins": "160a(ii)",
-    "name": "beta-Carotenes, vegetable"
+    "name": "beta-Carotenes, vegetable",
+    "funcClass": "Colour"
   },
   {
     "ins": "160a(iii)",
-    "name": "beta-Carotenes, Blakeslea trispora"
+    "name": "beta-Carotenes, Blakeslea trispora",
+    "funcClass": "Colour"
   },
   {
     "ins": "160b",
@@ -121,7 +143,8 @@
   },
   {
     "ins": "160b(ii)",
-    "name": "Annatto extracts, norbixin-based"
+    "name": "Annatto extracts, norbixin-based",
+    "funcClass": "Acidity regulator, Raising agent"
   },
   {
     "ins": "160c",
@@ -141,11 +164,13 @@
   },
   {
     "ins": "160e",
-    "name": "beta-apo-8'-Carotenal"
+    "name": "beta-apo-8'-Carotenal",
+    "funcClass": "Colour"
   },
   {
     "ins": "160f",
-    "name": "Ethyl ester of beta-apo-8'-carotenic acid"
+    "name": "Ethyl ester of beta-apo-8'-carotenic acid",
+    "funcClass": "Colour"
   },
   {
     "ins": "161",
@@ -157,7 +182,8 @@
   },
   {
     "ins": "161b(i)",
-    "name": "Lutein from"
+    "name": "Lutein from",
+    "funcClass": "Colour"
   },
   {
     "ins": "161b(iii)",
@@ -169,7 +195,8 @@
   },
   {
     "ins": "161h(i)",
-    "name": "Zeaxanthin, synthetic"
+    "name": "Zeaxanthin, synthetic",
+    "funcClass": "Colour"
   },
   {
     "ins": "162",
@@ -181,19 +208,23 @@
   },
   {
     "ins": "163(ii)",
-    "name": "Grape skin extract"
+    "name": "Grape skin extract",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "170(i)",
-    "name": "Calcium carbonate"
+    "name": "Calcium carbonate",
+    "funcClass": "Acidity regulator, Anticaking agent, Firming agent, Flour treatment agent, Stabilizer"
   },
   {
     "ins": "172(i)",
-    "name": "Iron oxide, black"
+    "name": "Iron oxide, black",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "172(ii)",
-    "name": "Iron oxide, red"
+    "name": "Iron oxide, red",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "172(iii)",
@@ -217,19 +248,23 @@
   },
   {
     "ins": "200",
-    "name": "Sorbic acid"
+    "name": "Sorbic acid",
+    "funcClass": "Acidity regulator,Anticaking agent, Raising agent"
   },
   {
     "ins": "201",
-    "name": "Sodium sorbate"
+    "name": "Sodium sorbate",
+    "funcClass": "Acidity regulator,Anticaking agent, Raising agent"
   },
   {
     "ins": "202",
-    "name": "Potassium sorbate"
+    "name": "Potassium sorbate",
+    "funcClass": "Acidity regulator,Anticaking agent, Raising agent"
   },
   {
     "ins": "203",
-    "name": "Calcium sorbate"
+    "name": "Calcium sorbate",
+    "funcClass": "Acidity regulator,Anticaking agent, Raising agent"
   },
   {
     "ins": "204",
@@ -257,23 +292,28 @@
   },
   {
     "ins": "210",
-    "name": "Benzoic acid"
+    "name": "Benzoic acid",
+    "funcClass": "Preservative"
   },
   {
     "ins": "211",
-    "name": "Sodium benzoate"
+    "name": "Sodium benzoate",
+    "funcClass": "Preservative"
   },
   {
     "ins": "212",
-    "name": "Potassium benzoate"
+    "name": "Potassium benzoate",
+    "funcClass": "Preservative"
   },
   {
     "ins": "213",
-    "name": "Calcium benzoate"
+    "name": "Calcium benzoate",
+    "funcClass": "Preservative"
   },
   {
     "ins": "214",
-    "name": "Ethyl para-hydroxybenzoate"
+    "name": "Ethyl para-hydroxybenzoate",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "215",
@@ -289,7 +329,8 @@
   },
   {
     "ins": "218",
-    "name": "Methyl para-hydroxybenzoate"
+    "name": "Methyl para-hydroxybenzoate",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "219",
@@ -297,7 +338,8 @@
   },
   {
     "ins": "220",
-    "name": "Sulfur dioxide"
+    "name": "Sulfur dioxide",
+    "funcClass": "Antioxidant, Bleaching agent, Flour treatment agent, Preservative"
   },
   {
     "ins": "221",
@@ -341,11 +383,13 @@
   },
   {
     "ins": "231",
-    "name": "ortho-Phenylphenol"
+    "name": "ortho-Phenylphenol",
+    "funcClass": "Preservative"
   },
   {
     "ins": "232",
-    "name": "Sodium ortho-phenylphenol"
+    "name": "Sodium ortho-phenylphenol",
+    "funcClass": "Preservative"
   },
   {
     "ins": "233",
@@ -353,11 +397,13 @@
   },
   {
     "ins": "234",
-    "name": "Nisin"
+    "name": "Nisin",
+    "funcClass": "Preservative"
   },
   {
     "ins": "235",
-    "name": "Natamycin (Pimaricin)"
+    "name": "Natamycin (Pimaricin)",
+    "funcClass": "Preservative"
   },
   {
     "ins": "236",
@@ -385,11 +431,13 @@
   },
   {
     "ins": "242",
-    "name": "Dimethyl dicarbonate"
+    "name": "Dimethyl dicarbonate",
+    "funcClass": "Preservative"
   },
   {
     "ins": "243",
-    "name": "Lauric arginate ethyl ester"
+    "name": "Lauric arginate ethyl ester",
+    "funcClass": "Preservative"
   },
   {
     "ins": "244",
@@ -457,7 +505,8 @@
   },
   {
     "ins": "260",
-    "name": "Acetic acid, glacial"
+    "name": "Acetic acid, glacial",
+    "funcClass": "Acidity regulator, Preservative"
   },
   {
     "ins": "261",
@@ -465,7 +514,8 @@
   },
   {
     "ins": "261(i)",
-    "name": "Potassium acetate"
+    "name": "Potassium acetate",
+    "funcClass": "Acidity regulator, Preservative"
   },
   {
     "ins": "262",
@@ -473,11 +523,13 @@
   },
   {
     "ins": "262(i)",
-    "name": "Sodium acetate"
+    "name": "Sodium acetate",
+    "funcClass": "Acidity regulator, Preservative, Sequestrant"
   },
   {
     "ins": "262(ii)",
-    "name": "Sodium diacetate"
+    "name": "Sodium diacetate",
+    "funcClass": "Acidity regulator, Preservative, Sequestrant"
   },
   {
     "ins": "263",
@@ -509,7 +561,8 @@
   },
   {
     "ins": "270",
-    "name": "Lactic acid,"
+    "name": "Lactic acid,",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "271",
@@ -549,15 +602,18 @@
   },
   {
     "ins": "280",
-    "name": "Propionic acid"
+    "name": "Propionic acid",
+    "funcClass": "Preservative"
   },
   {
     "ins": "281",
-    "name": "Sodium propionate"
+    "name": "Sodium propionate",
+    "funcClass": "Acidity regulator, Antioxidant, Bulking agent, Emulsifier, Emulsifying salt, Humectant, Thickener"
   },
   {
     "ins": "282",
-    "name": "Calcium propionate"
+    "name": "Calcium propionate",
+    "funcClass": "Acidity regulator, Flour treatment agent"
   },
   {
     "ins": "283",
@@ -589,7 +645,8 @@
   },
   {
     "ins": "290",
-    "name": "Carbon dioxide"
+    "name": "Carbon dioxide",
+    "funcClass": "Carbonating agent, Foaming agent, Packaging gas, Preservative, Propellant"
   },
   {
     "ins": "291",
@@ -613,11 +670,13 @@
   },
   {
     "ins": "296",
-    "name": "Malic acid,"
+    "name": "Malic acid,",
+    "funcClass": "Acidity regulator, Sequestrant"
   },
   {
     "ins": "297",
-    "name": "Fumaric acid"
+    "name": "Fumaric acid",
+    "funcClass": "Colour retention agent"
   },
   {
     "ins": "298",
@@ -629,15 +688,18 @@
   },
   {
     "ins": "300",
-    "name": "Ascorbic acid,"
+    "name": "Ascorbic acid,",
+    "funcClass": "Acidity regulator, Raising agent"
   },
   {
     "ins": "301",
-    "name": "Sodium ascorbate"
+    "name": "Sodium ascorbate",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "302",
-    "name": "Calcium ascorbate"
+    "name": "Calcium ascorbate",
+    "funcClass": "Antifoaming agent, Bulking agent, Carrier, Foaming agent, Gelling agent, Glazing agent, Humectant, Sequestrant, Stabilizer, Thickener"
   },
   {
     "ins": "304",
@@ -653,15 +715,18 @@
   },
   {
     "ins": "307a",
-    "name": "d-alpha-Tocopherol"
+    "name": "d-alpha-Tocopherol",
+    "funcClass": "Antioxidant"
   },
   {
     "ins": "307b",
-    "name": "Tocopherol concentrate, mixed"
+    "name": "Tocopherol concentrate, mixed",
+    "funcClass": "Antioxidant"
   },
   {
     "ins": "307c",
-    "name": "dl-alpha-Tocopherol"
+    "name": "dl-alpha-Tocopherol",
+    "funcClass": "Antioxidant"
   },
   {
     "ins": "310",
@@ -669,7 +734,8 @@
   },
   {
     "ins": "314",
-    "name": "Guaiac resin"
+    "name": "Guaiac resin",
+    "funcClass": "Antioxidant"
   },
   {
     "ins": "315",
@@ -677,35 +743,43 @@
   },
   {
     "ins": "316",
-    "name": "Sodium erythorbate (Sodium isoascorbate)"
+    "name": "Sodium erythorbate (Sodium isoascorbate)",
+    "funcClass": "Acidity regulator,"
   },
   {
     "ins": "319",
-    "name": "Tertiary butylhydroquinone (TBHQ)"
+    "name": "Tertiary butylhydroquinone (TBHQ)",
+    "funcClass": "Colour"
   },
   {
     "ins": "320",
-    "name": "Butylated hydroxyanisole (BHA)"
+    "name": "Butylated hydroxyanisole (BHA)",
+    "funcClass": "Colour"
   },
   {
     "ins": "321",
-    "name": "Butylated hydroxytoluene (BHT)"
+    "name": "Butylated hydroxytoluene (BHT)",
+    "funcClass": "Antioxidant"
   },
   {
     "ins": "322(i)",
-    "name": "Lecithin"
+    "name": "Lecithin",
+    "funcClass": "Antioxidant, Emulsifier"
   },
   {
     "ins": "325",
-    "name": "Sodium lactate"
+    "name": "Sodium lactate",
+    "funcClass": "Acidity regulator, Antioxidant, Bulking agent, Emulsifier, Emulsifying salt, Humectant, Thickener"
   },
   {
     "ins": "326",
-    "name": "Potassium lactate"
+    "name": "Potassium lactate",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "327",
-    "name": "Calcium lactate"
+    "name": "Calcium lactate",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "329",
@@ -713,7 +787,8 @@
   },
   {
     "ins": "330",
-    "name": "Citric acid"
+    "name": "Citric acid",
+    "funcClass": "Acidity regulator,                            Antioxidant, Colour retention"
   },
   {
     "ins": "331(i)",
@@ -721,15 +796,18 @@
   },
   {
     "ins": "331(iii)",
-    "name": "Trisodium citrate"
+    "name": "Trisodium citrate",
+    "funcClass": "Acidity regulator, Emulsifier, Emulsifying salt, Sequestrant, Stabilizer"
   },
   {
     "ins": "332(i)",
-    "name": "Potassium dihydrogen citrate"
+    "name": "Potassium dihydrogen citrate",
+    "funcClass": "Firming agent, Flavour enhancer, Stabilizer, Thickener"
   },
   {
     "ins": "332(ii)",
-    "name": "Tripotassium citrate"
+    "name": "Tripotassium citrate",
+    "funcClass": "Acidity regulator, Emulsifying salt, Firming agent, Sequestrant, Stabilizer"
   },
   {
     "ins": "333(iii)",
@@ -741,7 +819,8 @@
   },
   {
     "ins": "335(ii)",
-    "name": "L(+)-tartrate"
+    "name": "L(+)-tartrate",
+    "funcClass": "Acidity regulator, Antioxidant, Flavour enhancer, Sequestrant"
   },
   {
     "ins": "337",
@@ -749,7 +828,8 @@
   },
   {
     "ins": "338",
-    "name": "Phosphoric acid"
+    "name": "Phosphoric acid",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "339",
@@ -757,59 +837,73 @@
   },
   {
     "ins": "339(i)",
-    "name": "Sodium dihydrogen phosphate"
+    "name": "Sodium dihydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "339(ii)",
-    "name": "Disodium hydrogen phosphate"
+    "name": "Disodium hydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "339(iii)",
-    "name": "Trisodium phosphate"
+    "name": "Trisodium phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "340(i)",
-    "name": "Potassium dihydrogen phosphate"
+    "name": "Potassium dihydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "340(ii)",
-    "name": "Dipotassium hydrogen phosphate"
+    "name": "Dipotassium hydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "340(iii)",
-    "name": "Tripotassium phosphate"
+    "name": "Tripotassium phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "341(i)",
-    "name": "Calcium dihydrogen phosphate"
+    "name": "Calcium dihydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "341(ii)",
-    "name": "Calcium hydrogen phosphate"
+    "name": "Calcium hydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "341(iii)",
-    "name": "Tricalcium phosphate"
+    "name": "Tricalcium phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "342(i)",
-    "name": "Ammonium dihydrogen phosphate"
+    "name": "Ammonium dihydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "342(ii)",
-    "name": "Diammonium hydrogen phosphate"
+    "name": "Diammonium hydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "343(i)",
-    "name": "Magnesium dihydrogen phosphate"
+    "name": "Magnesium dihydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "343(ii)",
-    "name": "Magnesium hydrogen phosphate"
+    "name": "Magnesium hydrogen phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "343(iii)",
-    "name": "Trimagnesium phosphate"
+    "name": "Trimagnesium phosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "350(i)",
@@ -825,7 +919,8 @@
   },
   {
     "ins": "355",
-    "name": "Adipic acid"
+    "name": "Adipic acid",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "365",
@@ -837,19 +932,23 @@
   },
   {
     "ins": "381",
-    "name": "Ferric ammonium citrate"
+    "name": "Ferric ammonium citrate",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "384",
-    "name": "Isopropyl citrates"
+    "name": "Isopropyl citrates",
+    "funcClass": "Antioxidant, Preservative, Sequestrant"
   },
   {
     "ins": "385",
-    "name": "Calcium disodium EDTA"
+    "name": "Calcium disodium EDTA",
+    "funcClass": "Colour"
   },
   {
     "ins": "386",
-    "name": "Disodium EDTA"
+    "name": "Disodium EDTA",
+    "funcClass": "Colour"
   },
   {
     "ins": "388",
@@ -861,7 +960,8 @@
   },
   {
     "ins": "392",
-    "name": "Extracts of rosemary"
+    "name": "Extracts of rosemary",
+    "funcClass": "Antioxidant"
   },
   {
     "ins": "400",
@@ -869,23 +969,28 @@
   },
   {
     "ins": "401",
-    "name": "Sodium alginate"
+    "name": "Sodium alginate",
+    "funcClass": "Acidity regulator, Preservative, Sequestrant"
   },
   {
     "ins": "402",
-    "name": "Potassium alginate"
+    "name": "Potassium alginate",
+    "funcClass": "Glazing agent,"
   },
   {
     "ins": "403",
-    "name": "Ammonium alginate"
+    "name": "Ammonium alginate",
+    "funcClass": "Flour treatment agent"
   },
   {
     "ins": "404",
-    "name": "Calcium alginate"
+    "name": "Calcium alginate",
+    "funcClass": "Antifoaming agent, Bulking agent, Carrier, Foaming agent, Gelling agent, Glazing agent, Humectant, Sequestrant, Stabilizer, Thickener"
   },
   {
     "ins": "405",
-    "name": "Propylene glycol alginate"
+    "name": "Propylene glycol alginate",
+    "funcClass": "Carrier, Emulsifier, Glazing                           agent, Humectant"
   },
   {
     "ins": "406",
@@ -893,43 +998,53 @@
   },
   {
     "ins": "407",
-    "name": "Carrageenan"
+    "name": "Carrageenan",
+    "funcClass": "Bulking agent, Carrier, Emulsifier, Gelling agent, Glazing agent, Humectant, Stabilizer, Thickener"
   },
   {
     "ins": "407a",
-    "name": "Processed eucheuma seaweed (PES)"
+    "name": "Processed eucheuma seaweed (PES)",
+    "funcClass": "Bulking agent, Carrier, Emulsifier, Gelling agent, Glazing agent, Humectant, Stabilizer, Thickener"
   },
   {
     "ins": "410",
-    "name": "Carob bean gum"
+    "name": "Carob bean gum",
+    "funcClass": "Acidity regulator, Anticaking agent, Bulking agent, Carrier, Glazing agent"
   },
   {
     "ins": "412",
-    "name": "Guar gum"
+    "name": "Guar gum",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "413",
-    "name": "Tragacanth gum"
+    "name": "Tragacanth gum",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "414",
-    "name": "Gum 101rabic (Acacia gum)"
+    "name": "Gum 101rabic (Acacia gum)",
+    "funcClass": "Bulking agent, Carrier, Emulsifier, Glazing agent, Stabilizer, Thickener"
   },
   {
     "ins": "415",
-    "name": "Xanthan gum"
+    "name": "Xanthan gum",
+    "funcClass": "Emulsifier, Foaming agent, Stabilizer, Thickener"
   },
   {
     "ins": "416",
-    "name": "Karaya gum"
+    "name": "Karaya gum",
+    "funcClass": "Antioxidant, Preservative, Sequestrant"
   },
   {
     "ins": "417",
-    "name": "Tara gum"
+    "name": "Tara gum",
+    "funcClass": "Anticaking agent, Glazing agent, Thickener"
   },
   {
     "ins": "418",
-    "name": "Gellan gum"
+    "name": "Gellan gum",
+    "funcClass": "Gelling agent, Stabilizer, Thickener"
   },
   {
     "ins": "419",
@@ -949,7 +1064,8 @@
   },
   {
     "ins": "422",
-    "name": "Glycerol"
+    "name": "Glycerol",
+    "funcClass": "Acidity regulator, Raising agent, Sequestrant"
   },
   {
     "ins": "423",
@@ -961,7 +1077,8 @@
   },
   {
     "ins": "425",
-    "name": "Konjac flour"
+    "name": "Konjac flour",
+    "funcClass": "Carrier, Emulsifier, Gelling agent, Glazing agent, Humectant, Stabilizer, Thickener"
   },
   {
     "ins": "427",
@@ -969,31 +1086,38 @@
   },
   {
     "ins": "430",
-    "name": "Polyoxyethylene (8) stearate"
+    "name": "Polyoxyethylene (8) stearate",
+    "funcClass": "Emulsifier"
   },
   {
     "ins": "431",
-    "name": "Polyoxyethylene (40) stearate"
+    "name": "Polyoxyethylene (40) stearate",
+    "funcClass": "Emulsifier"
   },
   {
     "ins": "432",
-    "name": "Polyoxyethylene (20) sorbitan monolaurate"
+    "name": "Polyoxyethylene (20) sorbitan monolaurate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "433",
-    "name": "Polyoxyethylene (20) sorbitan monooleate"
+    "name": "Polyoxyethylene (20) sorbitan monooleate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "434",
-    "name": "Polyoxyethylene (20) sorbitan monopalmitate"
+    "name": "Polyoxyethylene (20) sorbitan monopalmitate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "435",
-    "name": "Polyoxyethylene (20) sorbitan monostearate"
+    "name": "Polyoxyethylene (20) sorbitan monostearate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "436",
-    "name": "Polyoxyethylene (20) sorbitan tristearate"
+    "name": "Polyoxyethylene (20) sorbitan tristearate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "437",
@@ -1001,7 +1125,8 @@
   },
   {
     "ins": "440",
-    "name": "Pectins"
+    "name": "Pectins",
+    "funcClass": "Antioxidant, Foaming agent, Packaging gas, Propellant"
   },
   {
     "ins": "442",
@@ -1009,7 +1134,8 @@
   },
   {
     "ins": "444",
-    "name": "Sucrose acetate isobutyrate"
+    "name": "Sucrose acetate isobutyrate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "445(iii)",
@@ -1021,15 +1147,18 @@
   },
   {
     "ins": "450(i)",
-    "name": "Disodium diphosphate"
+    "name": "Disodium diphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "450(ii)",
-    "name": "Trisodium diphosphate"
+    "name": "Trisodium diphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "450(iii)",
-    "name": "Tetrasodium diphosphate"
+    "name": "Tetrasodium diphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "450(iv)",
@@ -1037,27 +1166,33 @@
   },
   {
     "ins": "450(ix)",
-    "name": "Magnesium dihydrogen diphosphate"
+    "name": "Magnesium dihydrogen diphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "450(v)",
-    "name": "Tetrapotassium diphosphate"
+    "name": "Tetrapotassium diphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "450(vi)",
-    "name": "Dicalcium diphosphate"
+    "name": "Dicalcium diphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "450(vii)",
-    "name": "Calcium dihydrogen diphosphate"
+    "name": "Calcium dihydrogen diphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "451(i)",
-    "name": "Pentasodium triphosphate"
+    "name": "Pentasodium triphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "451(ii)",
-    "name": "Pentapotassium triphosphate"
+    "name": "Pentapotassium triphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "452",
@@ -1065,19 +1200,23 @@
   },
   {
     "ins": "452(i)",
-    "name": "Sodium polyphosphate"
+    "name": "Sodium polyphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "452(ii)",
-    "name": "Potassium polyphosphate"
+    "name": "Potassium polyphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "452(iii)",
-    "name": "Sodium calcium polyphosphate"
+    "name": "Sodium calcium polyphosphate",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "452(iv)",
-    "name": "Ammonium polyphosphates"
+    "name": "Ammonium polyphosphates",
+    "funcClass": "Acidity regulator, Antioxidant, Sequestrant"
   },
   {
     "ins": "452(v)",
@@ -1097,15 +1236,18 @@
   },
   {
     "ins": "460(i)",
-    "name": "Microcrystalline cellulose (Cellulose gel)"
+    "name": "Microcrystalline cellulose (Cellulose gel)",
+    "funcClass": "Anticaking agent, Bulking agent, Carrier, Emulsifier, Foaming agent, Glazing agent, Stabilizer, Thickener"
   },
   {
     "ins": "460(ii)",
-    "name": "Powdered cellulose"
+    "name": "Powdered cellulose",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "461",
-    "name": "Methyl cellulose"
+    "name": "Methyl cellulose",
+    "funcClass": "Anticaking agent, Bulking agent, Humectant, Stabilizer, Sweetener,Thickener"
   },
   {
     "ins": "462",
@@ -1113,19 +1255,23 @@
   },
   {
     "ins": "463",
-    "name": "Hydroxypropyl cellulose"
+    "name": "Hydroxypropyl cellulose",
+    "funcClass": "Emulsifier, Foaming agent, Glazing agent, Stabilizer, Thickener"
   },
   {
     "ins": "464",
-    "name": "Hydroxypropyl methyl cellulose"
+    "name": "Hydroxypropyl methyl cellulose",
+    "funcClass": "Bulking agent, Emulsifier, Glazing agent, Stabilizer, Thickener"
   },
   {
     "ins": "465",
-    "name": "Methyl ethyl cellulose"
+    "name": "Methyl ethyl cellulose",
+    "funcClass": "Emulsifier, Foaming agent, Stabilizer, Thickener"
   },
   {
     "ins": "466",
-    "name": "Sodium carboxymethyl cellulose (Cellulose gum)"
+    "name": "Sodium carboxymethyl cellulose (Cellulose gum)",
+    "funcClass": "Bulking agent, Emulsifier, Firming agent, Gelling agent, Glazing agent, Humectant, Stabilizer, Thickener"
   },
   {
     "ins": "467",
@@ -1141,11 +1287,13 @@
   },
   {
     "ins": "470(i)",
-    "name": "Salts of myristic, palmitic and stearic acids with ammonia, calcium, potassium and sodium"
+    "name": "Salts of myristic, palmitic and stearic acids with ammonia, calcium, potassium and sodium",
+    "funcClass": "Anticaking agent, Emulsifier, Stabilizer"
   },
   {
     "ins": "470(ii)",
-    "name": "Salts of oleic acid with calcium, potassium and sodium"
+    "name": "Salts of oleic acid with calcium, potassium and sodium",
+    "funcClass": "Anticaking agent, Emulsifier, Stabilizer"
   },
   {
     "ins": "470(iii)",
@@ -1153,7 +1301,8 @@
   },
   {
     "ins": "471",
-    "name": "Mono- and di-glycerides of fatty acids"
+    "name": "Mono- and di-glycerides of fatty acids",
+    "funcClass": "Glazing agent"
   },
   {
     "ins": "472",
@@ -1161,19 +1310,23 @@
   },
   {
     "ins": "472a",
-    "name": "Acetic and fatty acid esters of glycerol"
+    "name": "Acetic and fatty acid esters of glycerol",
+    "funcClass": "Emulsifier, Sequestrant, Stabilizer"
   },
   {
     "ins": "472b",
-    "name": "Lactic and fatty acid esters of glycerol"
+    "name": "Lactic and fatty acid esters of glycerol",
+    "funcClass": "Emulsifier, Sequestrant, Stabilizer"
   },
   {
     "ins": "472c",
-    "name": "Citric and fatty acid esters of glycerol"
+    "name": "Citric and fatty acid esters of glycerol",
+    "funcClass": "Antioxidant, Emulsifier, Flour treatment agent, Sequestrant, Stabilizer"
   },
   {
     "ins": "472e",
-    "name": "Diacetyltartaric and fatty acid esters of glycerol"
+    "name": "Diacetyltartaric and fatty acid esters of glycerol",
+    "funcClass": "Emulsifier, Sequestrant, Stabilizer"
   },
   {
     "ins": "473",
@@ -1181,67 +1334,83 @@
   },
   {
     "ins": "473a",
-    "name": "Sucrose"
+    "name": "Sucrose",
+    "funcClass": "Emulsifier, Glazing agent, Stabilizer"
   },
   {
     "ins": "474",
-    "name": "Sucroglycerides"
+    "name": "Sucroglycerides",
+    "funcClass": "Emulsifier"
   },
   {
     "ins": "475",
-    "name": "Polyglycerol esters of fatty acids"
+    "name": "Polyglycerol esters of fatty acids",
+    "funcClass": "Antifoaming agent, Carrier, Emulsifier, Glazing agent,Thickener"
   },
   {
     "ins": "476",
-    "name": "Polyglycerol esters of interesterified ricinoleic acid"
+    "name": "Polyglycerol esters of interesterified ricinoleic acid",
+    "funcClass": "Emulsifier"
   },
   {
     "ins": "477",
-    "name": "Propylene glycol esters of fatty acids"
+    "name": "Propylene glycol esters of fatty acids",
+    "funcClass": "Emulsifier"
   },
   {
     "ins": "479",
-    "name": "Thermally oxidized soya bean oil interacted with mono- and diglycerides of fatty acids"
+    "name": "Thermally oxidized soya bean oil interacted with mono- and diglycerides of fatty acids",
+    "funcClass": "Emulsifier"
   },
   {
     "ins": "480",
-    "name": "Dioctyl sodium sulfosuccinate"
+    "name": "Dioctyl sodium sulfosuccinate",
+    "funcClass": "Emulsifier, Humectant"
   },
   {
     "ins": "481(i)",
-    "name": "Sodium stearoyl lactylate"
+    "name": "Sodium stearoyl lactylate",
+    "funcClass": "Antioxidant, Colour retention agent"
   },
   {
     "ins": "482(i)",
-    "name": "Calcium stearoyl lactylate"
+    "name": "Calcium stearoyl lactylate",
+    "funcClass": "Antioxidant, Colour retention agent"
   },
   {
     "ins": "484",
-    "name": "Stearyl citrate"
+    "name": "Stearyl citrate",
+    "funcClass": "Antioxidant, Emulsifier, Sequestrant"
   },
   {
     "ins": "491",
-    "name": "Sorbitan monostearate"
+    "name": "Sorbitan monostearate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "492",
-    "name": "Sorbitan tristearate"
+    "name": "Sorbitan tristearate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "493",
-    "name": "Sorbitan monolaurate"
+    "name": "Sorbitan monolaurate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "494",
-    "name": "Sorbitan monooleate"
+    "name": "Sorbitan monooleate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "495",
-    "name": "Sorbitan monopalmitate"
+    "name": "Sorbitan monopalmitate",
+    "funcClass": "Emulsifier, Stabilizer"
   },
   {
     "ins": "500(i)",
-    "name": "Sodium carbonate"
+    "name": "Sodium carbonate",
+    "funcClass": "Acidity regulator, Anticaking agent, Emulsifying salt, Raising agent, Stabilizer, Thickener"
   },
   {
     "ins": "500(ii)",
@@ -1249,27 +1418,33 @@
   },
   {
     "ins": "500(iii)",
-    "name": "Sodium sesquicarbonate"
+    "name": "Sodium sesquicarbonate",
+    "funcClass": "Acidity regulator,Anticaking agent, Raising agent"
   },
   {
     "ins": "501(i)",
-    "name": "Potassium carbonate"
+    "name": "Potassium carbonate",
+    "funcClass": "Acidity regulator, Stabilizer"
   },
   {
     "ins": "501(ii)",
-    "name": "Potassium hydrogen carbonate"
+    "name": "Potassium hydrogen carbonate",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "503(i)",
-    "name": "Ammonium carbonate"
+    "name": "Ammonium carbonate",
+    "funcClass": "Acidity regulator, Raising agent"
   },
   {
     "ins": "503(ii)",
-    "name": "Ammonium hydrogen carbonate"
+    "name": "Ammonium hydrogen carbonate",
+    "funcClass": "Acidity regulator, Raising agent"
   },
   {
     "ins": "504(i)",
-    "name": "Magnesium carbonate"
+    "name": "Magnesium carbonate",
+    "funcClass": "Colour"
   },
   {
     "ins": "504(ii)",
@@ -1277,15 +1452,18 @@
   },
   {
     "ins": "507",
-    "name": "Hydrochloric acid"
+    "name": "Hydrochloric acid",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "508",
-    "name": "Potassium chloride"
+    "name": "Potassium chloride",
+    "funcClass": "Firming agent, Flavour enhancer, Stabilizer, Thickener"
   },
   {
     "ins": "509",
-    "name": "Calcium chloride"
+    "name": "Calcium chloride",
+    "funcClass": "Firming agent, Stabilizer, Thickener"
   },
   {
     "ins": "510",
@@ -1293,11 +1471,13 @@
   },
   {
     "ins": "511",
-    "name": "Magnesium chloride"
+    "name": "Magnesium chloride",
+    "funcClass": "Colour retention agent, Firming agent, Stabilizer"
   },
   {
     "ins": "512",
-    "name": "Stannous chloride"
+    "name": "Stannous chloride",
+    "funcClass": "Antioxidant, Colour retention agent"
   },
   {
     "ins": "514(i)",
@@ -1313,31 +1493,38 @@
   },
   {
     "ins": "516",
-    "name": "Calcium sulfate"
+    "name": "Calcium sulfate",
+    "funcClass": "Acidity regulator, Firming agent, Flour treatment agent, Sequestrant, Stabilizer"
   },
   {
     "ins": "518",
-    "name": "Magnesium sulfate"
+    "name": "Magnesium sulfate",
+    "funcClass": "Firming agent, Flavour enhancer"
   },
   {
     "ins": "523",
-    "name": "Aluminium ammonium sulfate"
+    "name": "Aluminium ammonium sulfate",
+    "funcClass": "Flour treatment agent"
   },
   {
     "ins": "524",
-    "name": "Sodium hydroxide"
+    "name": "Sodium hydroxide",
+    "funcClass": "Acidity regulator, Anticaking agent, Raising agent, Stabilizer, Thickener"
   },
   {
     "ins": "525",
-    "name": "Potassium hydroxide"
+    "name": "Potassium hydroxide",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "526",
-    "name": "Calcium hydroxide"
+    "name": "Calcium hydroxide",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "527",
-    "name": "Ammonium hydroxide"
+    "name": "Ammonium hydroxide",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "528",
@@ -1345,23 +1532,28 @@
   },
   {
     "ins": "529",
-    "name": "Calcium oxide"
+    "name": "Calcium oxide",
+    "funcClass": "Acidity regulator, Flour treatment agent"
   },
   {
     "ins": "530",
-    "name": "Magnesium oxide"
+    "name": "Magnesium oxide",
+    "funcClass": "Acidity regulator, Sequestrant"
   },
   {
     "ins": "535",
-    "name": "Sodium ferrocyanide"
+    "name": "Sodium ferrocyanide",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "536",
-    "name": "Potassium ferrocyanide"
+    "name": "Potassium ferrocyanide",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "538",
-    "name": "Calcium ferrocyanide"
+    "name": "Calcium ferrocyanide",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "539",
@@ -1381,23 +1573,28 @@
   },
   {
     "ins": "551",
-    "name": "Silicon dioxide, amorphous"
+    "name": "Silicon dioxide, amorphous",
+    "funcClass": "Glazing agent"
   },
   {
     "ins": "552",
-    "name": "Calcium silicate"
+    "name": "Calcium silicate",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "553(i)",
-    "name": "Magnesium silicate, synthetic"
+    "name": "Magnesium silicate, synthetic",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "553(iii)",
-    "name": "Talc"
+    "name": "Talc",
+    "funcClass": "Anticaking agent, Glazing agent, Thickener"
   },
   {
     "ins": "554",
-    "name": "Sodium aluminium silicate"
+    "name": "Sodium aluminium silicate",
+    "funcClass": "Anticaking agent"
   },
   {
     "ins": "556",
@@ -1409,11 +1606,13 @@
   },
   {
     "ins": "575",
-    "name": "Glucono delta-lactone"
+    "name": "Glucono delta-lactone",
+    "funcClass": "Acidity regulator, Raising agent, Sequestrant"
   },
   {
     "ins": "576",
-    "name": "Sodium gluconate"
+    "name": "Sodium gluconate",
+    "funcClass": "Acidity regulator"
   },
   {
     "ins": "577",
@@ -1433,75 +1632,93 @@
   },
   {
     "ins": "585",
-    "name": "Ferrous lactate"
+    "name": "Ferrous lactate",
+    "funcClass": "Colour retention agent"
   },
   {
     "ins": "620",
-    "name": "Glutamic acid,"
+    "name": "Glutamic acid,",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "621",
-    "name": "Monosodium"
+    "name": "Monosodium",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "622",
-    "name": "Monopotassium"
+    "name": "Monopotassium",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "623",
-    "name": "Calcium di-L-glutamate"
+    "name": "Calcium di-L-glutamate",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "624",
-    "name": "Monoammonium"
+    "name": "Monoammonium",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "625",
-    "name": "Magnesium di-L-glutamate"
+    "name": "Magnesium di-L-glutamate",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "626",
-    "name": "Guanylic acid, 5’-"
+    "name": "Guanylic acid, 5’-",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "627",
-    "name": "Disodium 5’-guanylate"
+    "name": "Disodium 5’-guanylate",
+    "funcClass": "Preservative"
   },
   {
     "ins": "628",
-    "name": "Dipotassium 5’-guanylate"
+    "name": "Dipotassium 5’-guanylate",
+    "funcClass": "Preservative"
   },
   {
     "ins": "629",
-    "name": "Calcium 5’-guanylate"
+    "name": "Calcium 5’-guanylate",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "630",
-    "name": "Inosinic acid, 5’-"
+    "name": "Inosinic acid, 5’-",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "631",
-    "name": "Disodium 5’-inosinate"
+    "name": "Disodium 5’-inosinate",
+    "funcClass": "Preservative"
   },
   {
     "ins": "632",
-    "name": "Potassium 5’-inosinate"
+    "name": "Potassium 5’-inosinate",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "633",
-    "name": "Calcium 5’-inosinate"
+    "name": "Calcium 5’-inosinate",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "634",
-    "name": "Calcium 5’-ribonucleotides"
+    "name": "Calcium 5’-ribonucleotides",
+    "funcClass": "Antioxidant"
   },
   {
     "ins": "635",
-    "name": "Disodium 5’-ribonucleotides"
+    "name": "Disodium 5’-ribonucleotides",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "636",
-    "name": "Maltol"
+    "name": "Maltol",
+    "funcClass": "Flavour enhancer"
   },
   {
     "ins": "637",
@@ -1513,23 +1730,28 @@
   },
   {
     "ins": "900a",
-    "name": "Polydimethylsiloxane"
+    "name": "Polydimethylsiloxane",
+    "funcClass": "Bulking agent, Glazing agent, Humectant, Stabilizer, Thickener"
   },
   {
     "ins": "901",
-    "name": "Beeswax"
+    "name": "Beeswax",
+    "funcClass": "Colour"
   },
   {
     "ins": "902",
-    "name": "Candelilla wax"
+    "name": "Candelilla wax",
+    "funcClass": "Acidity regulator, Firming agent, Flour treatment agent, Sequestrant, Stabilizer"
   },
   {
     "ins": "903",
-    "name": "Carnauba wax"
+    "name": "Carnauba wax",
+    "funcClass": "Acidity regulator, Anticaking agent, Bulking agent, Carrier, Glazing agent"
   },
   {
     "ins": "904",
-    "name": "Shellac, bleached"
+    "name": "Shellac, bleached",
+    "funcClass": "Glazing agent"
   },
   {
     "ins": "905",
@@ -1537,19 +1759,23 @@
   },
   {
     "ins": "905c(i)",
-    "name": "Microcrystalline wax"
+    "name": "Microcrystalline wax",
+    "funcClass": "Glazing agent"
   },
   {
     "ins": "905d",
-    "name": "Mineral oil, high viscosity"
+    "name": "Mineral oil, high viscosity",
+    "funcClass": "Glazing agent"
   },
   {
     "ins": "905e",
-    "name": "Mineral oil, medium viscosity"
+    "name": "Mineral oil, medium viscosity",
+    "funcClass": "Glazing agent"
   },
   {
     "ins": "907",
-    "name": "Hydrogenated poly-1-decenes"
+    "name": "Hydrogenated poly-1-decenes",
+    "funcClass": "Glazing agent"
   },
   {
     "ins": "925",
@@ -1573,7 +1799,8 @@
   },
   {
     "ins": "942",
-    "name": "Nitrous oxide"
+    "name": "Nitrous oxide",
+    "funcClass": "Antioxidant, Foaming agent, Packaging gas, Propellant"
   },
   {
     "ins": "950",
@@ -1581,7 +1808,8 @@
   },
   {
     "ins": "951",
-    "name": "Aspartame"
+    "name": "Aspartame",
+    "funcClass": "Flavour enhancer, Sweetener"
   },
   {
     "ins": "953",
@@ -1589,23 +1817,28 @@
   },
   {
     "ins": "954(i)",
-    "name": "Saccharin"
+    "name": "Saccharin",
+    "funcClass": "Sweetener"
   },
   {
     "ins": "954(ii)",
-    "name": "Calcium saccharin"
+    "name": "Calcium saccharin",
+    "funcClass": "Sweetener"
   },
   {
     "ins": "954(iii)",
-    "name": "Sodium saccharin"
+    "name": "Sodium saccharin",
+    "funcClass": "Sweetener"
   },
   {
     "ins": "954(iv)",
-    "name": "Potassium saccharin"
+    "name": "Potassium saccharin",
+    "funcClass": "Sweetener"
   },
   {
     "ins": "955",
-    "name": "Sucralose (Trichlorogalactosucrose)"
+    "name": "Sucralose (Trichlorogalactosucrose)",
+    "funcClass": "Flavour enhancer, Sweetener"
   },
   {
     "ins": "956",
@@ -1617,19 +1850,23 @@
   },
   {
     "ins": "960a",
-    "name": "Steviol glycosides"
+    "name": "Steviol glycosides",
+    "funcClass": "Antioxidant, Emulsifier, Sequestrant"
   },
   {
     "ins": "960b(i)",
-    "name": "Rebaudioside A"
+    "name": "Rebaudioside A",
+    "funcClass": "Antioxidant, Emulsifier, Sequestrant"
   },
   {
     "ins": "961",
-    "name": "Neotame"
+    "name": "Neotame",
+    "funcClass": "Preservative"
   },
   {
     "ins": "962",
-    "name": "Aspartame-acesulfame salt"
+    "name": "Aspartame-acesulfame salt",
+    "funcClass": "Sweetener"
   },
   {
     "ins": "964",
@@ -1657,15 +1894,18 @@
   },
   {
     "ins": "999(i)",
-    "name": "Quillaia extract type"
+    "name": "Quillaia extract type",
+    "funcClass": "Emulsifier, Foaming agent"
   },
   {
     "ins": "999(ii)",
-    "name": "IQuillaia extract type 2"
+    "name": "IQuillaia extract type 2",
+    "funcClass": "Emulsifier, Foaming agent"
   },
   {
     "ins": "1100(i)",
-    "name": "alpha-Amylase from"
+    "name": "alpha-Amylase from",
+    "funcClass": "Flour treatment agent"
   },
   {
     "ins": "1100(ii)",
@@ -1673,7 +1913,8 @@
   },
   {
     "ins": "1100(iii)",
-    "name": "alpha-Amylase from"
+    "name": "alpha-Amylase from",
+    "funcClass": "Flour treatment agent"
   },
   {
     "ins": "1100(iv)",
@@ -1685,11 +1926,13 @@
   },
   {
     "ins": "1100(vi)",
-    "name": "Carbohydrase from"
+    "name": "Carbohydrase from",
+    "funcClass": "Flour treatment agent"
   },
   {
     "ins": "1101(i)",
-    "name": "Protease from"
+    "name": "Protease from",
+    "funcClass": "Flavour enhancer, Flour treatment agent, Stabilizer"
   },
   {
     "ins": "1101(ii)",
@@ -1709,11 +1952,13 @@
   },
   {
     "ins": "1105",
-    "name": "Lysozyme"
+    "name": "Lysozyme",
+    "funcClass": "Preservative"
   },
   {
     "ins": "1200",
-    "name": "Polydextroses"
+    "name": "Polydextroses",
+    "funcClass": "Bulking agent, Glazing agent, Humectant, Stabilizer, Thickener"
   },
   {
     "ins": "1201",
@@ -1725,35 +1970,43 @@
   },
   {
     "ins": "1204",
-    "name": "Pullulan"
+    "name": "Pullulan",
+    "funcClass": "Flavour enhancer, Flour treatment agent, Stabilizer"
   },
   {
     "ins": "1400",
-    "name": "Dextrins, roasted starch"
+    "name": "Dextrins, roasted starch",
+    "funcClass": "Carrier, Stabilizer, Thickener"
   },
   {
     "ins": "1401",
-    "name": "Acid-treated starch"
+    "name": "Acid-treated starch",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1402",
-    "name": "Alkaline treated starch"
+    "name": "Alkaline treated starch",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1403",
-    "name": "Bleached starch"
+    "name": "Bleached starch",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1404",
-    "name": "Oxidized starch"
+    "name": "Oxidized starch",
+    "funcClass": "Preservative"
   },
   {
     "ins": "1405",
-    "name": "Starches, enzyme treated"
+    "name": "Starches, enzyme treated",
+    "funcClass": "Antioxidant, Colour retention agent"
   },
   {
     "ins": "1410",
-    "name": "Monostarch phosphate"
+    "name": "Monostarch phosphate",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1412",
@@ -1765,23 +2018,28 @@
   },
   {
     "ins": "1414",
-    "name": "Acetylated distarch phosphate"
+    "name": "Acetylated distarch phosphate",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1420",
-    "name": "Starch acetate"
+    "name": "Starch acetate",
+    "funcClass": "Antioxidant, Colour retention agent"
   },
   {
     "ins": "1422",
-    "name": "Acetylated distarch adipate"
+    "name": "Acetylated distarch adipate",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1440",
-    "name": "Hydroxypropyl starch"
+    "name": "Hydroxypropyl starch",
+    "funcClass": "Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1442",
-    "name": "Hydroxypropyl distarch phosphate"
+    "name": "Hydroxypropyl distarch phosphate",
+    "funcClass": "Anticaking agent, Emulsifier, Stabilizer, Thickener"
   },
   {
     "ins": "1450",
@@ -1793,7 +2051,8 @@
   },
   {
     "ins": "1503",
-    "name": "Castor oil"
+    "name": "Castor oil",
+    "funcClass": "Anticaking agent, Carrier, Emulsifier, Glazing agent"
   },
   {
     "ins": "1504(i)",
@@ -1805,7 +2064,8 @@
   },
   {
     "ins": "1505",
-    "name": "Triethyl citrate"
+    "name": "Triethyl citrate",
+    "funcClass": "Acidity regulator, Emulsifying salt, Firming agent, Sequestrant, Stabilizer"
   },
   {
     "ins": "1518",
@@ -1813,11 +2073,13 @@
   },
   {
     "ins": "1520",
-    "name": "Propylene glycol"
+    "name": "Propylene glycol",
+    "funcClass": "Carrier, Emulsifier, Glazing                           agent, Humectant"
   },
   {
     "ins": "1521",
-    "name": "Polyethylene glycol"
+    "name": "Polyethylene glycol",
+    "funcClass": "Antifoaming agent, Carrier, Emulsifier, Glazing agent,Thickener"
   },
   {
     "ins": "أغذيةتكميليةللرضعوصغارالأطفال",

@@ -21,7 +21,7 @@ const generalData = require("../assets/general-additives.json") as {
 };
 
 const comprehensiveData = require("../assets/comprehensive-additives.json") as {
-  ins: string; name: string;
+  ins: string; name: string; funcClass?: string;
 }[];
 
 // Build a Set of INS codes that are in the general-additives list for badge display
@@ -51,6 +51,7 @@ type ComprehensiveMatchResult = {
   kind: "comprehensive-match";
   ins: string;
   name: string;
+  funcClass?: string;
   isGeneral: boolean;
 };
 
@@ -102,76 +103,113 @@ function missingLetterExpansions(q: string): string[] {
   return ["a", "b", "c", "d", "e", "f"].map((l) => `${m[1]}${l}(${m[2]})`);
 }
 
+/** Escape special regex chars */
+function escRx(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Check whether a query code (e.g. "101(ii)") is present in a text that may
+ * express it as:
+ *   • Exact: "101(ii)"
+ *   • Range: "101(i)-(iii)"
+ *   • Comma list: "101(i),(ii),(iii)" or "101(i), (ii), (iii)"
+ * prefix is the numeric+letter part before the first "(", e.g. "101" or "160a".
+ * qVal is the integer value of the roman suffix.
+ * Works on normalised (no-space, lower) text.
+ */
+function matchesPrefixRoman(tn: string, prefix: string, qVal: number): boolean {
+  // (?<!\d) prevents "101" from matching inside "1101"
+  const esc = "(?<!\\d)" + escRx(prefix);
+  // Range: "101(i)-(iii)"
+  const rangeRx = new RegExp(esc + "\\(([ivx]+)\\)-\\(([ivx]+)\\)", "gi");
+  let m: RegExpExecArray | null;
+  while ((m = rangeRx.exec(tn)) !== null) {
+    if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
+  }
+  // Comma-separated list: "101(i),(ii),(iii)" — capture the whole block then
+  // check each individual roman value
+  const listRx = new RegExp(
+    esc + "(?:\\(([ivx]+)\\),?\\s*)+",
+    "gi"
+  );
+  while ((m = listRx.exec(tn)) !== null) {
+    const block = m[0];
+    const vals = [...block.matchAll(/\(([ivx]+)\)/gi)].map((x) =>
+      romanToInt(x[1])
+    );
+    if (vals.includes(qVal)) return true;
+  }
+  return false;
+}
+
 function matchesQuery(text: string, q: string): boolean {
   const tl = text.toLowerCase();
-
-  // 1. Direct substring match (already lowercased query from caller)
-  if (tl.includes(q)) return true;
-
-  // 2. Normalised (no-space) match — handles "INS339(i)" vs "339(i)" etc.
   const tn = normCode(text);
   const qn = normCode(q);
-  if (qn.length >= 2 && tn.includes(qn)) return true;
 
-  // 3. Numeric range: query is a plain 3-4 digit number → check "X-Y" ranges
+  // 1. Direct substring — but guard against digit-embedded false positives.
+  //    Only accept if NOT preceded/followed by a digit.
+  if (tl.includes(q)) {
+    const idx = tl.indexOf(q);
+    const before = idx > 0 ? tl[idx - 1] : " ";
+    const after = idx + q.length < tl.length ? tl[idx + q.length] : " ";
+    if (!/\d/.test(before)) return true; // safe match
+    // If preceded by a digit it's a false positive — keep going
+  }
+
+  // 2. Plain number (3-4 digits): word-boundary + dash-range check
   const queryNum = parseInt(q, 10);
   if (/^\d{3,4}$/.test(q) && !Number.isNaN(queryNum)) {
-    // Word-boundary aware: don't match "200" inside "1200" or "2001"
     const wordBound = new RegExp(`(?<!\\d)${q}(?!\\d)`, "g");
     if (wordBound.test(tl)) return true;
-    // Range check: "200-203"
     const numRange = /\b(\d{3,4})-(\d{3,4})\b/g;
     let m: RegExpExecArray | null;
     while ((m = numRange.exec(tl)) !== null) {
       if (queryNum >= Number(m[1]) && queryNum <= Number(m[2])) return true;
     }
+    return false;
   }
 
-  // 4. Roman-numeral range: "172(ii)" → "172(i)-(iii)"
-  const romanQ = q.match(/\(([ivx]+)\)$/i);
+  // 3. Code with roman suffix: "101(ii)", "160a(ii)", "172(iii)"
+  const romanQ = q.match(/^(\d{3,4}[a-z]?)\(([ivx]+)\)$/i);
   if (romanQ) {
-    const qVal = romanToInt(romanQ[1]);
+    const prefix = romanQ[1].toLowerCase();
+    const qVal = romanToInt(romanQ[2]);
     if (qVal > 0) {
-      const prefix = normCode(q.slice(0, q.lastIndexOf("(")).trim());
-      if (prefix) {
-        // Specific: "172(ii)" → look for "172(i)-(iii)"
-        const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const specificRange = new RegExp(
-          escaped + "\\(([ivx]+)\\)-\\(([ivx]+)\\)",
-          "gi"
-        );
-        let m: RegExpExecArray | null;
-        while ((m = specificRange.exec(tn)) !== null) {
-          if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
-        }
-      } else {
-        // Generic: query is just "(ii)" → match any roman range in text
-        const genericRange = /\(([ivx]+)\)-\(([ivx]+)\)/gi;
-        let m: RegExpExecArray | null;
-        while ((m = genericRange.exec(tl)) !== null) {
-          if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
-        }
-      }
-
-      // 5. Missing-letter expansion: "160(i)" → try "160a(i)", "160b(i)", …
-      for (const expanded of missingLetterExpansions(q)) {
-        if (tn.includes(normCode(expanded))) return true;
-        // Also check range membership for the expanded form
-        const expPrefix = normCode(expanded.slice(0, expanded.lastIndexOf("(")));
-        if (expPrefix) {
-          const escaped2 = expPrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-          const expRange = new RegExp(
-            escaped2 + "\\(([ivx]+)\\)-\\(([ivx]+)\\)",
-            "gi"
-          );
-          let m2: RegExpExecArray | null;
-          while ((m2 = expRange.exec(tn)) !== null) {
-            if (qVal >= romanToInt(m2[1]) && qVal <= romanToInt(m2[2])) return true;
-          }
-        }
+      // 3a. Exact code word-boundary check (prevent "101(ii)" matching "1101(ii)")
+      const exactRx = new RegExp(`(?<!\\d)${escRx(qn)}(?![\\w])`, "i");
+      if (exactRx.test(tn)) return true;
+      // 3b. Range / comma-list with same prefix
+      if (matchesPrefixRoman(tn, prefix, qVal)) return true;
+      // 3c. Missing-letter expansion: "160(ii)" → try "160a(ii)", "160b(ii)"…
+      for (const exp of missingLetterExpansions(q)) {
+        const expM = exp.match(/^(\d{3,4}[a-z])\(([ivx]+)\)$/i);
+        if (!expM) continue;
+        const expPfx = expM[1].toLowerCase();
+        const expVal = romanToInt(expM[2]);
+        if (matchesPrefixRoman(tn, expPfx, expVal)) return true;
       }
     }
+    return false;
   }
+
+  // 4. Generic roman-only query: "(ii)" → match any range/list containing it
+  const genericQ = q.match(/^\(([ivx]+)\)$/i);
+  if (genericQ) {
+    const qVal = romanToInt(genericQ[1]);
+    if (qVal > 0) {
+      const anyRange = /\(([ivx]+)\)-\(([ivx]+)\)/gi;
+      let m: RegExpExecArray | null;
+      while ((m = anyRange.exec(tl)) !== null) {
+        if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
+      }
+    }
+    return false;
+  }
+
+  // 5. Name / free-text search (no code pattern) — plain substring on normalised
+  if (qn.length >= 2 && tn.includes(qn)) return true;
 
   return false;
 }
@@ -243,14 +281,33 @@ export default function AdditiveSearchScreen() {
     comprehensiveData.forEach((entry) => {
       const insNorm = normCode(entry.ins);
       const nameNorm = entry.name.toLowerCase();
-      // Match on normalised INS code (handles spaces, "INS" prefix already stripped)
-      const codeMatch = insNorm.includes(normCode(q));
-      // Match on name
+      const qn = normCode(q);
+
+      // Code match: INS code must START with query or be an exact/word-boundary match.
+      // Using startsWith prevents "101(ii)" from matching "1101(ii)".
+      const codeMatch =
+        insNorm === qn ||
+        insNorm.startsWith(qn + "(") ||
+        insNorm.startsWith(qn + "a") ||
+        insNorm.startsWith(qn + "b") ||
+        insNorm.startsWith(qn + "c") ||
+        insNorm.startsWith(qn + "d") ||
+        insNorm.startsWith(qn + "e") ||
+        insNorm.startsWith(qn + "f") ||
+        // For plain number query, also allow letter-suffixed codes: "101" → "101(i)"
+        (/^\d{3,4}$/.test(qn) &&
+          new RegExp(`^${escRx(qn)}[^0-9]`).test(insNorm));
+
+      // Name match (substring is fine for names)
       const nameMatch = nameNorm.includes(q);
-      // Missing-letter expansion: "160(i)" → try "160a(i)" against this entry
+
+      // Missing-letter expansion: "160(i)" → try "160a(i)", "160b(i)"…
       const expansionMatch =
         !codeMatch &&
-        missingLetterExpansions(q).some((exp) => insNorm.includes(normCode(exp)));
+        missingLetterExpansions(q).some((exp) => {
+          const en = normCode(exp);
+          return insNorm === en || insNorm.startsWith(en);
+        });
 
       if ((codeMatch || nameMatch || expansionMatch) && !seenIns.has(entry.ins)) {
         seenIns.add(entry.ins);
@@ -258,6 +315,7 @@ export default function AdditiveSearchScreen() {
           kind: "comprehensive-match",
           ins: entry.ins,
           name: entry.name,
+          funcClass: entry.funcClass,
           isGeneral: generalInsSet.has(entry.ins.toLowerCase()),
         });
       }
@@ -356,6 +414,12 @@ export default function AdditiveSearchScreen() {
               </Text>
             </View>
           </View>
+          {result.funcClass ? (
+            <View style={styles.funcClassRow}>
+              <Feather name="layers" size={12} color="#0e7c7c" style={{ marginTop: 1 }} />
+              <Text style={styles.funcClassText} numberOfLines={2}>{result.funcClass}</Text>
+            </View>
+          ) : null}
         </View>
       );
     }
@@ -560,6 +624,11 @@ const styles = StyleSheet.create({
   matchText: { fontSize: 12, color: colors.light.text, lineHeight: 18 },
   matchHighlight: { backgroundColor: "#ffe066", color: "#333", fontWeight: "700", borderRadius: 3 },
   itemCode: { fontSize: 11, color: "#0e7c7c", textAlign: "right" },
+  funcClassRow: {
+    flexDirection: "row", alignItems: "flex-start", gap: 5,
+    backgroundColor: "#f0faf8", borderRadius: 6, paddingHorizontal: 8, paddingVertical: 5,
+  },
+  funcClassText: { flex: 1, fontSize: 11, color: "#0e6060", textAlign: "right", lineHeight: 16 },
   emptyState: { alignItems: "center", paddingTop: 60, gap: 12, paddingHorizontal: 20 },
   emptyTitle: { fontSize: 17, fontWeight: "600", color: colors.light.text, textAlign: "center" },
   emptySubtitle: { fontSize: 14, color: colors.light.mutedForeground, textAlign: "center", lineHeight: 22 },
