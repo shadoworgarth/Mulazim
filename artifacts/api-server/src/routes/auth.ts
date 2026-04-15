@@ -23,10 +23,29 @@ function generateToken(): string {
   return crypto.randomUUID();
 }
 
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error("RESEND_API_KEY not configured");
-  return new Resend(apiKey);
+// Resend client via Replit Connectors (no raw API key needed)
+async function getUncachableResendClient(): Promise<{ client: Resend; fromEmail: string }> {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY
+    ? "repl " + process.env.REPL_IDENTITY
+    : process.env.WEB_REPL_RENEWAL
+    ? "depl " + process.env.WEB_REPL_RENEWAL
+    : null;
+
+  if (!hostname || !xReplitToken) throw new Error("Replit connector environment not available");
+
+  const data = await fetch(
+    `https://${hostname}/api/v2/connection?include_secrets=true&connector_names=resend`,
+    { headers: { Accept: "application/json", "X-Replit-Token": xReplitToken } }
+  ).then((r) => r.json());
+
+  const settings = data?.items?.[0]?.settings;
+  if (!settings?.api_key) throw new Error("Resend not connected");
+
+  return {
+    client: new Resend(settings.api_key),
+    fromEmail: settings.from_email ?? "noreply@sfda.gov.sa",
+  };
 }
 
 // POST /api/auth/request-otp
@@ -71,9 +90,9 @@ router.post("/auth/request-otp", async (req, res) => {
       expiresAt,
     });
 
-    const resend = getResend();
+    const { client: resend, fromEmail } = await getUncachableResendClient();
     await resend.emails.send({
-      from: "SFDA Food Additives <onboarding@resend.dev>",
+      from: `SFDA Food Additives <${fromEmail}>`,
       to: normalizedEmail,
       subject: "رمز التحقق - دليل المضافات الغذائية",
       html: `
