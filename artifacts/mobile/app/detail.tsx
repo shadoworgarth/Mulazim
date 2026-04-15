@@ -86,15 +86,15 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
       }
     }
 
-    // 2. Roman-numeral ranges: "954(i)-(iv)" or "341(i)-(iii)"
-    //    Also handles prefixes with letter: "160a(i)-(iii)"
+    // 2a. Roman-numeral ranges: "954(i)-(iv)" or "341(i)-(iii)"
+    //     Expands to every member AND the base number — the whole family is permitted.
     const rnRanges = [...ln.matchAll(/\b(\d{3,4}[a-z]?)\(([ivx]+)\)\s*[-–]\s*\(([ivx]+)\)/g)];
     for (const m of rnRanges) {
       const prefix = m[1];               // e.g. "954" or "341" or "160a"
       const fromIdx = romanToIdx(m[2]);  // e.g. 0 (i)
       const toIdx   = romanToIdx(m[3]);  // e.g. 3 (iv)
       if (fromIdx === -1 || toIdx === -1) continue;
-      // Store base number (plain prefix) so "954" matches too
+      // Store base number so any sub-code can find it
       const numOnly = prefix.replace(/[a-z]$/, "");
       if (!map.has(numOnly)) map.set(numOnly, line);
       if (prefix !== numOnly && !map.has(prefix)) map.set(prefix, line);
@@ -104,6 +104,15 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
       }
     }
 
+    // 2b. Individual roman-numeral codes NOT part of a range: "470(i)", "160a(ii)"
+    //     Stored as-is only — do NOT add the base number, because only this
+    //     specific sub-code is permitted (e.g. 470(i) ≠ 470(ii)).
+    const rnSingle = [...ln.matchAll(/\b(\d{3,4}[a-z]?)\(([ivx]+)\)(?!\s*[-–])/g)];
+    for (const m of rnSingle) {
+      const key = `${m[1]}(${m[2]})`;
+      if (!map.has(key)) map.set(key, line);
+    }
+
     // 3. Codes with letter suffix e.g. 160a, 150c → stored as "160a", "150c"
     const withSuffix = [...line.matchAll(/\b(\d{3,4}[a-z])(?:\([ivx]+\))?/gi)];
     for (const m of withSuffix) {
@@ -111,8 +120,10 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
       if (!map.has(key)) map.set(key, line);
     }
 
-    // 4. Plain numbers not followed by a letter
-    const nums = [...line.matchAll(/\b(\d{3,4})\b(?![a-z])/gi)];
+    // 4. Plain numbers not followed by a letter OR an opening paren.
+    //    We exclude "470(ii)" here — only a standalone "470" or range-expanded
+    //    entry should act as a wildcard for all sub-codes.
+    const nums = [...line.matchAll(/\b(\d{3,4})\b(?![a-z(])/gi)];
     for (const m of nums) {
       if (!map.has(m[1])) map.set(m[1], line);
     }
