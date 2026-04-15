@@ -31,22 +31,93 @@ const generalInsSet = new Set<string>([
   ...generalData.table2.rows.map((r) => r.ins.toLowerCase()),
 ]);
 
-// ── Named additive families from Table 1 ──────────────────────────────────────
-// When any member of a family matches, all members are shown as a chooser card.
+// ── Named additive families (same items permitted for all members) ─────────────
 const FAMILY_GROUPS: { name: string; codes: string[] }[] = [
-  { name: "SORBATES",                       codes: ["200","201","202","203"] },
-  { name: "BENZOATES",                      codes: ["210","211","212","213"] },
-  { name: "PARABENS",                       codes: ["214","218"] },
-  { name: "SULFITES",                       codes: ["220","221","222","223","224","225"] },
-  { name: "PHENYLPHENOLS",                  codes: ["231","232"] },
-  { name: "PROPIONATES",                    codes: ["280","281","282"] },
-  { name: "ASCORBATES",                     codes: ["300","301","302"] },
-  { name: "ASCORBYL ESTERS",                codes: ["304","305"] },
-  { name: "LACTATES",                       codes: ["325","326","327","329"] },
-  { name: "ALGINATES",                      codes: ["400","401","402","403","404","405"] },
-  { name: "POLYSORBATES",                   codes: ["432","433","434","435","436"] },
-  { name: "SORBITAN ESTERS OF FATTY ACIDS", codes: ["491","492","493","494","495"] },
-  { name: "GLUCONATES",                     codes: ["575","576","577","578"] },
+  // page 35
+  { name: "ASCORBYL ESTERS",
+    codes: ["304","305"] },
+  // page 42
+  { name: "BENZOATES",
+    codes: ["210","211","212","213"] },
+  // page 72
+  { name: "CAROTENOIDS",
+    codes: ["160a(i)","160a(ii)","160a(iii)",
+            "160b","160b(i)","160b(ii)",
+            "160c",
+            "160d(i)","160d(ii)","160d(iii)",
+            "160e","160f"] },
+  // page 77
+  { name: "CHLOROPHYLLS AND CHLOROPHYLLINS",
+    codes: ["140","141(i)","141(ii)"] },
+  // page 90
+  { name: "ETHYLENE DIAMINE TETRA ACETATES",
+    codes: ["385","386"] },
+  // page 94
+  { name: "FERROCYANIDES",
+    codes: ["535","536","538"] },
+  // page 103
+  { name: "HYDROXYBENZOATES, PARA (PARABENS)",
+    codes: ["214","218"] },
+  // page 109
+  { name: "IRON OXIDES AND HYDROXIDES",
+    codes: ["172(i)","172(ii)","172(iii)"] },
+  // page 134
+  { name: "ORTHO-PHENYLPHENOLS",
+    codes: ["231","232"] },
+  // page 137
+  { name: "PHOSPHATES",
+    codes: ["338",
+            "339","339(i)","339(ii)","339(iii)",
+            "340(i)","340(ii)","340(iii)",
+            "341(i)","341(ii)","341(iii)",
+            "342(i)","342(ii)",
+            "343(i)","343(ii)","343(iii)",
+            "450","450(i)","450(ii)","450(iii)","450(iv)","450(v)","450(vi)","450(vii)","450(ix)",
+            "451(i)","451(ii)",
+            "452","452(i)","452(ii)","452(iii)","452(iv)","452(v)",
+            "542"] },
+  // page 148
+  { name: "POLYOXYETHYLENE STEARATES",
+    codes: ["430","431"] },
+  // page 148
+  { name: "POLYSORBATES",
+    codes: ["432","433","434","435","436"] },
+  // page 163
+  { name: "QUILLAIA EXTRACTS",
+    codes: ["999(i)","999(ii)"] },
+  // page 163
+  { name: "RIBOFLAVINS",
+    codes: ["101(i)","101(ii)","101(iii)"] },
+  // page 166
+  { name: "SACCHARINS",
+    codes: ["954(i)","954(ii)","954(iii)","954(iv)"] },
+  // page 173
+  { name: "SODIUM ALUMINIUM PHOSPHATES",
+    codes: ["541(i)","541(ii)"] },
+  // page 183
+  { name: "SORBATES",
+    codes: ["200","201","202","203"] },
+  // page 186
+  { name: "SORBITAN ESTERS OF FATTY ACIDS",
+    codes: ["491","492","493","494","495"] },
+  // page 189
+  { name: "STEAROYL LACTYLATES",
+    codes: ["481(i)","482(i)"] },
+  // page 191
+  { name: "STEVIOL GLYCOSIDES",
+    codes: ["960a","960b(i)"] },
+  // page 201
+  { name: "SULFITES",
+    codes: ["220","221","222","223","224","225"] },
+  // page 207
+  { name: "TARTRATES",
+    codes: ["334","335(ii)","337"] },
+  // page 211
+  { name: "THIODIPROPIONATES",
+    codes: ["388","389"] },
+  // page 211
+  { name: "TOCOPHEROLS",
+    codes: ["307","307a","307b","307c"] },
 ];
 
 // Reverse map: INS code → index in FAMILY_GROUPS
