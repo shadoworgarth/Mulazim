@@ -22,32 +22,37 @@ type CheckResult = { raw: string; code: string; permitted: boolean; line: string
 function buildPermittedMap(additives: string[]): Map<string, string> {
   const map = new Map<string, string>();
   for (const line of additives) {
-    const rangeMatch = line.match(/E(\d+)\s*[-–]\s*E(\d+)/i);
-    if (rangeMatch) {
-      const from = parseInt(rangeMatch[1]);
-      const to = parseInt(rangeMatch[2]);
+    // Expand numeric ranges like 200-203 or 200–203
+    const ranges = [...line.matchAll(/(\d{3,4})\s*[-–]\s*(\d{3,4})/g)];
+    for (const m of ranges) {
+      const from = parseInt(m[1]);
+      const to = parseInt(m[2]);
       for (let n = from; n <= to; n++) {
         if (!map.has(String(n))) map.set(String(n), line);
       }
     }
-    const singles = [...line.matchAll(/E(\d+[a-z]?)/gi)];
-    for (const m of singles) {
-      const key = m[1].toLowerCase();
-      if (!map.has(key)) map.set(key, line);
-      const numOnly = key.replace(/[a-z]$/, "");
-      if (!map.has(numOnly)) map.set(numOnly, line);
+    // Extract all standalone 3-4 digit numbers
+    const nums = [...line.matchAll(/\b(\d{3,4})\b/g)];
+    for (const m of nums) {
+      if (!map.has(m[1])) map.set(m[1], line);
     }
   }
   return map;
 }
 
-function parseUserInput(input: string): string[] {
-  const matches = [...input.matchAll(/E(\d+[a-z]?)|(?<![a-zA-Z])(\d{3,4})(?![a-zA-Z0-9])/gi)];
+type ParsedCode = { display: string; key: string };
+
+function parseUserInput(input: string): ParsedCode[] {
+  // Match optional E prefix + 3-4 digits + optional letter suffix (e.g. 160a, E160a, 330, E211)
+  const matches = [...input.matchAll(/E?(\d{3,4})[a-z]?/gi)];
   const seen = new Set<string>();
-  const result: string[] = [];
+  const result: ParsedCode[] = [];
   for (const m of matches) {
-    const raw = (m[1] || m[2]).toLowerCase();
-    if (!seen.has(raw)) { seen.add(raw); result.push(raw); }
+    const key = m[1];
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push({ key, display: "E" + m[0].replace(/^E/i, "").toUpperCase() });
+    }
   }
   return result;
 }
@@ -99,12 +104,12 @@ export default function DetailScreen() {
     : [];
 
   function handleCheck() {
-    const codes = parseUserInput(inputText);
-    if (codes.length === 0) return;
+    const parsed = parseUserInput(inputText);
+    if (parsed.length === 0) return;
     const map = buildPermittedMap(additives);
-    const res: CheckResult[] = codes.map(code => {
-      const line = map.get(code) ?? map.get(code.replace(/[a-z]$/, "")) ?? "";
-      return { raw: "E" + code.toUpperCase(), code, permitted: !!line, line };
+    const res: CheckResult[] = parsed.map(({ key, display }) => {
+      const line = map.get(key) ?? "";
+      return { raw: display, code: key, permitted: !!line, line };
     });
     setResults(res);
     setChecked(true);
@@ -150,7 +155,7 @@ export default function DetailScreen() {
               placeholderTextColor="#aaa"
               textAlign="right"
               multiline
-              autoCapitalize="characters"
+              autoCapitalize="none"
               autoCorrect={false}
             />
             <View style={styles.checkerButtons}>
