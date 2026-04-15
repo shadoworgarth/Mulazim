@@ -16,8 +16,6 @@ import colors from "@/constants/colors";
 import generalAdditives from "@/assets/general-additives.json";
 import comprehensiveAdditives from "@/assets/comprehensive-additives.json";
 
-const CHECK_CAT = 13;
-const CHECK_ITEM = 4;
 
 type AdditiveEntry = { ins: string; name: string };
 type Badge = AdditiveEntry;
@@ -261,8 +259,6 @@ export default function DetailScreen() {
   const itemIdx = parseInt(itemIndex ?? "0", 10);
   const category = appData[catIdx];
   const item = category?.subItems[itemIdx];
-  const showChecker = catIdx === CHECK_CAT && itemIdx === CHECK_ITEM;
-
   useEffect(() => {
     if (item) navigation.setOptions({ title: item.name.trim().slice(0, 30) });
   }, [item, navigation]);
@@ -299,18 +295,16 @@ export default function DetailScreen() {
         ) : null}
       </View>
 
-      {/* Additive Checker — test item only */}
-      {showChecker && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>التحقق من المواد المضافة</Text>
-          <View style={styles.card}>
-            <AdditiveChecker
-              additives={additives}
-              itemAllowsGeneral={row2.C === "نعم"}
-            />
-          </View>
+      {/* Additive Checker */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>التحقق من المواد المضافة</Text>
+        <View style={styles.card}>
+          <AdditiveChecker
+            additives={additives}
+            itemAllowsGeneral={row2.C === "نعم"}
+          />
         </View>
-      )}
+      </View>
 
       {/* Basic Info */}
       <View style={styles.section}>
