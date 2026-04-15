@@ -5,6 +5,7 @@ import {
   FlatList,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -55,6 +56,14 @@ type ComprehensiveMatchResult = {
   isGeneral: boolean;
 };
 
+type SimilarGroupResult = {
+  kind: "similar-group";
+  baseCode: string;           // shared numeric prefix, e.g. "101"
+  baseName: string;           // first member's name as group label
+  funcClass?: string;
+  members: ComprehensiveMatchResult[];
+};
+
 type AllowsGeneralResult = {
   kind: "allows-general";
   categoryIndex: number;
@@ -63,7 +72,7 @@ type AllowsGeneralResult = {
   item: SubItem;
 };
 
-type SearchResult = ItemResult | GeneralMatchResult | ComprehensiveMatchResult | AllowsGeneralResult;
+type SearchResult = ItemResult | GeneralMatchResult | ComprehensiveMatchResult | SimilarGroupResult | AllowsGeneralResult;
 
 // ─── Range-aware matching ──────────────────────────────────────────────────────
 const ROMAN: Record<string, number> = {
@@ -321,7 +330,28 @@ export default function AdditiveSearchScreen() {
       }
     });
 
-    found.push(...compMatches);
+    // Group compMatches by their numeric+letter base (strip roman suffix).
+    // e.g. ["101(i)","101(ii)","101(iii)"] → one similar-group; ["101(ii)"] → plain card
+    const groupMap = new Map<string, ComprehensiveMatchResult[]>();
+    for (const m of compMatches) {
+      const base = m.ins.toLowerCase().replace(/\s*\([ivx]+\)$/i, "");
+      if (!groupMap.has(base)) groupMap.set(base, []);
+      groupMap.get(base)!.push(m);
+    }
+    for (const [base, members] of groupMap) {
+      if (members.length >= 2) {
+        // Collapse into a "similar-group" chooser card
+        found.push({
+          kind: "similar-group",
+          baseCode: base,
+          baseName: members[0].name,
+          funcClass: members[0].funcClass,
+          members,
+        });
+      } else {
+        found.push(members[0]);
+      }
+    }
 
     // ── 3. Search General Additives table2 food description ──────────────────
     const generalMatches: GeneralMatchResult[] = [];
@@ -420,6 +450,42 @@ export default function AdditiveSearchScreen() {
               <Text style={styles.funcClassText} numberOfLines={2}>{result.funcClass}</Text>
             </View>
           ) : null}
+        </View>
+      );
+    }
+
+    // ── Similar-group chooser card ───────────────────────────────────────────
+    if (result.kind === "similar-group") {
+      return (
+        <View style={styles.groupCard}>
+          <View style={styles.resultHeader}>
+            <Feather name="git-branch" size={16} color="#0e5f5f" />
+            <Text style={[styles.resultItemName, { color: colors.light.text, flex: 1 }]} numberOfLines={2}>
+              {result.members[0].name.split(",")[0]}
+            </Text>
+            <View style={styles.groupCountBadge}>
+              <Text style={styles.groupCountText}>{result.members.length}</Text>
+            </View>
+          </View>
+          {result.funcClass ? (
+            <View style={[styles.funcClassRow, { marginBottom: 8 }]}>
+              <Feather name="layers" size={12} color="#0e7c7c" style={{ marginTop: 1 }} />
+              <Text style={styles.funcClassText} numberOfLines={2}>{result.funcClass}</Text>
+            </View>
+          ) : null}
+          <Text style={styles.groupHint}>اختر رمز INS لعرض الأصناف الغذائية المسموحة</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.groupBadgeScroll} contentContainerStyle={styles.groupBadgeRow}>
+            {result.members.map((m) => (
+              <Pressable
+                key={m.ins}
+                style={({ pressed }) => [styles.groupInsBadge, { opacity: pressed ? 0.72 : 1 }]}
+                onPress={() => setQuery(m.ins)}
+              >
+                <Text style={styles.groupInsBadgeText}>INS {m.ins}</Text>
+                <Text style={styles.groupInsBadgeName} numberOfLines={1}>{m.name.split(",")[0]}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
       );
     }
@@ -629,6 +695,27 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0faf8", borderRadius: 6, paddingHorizontal: 8, paddingVertical: 5,
   },
   funcClassText: { flex: 1, fontSize: 11, color: "#0e6060", textAlign: "right", lineHeight: 16 },
+  // ── Similar-group card ────────────────────────────────────────────────────
+  groupCard: {
+    backgroundColor: "#fff", borderRadius: 14, padding: 14, marginBottom: 10,
+    borderWidth: 1.5, borderColor: "#0e7c7c44",
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  groupCountBadge: {
+    backgroundColor: "#0e7c7c", borderRadius: 12, minWidth: 24, height: 24,
+    alignItems: "center", justifyContent: "center", paddingHorizontal: 7,
+  },
+  groupCountText: { fontSize: 12, fontWeight: "700", color: "#fff" },
+  groupHint: { fontSize: 11, color: "#0e7c7c", textAlign: "right", marginBottom: 8, marginTop: 2 },
+  groupBadgeScroll: { marginHorizontal: -2 },
+  groupBadgeRow: { flexDirection: "row", gap: 8, paddingHorizontal: 2, paddingBottom: 2 },
+  groupInsBadge: {
+    backgroundColor: "#e8f5f5", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8,
+    borderWidth: 1.2, borderColor: "#0e7c7c55", alignItems: "center", minWidth: 90,
+  },
+  groupInsBadgeText: { fontSize: 13, fontWeight: "700", color: "#0e5f5f", textAlign: "center" },
+  groupInsBadgeName: { fontSize: 10, color: "#0e7c7c", textAlign: "center", marginTop: 2, maxWidth: 120 },
   emptyState: { alignItems: "center", paddingTop: 60, gap: 12, paddingHorizontal: 20 },
   emptyTitle: { fontSize: 17, fontWeight: "600", color: colors.light.text, textAlign: "center" },
   emptySubtitle: { fontSize: 14, color: colors.light.mutedForeground, textAlign: "center", lineHeight: 22 },
