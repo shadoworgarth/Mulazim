@@ -66,44 +66,108 @@ type SearchResult = ItemResult | GeneralMatchResult | ComprehensiveMatchResult |
 
 // ─── Range-aware matching ──────────────────────────────────────────────────────
 const ROMAN: Record<string, number> = {
-  i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8,
+  i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8, ix: 9, x: 10,
 };
 function romanToInt(r: string): number { return ROMAN[r.toLowerCase()] ?? 0; }
 
-function matchesQuery(text: string, q: string): boolean {
-  // 1. Direct substring match
-  if (text.includes(q)) return true;
+/** Strip spaces and lowercase — used for code-level comparisons */
+function normCode(s: string): string {
+  return s.replace(/\s+/g, "").toLowerCase();
+}
 
-  // 2. Numeric range: query is a plain number → check "X-Y" ranges in text
-  const queryNum = Number(q);
-  if (Number.isInteger(queryNum) && queryNum > 0) {
-    const numRange = /\b(\d+)-(\d+)\b/g;
+/**
+ * Normalise a user query before matching:
+ *  • strip leading "INS" / "E" prefix (with optional space)
+ *  • lowercase + trim
+ * Returns the cleaned query string.
+ */
+function normalizeQuery(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/^ins\s*/i, "")   // "INS 200" → "200"
+    .replace(/^e(?=\d{3})/i, "") // "E200" → "200"  (only before 3-digit number)
+    .trim();
+}
+
+/**
+ * Given a query that looks like a code without a letter suffix (e.g. "160(i)"),
+ * return candidate expansions that insert a letter between the digits and the
+ * roman-numeral part: ["160a(i)", "160b(i)", "160c(i)", …]
+ * This handles the known Excel data-entry issue where the letter was dropped.
+ */
+function missingLetterExpansions(q: string): string[] {
+  const m = q.match(/^(\d{3,4})\(([ivx]+)\)$/i);
+  if (!m) return [];
+  return ["a", "b", "c", "d", "e", "f"].map((l) => `${m[1]}${l}(${m[2]})`);
+}
+
+function matchesQuery(text: string, q: string): boolean {
+  const tl = text.toLowerCase();
+
+  // 1. Direct substring match (already lowercased query from caller)
+  if (tl.includes(q)) return true;
+
+  // 2. Normalised (no-space) match — handles "INS339(i)" vs "339(i)" etc.
+  const tn = normCode(text);
+  const qn = normCode(q);
+  if (qn.length >= 2 && tn.includes(qn)) return true;
+
+  // 3. Numeric range: query is a plain 3-4 digit number → check "X-Y" ranges
+  const queryNum = parseInt(q, 10);
+  if (/^\d{3,4}$/.test(q) && !Number.isNaN(queryNum)) {
+    // Word-boundary aware: don't match "200" inside "1200" or "2001"
+    const wordBound = new RegExp(`(?<!\\d)${q}(?!\\d)`, "g");
+    if (wordBound.test(tl)) return true;
+    // Range check: "200-203"
+    const numRange = /\b(\d{3,4})-(\d{3,4})\b/g;
     let m: RegExpExecArray | null;
-    while ((m = numRange.exec(text)) !== null) {
+    while ((m = numRange.exec(tl)) !== null) {
       if (queryNum >= Number(m[1]) && queryNum <= Number(m[2])) return true;
     }
   }
 
-  // 3. Roman numeral range: handles "172(ii)" → "172(i)-(iii)" and "(ii)" → any "(i)-(iii)"
-  const romanQ = q.match(/\(([ivx]+)\)$/);
+  // 4. Roman-numeral range: "172(ii)" → "172(i)-(iii)"
+  const romanQ = q.match(/\(([ivx]+)\)$/i);
   if (romanQ) {
     const qVal = romanToInt(romanQ[1]);
     if (qVal > 0) {
-      const prefix = q.slice(0, q.lastIndexOf("(")).trim();
+      const prefix = normCode(q.slice(0, q.lastIndexOf("(")).trim());
       if (prefix) {
-        // Specific: only look for ranges starting with the same prefix e.g. "172(i)-(iii)"
+        // Specific: "172(ii)" → look for "172(i)-(iii)"
         const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const specificRange = new RegExp(escaped + "\\(([ivx]+)\\)-\\(([ivx]+)\\)", "g");
+        const specificRange = new RegExp(
+          escaped + "\\(([ivx]+)\\)-\\(([ivx]+)\\)",
+          "gi"
+        );
         let m: RegExpExecArray | null;
-        while ((m = specificRange.exec(text)) !== null) {
+        while ((m = specificRange.exec(tn)) !== null) {
           if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
         }
       } else {
-        // Generic: query is just "(ii)" → match any roman range
-        const genericRange = /\(([ivx]+)\)-\(([ivx]+)\)/g;
+        // Generic: query is just "(ii)" → match any roman range in text
+        const genericRange = /\(([ivx]+)\)-\(([ivx]+)\)/gi;
         let m: RegExpExecArray | null;
-        while ((m = genericRange.exec(text)) !== null) {
+        while ((m = genericRange.exec(tl)) !== null) {
           if (qVal >= romanToInt(m[1]) && qVal <= romanToInt(m[2])) return true;
+        }
+      }
+
+      // 5. Missing-letter expansion: "160(i)" → try "160a(i)", "160b(i)", …
+      for (const expanded of missingLetterExpansions(q)) {
+        if (tn.includes(normCode(expanded))) return true;
+        // Also check range membership for the expanded form
+        const expPrefix = normCode(expanded.slice(0, expanded.lastIndexOf("(")));
+        if (expPrefix) {
+          const escaped2 = expPrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const expRange = new RegExp(
+            escaped2 + "\\(([ivx]+)\\)-\\(([ivx]+)\\)",
+            "gi"
+          );
+          let m2: RegExpExecArray | null;
+          while ((m2 = expRange.exec(tn)) !== null) {
+            if (qVal >= romanToInt(m2[1]) && qVal <= romanToInt(m2[2])) return true;
+          }
         }
       }
     }
@@ -113,17 +177,18 @@ function matchesQuery(text: string, q: string): boolean {
 }
 
 // ─── Highlight helper ─────────────────────────────────────────────────────────
-function highlight(text: string, query: string): React.ReactNode {
-  if (!query.trim()) return <Text style={styles.matchText}>{text}</Text>;
-  const lq = query.toLowerCase();
+function highlight(text: string, rawQuery: string): React.ReactNode {
+  if (!rawQuery.trim()) return <Text style={styles.matchText}>{text}</Text>;
+  // Try to highlight using the normalised query (strips INS prefix etc.)
+  const lq = normalizeQuery(rawQuery);
   const lt = text.toLowerCase();
-  const idx = lt.indexOf(lq);
+  const idx = lq.length >= 2 ? lt.indexOf(lq) : -1;
   if (idx === -1) return <Text style={styles.matchText}>{text}</Text>;
   return (
     <Text style={styles.matchText}>
       {text.slice(0, idx)}
-      <Text style={styles.matchHighlight}>{text.slice(idx, idx + query.length)}</Text>
-      {text.slice(idx + query.length)}
+      <Text style={styles.matchHighlight}>{text.slice(idx, idx + lq.length)}</Text>
+      {text.slice(idx + lq.length)}
     </Text>
   );
 }
@@ -134,7 +199,11 @@ export default function AdditiveSearchScreen() {
   const [query, setQuery] = useState("");
 
   const results = useMemo<SearchResult[]>(() => {
-    const q = query.trim().toLowerCase();
+    const raw = query.trim();
+    if (!raw || raw.length < 2) return [];
+
+    // Normalised query: strips "INS"/"E" prefix, lowercased
+    const q = normalizeQuery(raw);
     if (!q || q.length < 2) return [];
 
     const found: SearchResult[] = [];
@@ -151,31 +220,46 @@ export default function AdditiveSearchScreen() {
           .split(/[\r\n]+/)
           .map((s) => s.trim())
           .filter(Boolean);
-        const matchedLine = lines.find((l) => matchesQuery(l.toLowerCase(), q)) ?? item.data!.row2.D.slice(0, 80);
+        const matchedLine =
+          lines.find((l) => matchesQuery(l.toLowerCase(), q)) ??
+          item.data!.row2.D.slice(0, 80);
 
-        found.push({ kind: "item", categoryIndex, categoryName: category.name.trim(), itemIndex, item, matchedAdditive: matchedLine });
+        found.push({
+          kind: "item",
+          categoryIndex,
+          categoryName: category.name.trim(),
+          itemIndex,
+          item,
+          matchedAdditive: matchedLine,
+        });
         itemResultKeys.add(`${categoryIndex}-${itemIndex}`);
       });
     });
 
-    // ── 2. Search Comprehensive additives (all individual sub-additives) ────────
+    // ── 2. Search Comprehensive additives (all individual sub-additives) ──────
     const seenIns = new Set<string>();
     const compMatches: ComprehensiveMatchResult[] = [];
 
     comprehensiveData.forEach((entry) => {
-      if (
-        entry.ins.toLowerCase().includes(q) ||
-        entry.name.toLowerCase().includes(q)
-      ) {
-        if (!seenIns.has(entry.ins)) {
-          seenIns.add(entry.ins);
-          compMatches.push({
-            kind: "comprehensive-match",
-            ins: entry.ins,
-            name: entry.name,
-            isGeneral: generalInsSet.has(entry.ins.toLowerCase()),
-          });
-        }
+      const insNorm = normCode(entry.ins);
+      const nameNorm = entry.name.toLowerCase();
+      // Match on normalised INS code (handles spaces, "INS" prefix already stripped)
+      const codeMatch = insNorm.includes(normCode(q));
+      // Match on name
+      const nameMatch = nameNorm.includes(q);
+      // Missing-letter expansion: "160(i)" → try "160a(i)" against this entry
+      const expansionMatch =
+        !codeMatch &&
+        missingLetterExpansions(q).some((exp) => insNorm.includes(normCode(exp)));
+
+      if ((codeMatch || nameMatch || expansionMatch) && !seenIns.has(entry.ins)) {
+        seenIns.add(entry.ins);
+        compMatches.push({
+          kind: "comprehensive-match",
+          ins: entry.ins,
+          name: entry.name,
+          isGeneral: generalInsSet.has(entry.ins.toLowerCase()),
+        });
       }
     });
 
@@ -186,20 +270,32 @@ export default function AdditiveSearchScreen() {
     generalData.table2.rows.forEach((row) => {
       if (row.food.toLowerCase().includes(q) && !seenIns.has(row.ins)) {
         seenIns.add(row.ins);
-        generalMatches.push({ kind: "general-match", ins: row.ins, label: row.color, detail: row.food });
+        generalMatches.push({
+          kind: "general-match",
+          ins: row.ins,
+          label: row.color,
+          detail: row.food,
+        });
       }
     });
     found.push(...generalMatches);
 
     // ── 4. If any general additive matched → show items with "نعم" ────────────
-    const anyGeneralMatch = compMatches.some((m) => m.isGeneral) || generalMatches.length > 0;
+    const anyGeneralMatch =
+      compMatches.some((m) => m.isGeneral) || generalMatches.length > 0;
     if (anyGeneralMatch) {
       appData.forEach((category, categoryIndex) => {
         category.subItems.forEach((item, itemIndex) => {
           const key = `${categoryIndex}-${itemIndex}`;
           if (itemResultKeys.has(key)) return;
           if (item.data?.row2.C !== "نعم") return;
-          found.push({ kind: "allows-general", categoryIndex, categoryName: category.name.trim(), itemIndex, item });
+          found.push({
+            kind: "allows-general",
+            categoryIndex,
+            categoryName: category.name.trim(),
+            itemIndex,
+            item,
+          });
         });
       });
     }
