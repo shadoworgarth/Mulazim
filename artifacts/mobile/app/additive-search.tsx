@@ -253,37 +253,9 @@ export default function AdditiveSearchScreen() {
     const q = normalizeQuery(raw);
     if (!q || q.length < 2) return [];
 
-    const found: SearchResult[] = [];
     const itemResultKeys = new Set<string>(); // "catIdx-itemIdx"
 
-    // ── 1. Regular items: search row2.D ──────────────────────────────────────
-    appData.forEach((category, categoryIndex) => {
-      category.subItems.forEach((item, itemIndex) => {
-        if (!item.data?.row2.D) return;
-        const additivesText = item.data.row2.D.toLowerCase();
-        if (!matchesQuery(additivesText, q)) return;
-
-        const lines = item.data.row2.D
-          .split(/[\r\n]+/)
-          .map((s) => s.trim())
-          .filter(Boolean);
-        const matchedLine =
-          lines.find((l) => matchesQuery(l.toLowerCase(), q)) ??
-          item.data!.row2.D.slice(0, 80);
-
-        found.push({
-          kind: "item",
-          categoryIndex,
-          categoryName: category.name.trim(),
-          itemIndex,
-          item,
-          matchedAdditive: matchedLine,
-        });
-        itemResultKeys.add(`${categoryIndex}-${itemIndex}`);
-      });
-    });
-
-    // ── 2. Search Comprehensive additives (all individual sub-additives) ──────
+    // ── 1. Comprehensive additives first (so badges appear at the top) ────────
     const seenIns = new Set<string>();
     const compMatches: ComprehensiveMatchResult[] = [];
 
@@ -303,14 +275,11 @@ export default function AdditiveSearchScreen() {
         insNorm.startsWith(qn + "d") ||
         insNorm.startsWith(qn + "e") ||
         insNorm.startsWith(qn + "f") ||
-        // For plain number query, also allow letter-suffixed codes: "101" → "101(i)"
         (/^\d{3,4}$/.test(qn) &&
           new RegExp(`^${escRx(qn)}[^0-9]`).test(insNorm));
 
-      // Name match (substring is fine for names)
       const nameMatch = nameNorm.includes(q);
 
-      // Missing-letter expansion: "160(i)" → try "160a(i)", "160b(i)"…
       const expansionMatch =
         !codeMatch &&
         missingLetterExpansions(q).some((exp) => {
@@ -330,18 +299,17 @@ export default function AdditiveSearchScreen() {
       }
     });
 
-    // Group compMatches by their numeric+letter base (strip roman suffix).
-    // e.g. ["101(i)","101(ii)","101(iii)"] → one similar-group; ["101(ii)"] → plain card
+    // Group by base code — multi-member families become a single badge chooser card
     const groupMap = new Map<string, ComprehensiveMatchResult[]>();
     for (const m of compMatches) {
       const base = m.ins.toLowerCase().replace(/\s*\([ivx]+\)$/i, "");
       if (!groupMap.has(base)) groupMap.set(base, []);
       groupMap.get(base)!.push(m);
     }
+    const compCards: SearchResult[] = [];
     for (const [base, members] of groupMap) {
       if (members.length >= 2) {
-        // Collapse into a "similar-group" chooser card
-        found.push({
+        compCards.push({
           kind: "similar-group",
           baseCode: base,
           baseName: members[0].name,
@@ -349,9 +317,40 @@ export default function AdditiveSearchScreen() {
           members,
         });
       } else {
-        found.push(members[0]);
+        compCards.push(members[0]);
       }
     }
+
+    // ── 2. Food items that contain the additive ───────────────────────────────
+    const itemCards: SearchResult[] = [];
+    appData.forEach((category, categoryIndex) => {
+      category.subItems.forEach((item, itemIndex) => {
+        if (!item.data?.row2.D) return;
+        const additivesText = item.data.row2.D.toLowerCase();
+        if (!matchesQuery(additivesText, q)) return;
+
+        const lines = item.data.row2.D
+          .split(/[\r\n]+/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const matchedLine =
+          lines.find((l) => matchesQuery(l.toLowerCase(), q)) ??
+          item.data!.row2.D.slice(0, 80);
+
+        itemCards.push({
+          kind: "item",
+          categoryIndex,
+          categoryName: category.name.trim(),
+          itemIndex,
+          item,
+          matchedAdditive: matchedLine,
+        });
+        itemResultKeys.add(`${categoryIndex}-${itemIndex}`);
+      });
+    });
+
+    // Comp/badge cards first, food items below
+    const found: SearchResult[] = [...compCards, ...itemCards];
 
     // ── 3. Search General Additives table2 food description ──────────────────
     const generalMatches: GeneralMatchResult[] = [];
