@@ -75,12 +75,6 @@ const FAMILY_GROUPS: { name: string; codes: string[] }[] = [
     codes: ["304","305"] },
   { name: "BENZOATES",
     codes: ["210","211","212","213"] },
-  { name: "CAROTENOIDS",
-    codes: ["160a(i)","160a(ii)","160a(iii)",
-            "160b","160b(i)","160b(ii)",
-            "160c",
-            "160d(i)","160d(ii)","160d(iii)",
-            "160e","160f"] },
   { name: "CHLOROPHYLLS AND CHLOROPHYLLINS",
     codes: ["140","141(i)","141(ii)"] },
   { name: "ETHYLENE DIAMINE TETRA ACETATES",
@@ -212,6 +206,25 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
     const nums = [...line.matchAll(/\b(\d{3,4})\b(?![a-z(])/gi)];
     for (const m of nums) {
       if (!map.has(m[1])) map.set(m[1], line);
+    }
+
+    // 5. Abbreviated continuation lists, e.g.:
+    //    "160a(i),a(iii),e,f"   → also stores 160a(iii), 160e, 160f
+    //    "101(i),(ii),(iii)"    → also stores 101(ii), 101(iii)
+    //    The numeric base is inherited from the first full code in the list.
+    //    Each continuation item is <letter?><roman?> without its own digits,
+    //    and must be a single letter (optionally + roman) — NOT a new word.
+    const abbrevContRx = /\b(\d{3,4})([a-z]?)(\([ivx]+\))((?:,\s*[a-z]?(?:\([ivx]+\))?(?![a-z\d]))+)/gi;
+    for (const m of [...line.matchAll(abbrevContRx)]) {
+      const numBase = m[1];
+      const contStr = m[4];
+      for (const part of [...contStr.matchAll(/,\s*([a-z]?)(\([ivx]+\))?/gi)]) {
+        const letter = part[1] || "";
+        const roman  = part[2] || "";
+        if (!letter && !roman) continue;
+        const key = `${numBase}${letter}${roman}`.toLowerCase();
+        if (!map.has(key)) map.set(key, line);
+      }
     }
   }
   return map;

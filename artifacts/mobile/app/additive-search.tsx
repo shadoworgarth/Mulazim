@@ -40,12 +40,6 @@ const FAMILY_GROUPS: { name: string; codes: string[] }[] = [
   { name: "BENZOATES",
     codes: ["210","211","212","213"] },
   // page 72
-  { name: "CAROTENOIDS",
-    codes: ["160a(i)","160a(ii)","160a(iii)",
-            "160b","160b(i)","160b(ii)",
-            "160c",
-            "160d(i)","160d(ii)","160d(iii)",
-            "160e","160f"] },
   // page 77
   { name: "CHLOROPHYLLS AND CHLOROPHYLLINS",
     codes: ["140","141(i)","141(ii)"] },
@@ -316,6 +310,30 @@ function matchesQuery(text: string, q: string): boolean {
 
   // 5. Name / free-text search (no code pattern) — plain substring on normalised
   if (qn.length >= 2 && tn.includes(qn)) return true;
+
+  // 6. Abbreviated continuation lists: "160a(i),a(iii),e,f" also contains
+  //    "160a(iii)", "160e", "160f". Check if any expansion of the abbreviated
+  //    list equals the query code. Works for roman-suffix AND letter-suffix codes.
+  {
+    const numMatch = qn.match(/^(\d{3,4})/);
+    if (numMatch) {
+      const numBase = numMatch[1];
+      const abbrevRx = new RegExp(
+        `(?<!\\d)${escRx(numBase)}[a-z]?\\([ivx]+\\)((?:,\\s*[a-z]?(?:\\([ivx]+\\))?(?![a-z\\d]))+)`,
+        "gi"
+      );
+      let am: RegExpExecArray | null;
+      while ((am = abbrevRx.exec(tn)) !== null) {
+        const contStr = am[1];
+        for (const part of [...contStr.matchAll(/,\s*([a-z]?)(\([ivx]+\))?/gi)]) {
+          const letter = part[1] || "";
+          const roman  = part[2] || "";
+          if (!letter && !roman) continue;
+          if (`${numBase}${letter}${roman}`.toLowerCase() === qn) return true;
+        }
+      }
+    }
+  }
 
   return false;
 }
