@@ -81,14 +81,7 @@ function AdditiveChecker({
     const exact    = available.filter(a => a.ins === q);
     const starts   = available.filter(a => a.ins !== q && a.ins.startsWith(q));
     const contains = available.filter(a => !a.ins.startsWith(q) && (a.ins.includes(q) || a.name.toLowerCase().includes(q)));
-    const ordered  = [...exact, ...starts, ...contains].slice(0, 6);
-    // Fallback manual-add if nothing found and input looks like a number
-    if (ordered.length === 0 && /^\d{3,4}[a-z]?$/.test(q)) {
-      if (!badges.some(b => b.ins === q)) {
-        ordered.push({ ins: q, name: "— رقم غير موجود في القاعدة —" });
-      }
-    }
-    return ordered;
+    return [...exact, ...starts, ...contains].slice(0, 6);
   }, [trimmed, badges]);
 
   function addBadge(entry: AdditiveEntry) {
