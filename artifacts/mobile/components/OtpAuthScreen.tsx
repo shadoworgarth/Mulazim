@@ -110,7 +110,6 @@ export default function OtpAuthScreen() {
             <Feather name="shield" size={36} color="#0e7c7c" />
           </View>
           <Text style={styles.title}>دليل المضافات الغذائية</Text>
-          <Text style={styles.subtitle}>هيئة الغذاء والدواء السعودية</Text>
         </View>
 
         {/* Card */}
