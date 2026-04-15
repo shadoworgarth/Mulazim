@@ -14,6 +14,7 @@ import {
 import appData from "@/constants/data";
 import colors from "@/constants/colors";
 import generalAdditives from "@/assets/general-additives.json";
+import comprehensiveAdditives from "@/assets/comprehensive-additives.json";
 
 const CHECK_CAT = 13;
 const CHECK_ITEM = 4;
@@ -25,15 +26,18 @@ type VerifyResult = Badge & { permitted: boolean; reason: string };
 // Valid INS number: starts with a digit (filters out Arabic header/section rows in table2)
 const isValidIns = (ins: string) => /^\d/.test(String(ins));
 
-// Combined autocomplete database from general-additives tables
-const GA_DB: AdditiveEntry[] = [
+// Full autocomplete database — all 406 entries from every item + general additives
+const GA_DB: AdditiveEntry[] = comprehensiveAdditives as AdditiveEntry[];
+
+// General-additives-only set used for the "item allows general additives" verification check
+const GA_GENERAL_SET = new Set<string>([
   ...(generalAdditives as any).table1.rows
     .filter((r: any) => isValidIns(r.ins))
-    .map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.name })),
+    .map((r: any) => String(r.ins).toLowerCase()),
   ...(generalAdditives as any).table2.rows
     .filter((r: any) => isValidIns(r.ins) && r.color)
-    .map((r: any) => ({ ins: String(r.ins).toLowerCase(), name: r.color })),
-];
+    .map((r: any) => String(r.ins).toLowerCase()),
+]);
 
 function buildPermittedMap(additives: string[]): Map<string, string> {
   const map = new Map<string, string>();
@@ -53,7 +57,6 @@ function buildPermittedMap(additives: string[]): Map<string, string> {
   return map;
 }
 
-const GA_SET = new Set(GA_DB.map(a => a.ins));
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -107,7 +110,7 @@ function AdditiveChecker({
     const res: VerifyResult[] = badges.map(badge => {
       const key = badge.ins.replace(/[a-z]$/, "");
       const inItem = permMap.has(badge.ins) || permMap.has(key);
-      const inGeneral = itemAllowsGeneral && (GA_SET.has(badge.ins) || GA_SET.has(key));
+      const inGeneral = itemAllowsGeneral && (GA_GENERAL_SET.has(badge.ins) || GA_GENERAL_SET.has(key));
       const permitted = inItem || inGeneral;
       const reason = inItem
         ? permMap.get(badge.ins) || permMap.get(key) || ""
