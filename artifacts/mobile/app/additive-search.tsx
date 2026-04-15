@@ -61,6 +61,9 @@ const FAMILY_GROUPS: { name: string; codes: string[] }[] = [
   // page 109
   { name: "IRON OXIDES AND HYDROXIDES",
     codes: ["172(i)","172(ii)","172(iii)"] },
+  // page 133
+  { name: "NITRITES",
+    codes: ["249","250"] },
   // page 134
   { name: "ORTHO-PHENYLPHENOLS",
     codes: ["231","232"] },

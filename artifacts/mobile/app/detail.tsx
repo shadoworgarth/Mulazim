@@ -91,6 +91,8 @@ const FAMILY_GROUPS: { name: string; codes: string[] }[] = [
     codes: ["214","218"] },
   { name: "IRON OXIDES AND HYDROXIDES",
     codes: ["172(i)","172(ii)","172(iii)"] },
+  { name: "NITRITES",
+    codes: ["249","250"] },
   { name: "ORTHO-PHENYLPHENOLS",
     codes: ["231","232"] },
   { name: "PHOSPHATES",

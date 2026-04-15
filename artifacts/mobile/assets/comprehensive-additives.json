@@ -356,6 +356,14 @@
     "funcClass": "Preservative"
   },
   {
+    "ins": "249",
+    "name": "Potassium nitrite"
+  },
+  {
+    "ins": "250",
+    "name": "Sodium nitrite"
+  },
+  {
     "ins": "260",
     "name": "Acetic acid, glacial",
     "funcClass": "Acidity regulator, Preservative"
