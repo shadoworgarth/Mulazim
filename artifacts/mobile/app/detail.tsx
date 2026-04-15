@@ -69,23 +69,49 @@ function insLookupKeys(ins: string): string[] {
   return Array.from(keys);
 }
 
+const ROMAN_ORDER = ["i","ii","iii","iv","v","vi","vii","viii","ix","x"];
+function romanToIdx(r: string): number { return ROMAN_ORDER.indexOf(r.toLowerCase()); }
+
 function buildPermittedMap(additives: string[]): Map<string, string> {
   const map = new Map<string, string>();
   for (const line of additives) {
-    const ranges = [...line.matchAll(/(\d{3,4})\s*[-–]\s*(\d{3,4})/g)];
-    for (const m of ranges) {
+    const ln = line.toLowerCase();
+
+    // 1. Numeric ranges: "338-343" → store 338,339,...,343
+    const numRanges = [...line.matchAll(/(\d{3,4})\s*[-–]\s*(\d{3,4})/g)];
+    for (const m of numRanges) {
       const from = parseInt(m[1]), to = parseInt(m[2]);
       for (let n = from; n <= to; n++) {
         if (!map.has(String(n))) map.set(String(n), line);
       }
     }
-    // Codes with letter suffix e.g. 160a, 150c → stored as "160a", "150c"
+
+    // 2. Roman-numeral ranges: "954(i)-(iv)" or "341(i)-(iii)"
+    //    Also handles prefixes with letter: "160a(i)-(iii)"
+    const rnRanges = [...ln.matchAll(/\b(\d{3,4}[a-z]?)\(([ivx]+)\)\s*[-–]\s*\(([ivx]+)\)/g)];
+    for (const m of rnRanges) {
+      const prefix = m[1];               // e.g. "954" or "341" or "160a"
+      const fromIdx = romanToIdx(m[2]);  // e.g. 0 (i)
+      const toIdx   = romanToIdx(m[3]);  // e.g. 3 (iv)
+      if (fromIdx === -1 || toIdx === -1) continue;
+      // Store base number (plain prefix) so "954" matches too
+      const numOnly = prefix.replace(/[a-z]$/, "");
+      if (!map.has(numOnly)) map.set(numOnly, line);
+      if (prefix !== numOnly && !map.has(prefix)) map.set(prefix, line);
+      for (let i = fromIdx; i <= toIdx; i++) {
+        const key = `${prefix}(${ROMAN_ORDER[i]})`;
+        if (!map.has(key)) map.set(key, line);
+      }
+    }
+
+    // 3. Codes with letter suffix e.g. 160a, 150c → stored as "160a", "150c"
     const withSuffix = [...line.matchAll(/\b(\d{3,4}[a-z])(?:\([ivx]+\))?/gi)];
     for (const m of withSuffix) {
       const key = m[1].toLowerCase();
       if (!map.has(key)) map.set(key, line);
     }
-    // Plain numbers not followed by a letter
+
+    // 4. Plain numbers not followed by a letter
     const nums = [...line.matchAll(/\b(\d{3,4})\b(?![a-z])/gi)];
     for (const m of nums) {
       if (!map.has(m[1])) map.set(m[1], line);
