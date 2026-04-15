@@ -14,16 +14,24 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import OtpAuthScreen from "@/components/OtpAuthScreen";
-import PasscodeLock from "@/components/PasscodeLock";
 import { OtpAuthProvider, useOtpAuth } from "@/context/OtpAuthContext";
-import { PasscodeProvider, usePasscode } from "@/context/PasscodeContext";
 
 SplashScreen.preventAutoHideAsync();
 
-function AppContent() {
-  const { isLocked } = usePasscode();
+function AuthGate() {
+  const { isVerified, checkDone } = useOtpAuth();
 
-  if (isLocked) return <PasscodeLock />;
+  if (!checkDone) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#0a5f5f", alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
+  }
+
+  if (!isVerified) {
+    return <OtpAuthScreen />;
+  }
 
   return (
     <Stack
@@ -42,28 +50,6 @@ function AppContent() {
       <Stack.Screen name="general-additives" options={{ title: "المضافات العامة" }} />
       <Stack.Screen name="scan-result" options={{ title: "نتائج المسح" }} />
     </Stack>
-  );
-}
-
-function AuthGate() {
-  const { isVerified, checkDone } = useOtpAuth();
-
-  if (!checkDone) {
-    return (
-      <View style={{ flex: 1, backgroundColor: "#0a5f5f", alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator size="large" color="#ffffff" />
-      </View>
-    );
-  }
-
-  if (!isVerified) {
-    return <OtpAuthScreen />;
-  }
-
-  return (
-    <PasscodeProvider>
-      <AppContent />
-    </PasscodeProvider>
   );
 }
 
