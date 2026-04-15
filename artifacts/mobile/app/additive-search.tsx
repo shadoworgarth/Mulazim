@@ -20,6 +20,16 @@ const generalData = require("../assets/general-additives.json") as {
   table2: { rows: { ins: string; color: string; food: string }[] };
 };
 
+const comprehensiveData = require("../assets/comprehensive-additives.json") as {
+  ins: string; name: string;
+}[];
+
+// Build a Set of INS codes that are in the general-additives list for badge display
+const generalInsSet = new Set<string>([
+  ...generalData.table1.rows.map((r) => r.ins.toLowerCase()),
+  ...generalData.table2.rows.map((r) => r.ins.toLowerCase()),
+]);
+
 // ─── Result types ─────────────────────────────────────────────────────────────
 type ItemResult = {
   kind: "item";
@@ -33,8 +43,15 @@ type ItemResult = {
 type GeneralMatchResult = {
   kind: "general-match";
   ins: string;
-  label: string;      // English name or color name
-  detail: string;     // food description (table2 only)
+  label: string;
+  detail: string;
+};
+
+type ComprehensiveMatchResult = {
+  kind: "comprehensive-match";
+  ins: string;
+  name: string;
+  isGeneral: boolean;
 };
 
 type AllowsGeneralResult = {
@@ -45,7 +62,7 @@ type AllowsGeneralResult = {
   item: SubItem;
 };
 
-type SearchResult = ItemResult | GeneralMatchResult | AllowsGeneralResult;
+type SearchResult = ItemResult | GeneralMatchResult | ComprehensiveMatchResult | AllowsGeneralResult;
 
 // ─── Range-aware matching ──────────────────────────────────────────────────────
 const ROMAN: Record<string, number> = {
@@ -141,51 +158,47 @@ export default function AdditiveSearchScreen() {
       });
     });
 
-    // ── 2. Search General Additives table1 (INS + English name) ──────────────
-    const generalMatches: GeneralMatchResult[] = [];
+    // ── 2. Search Comprehensive additives (all individual sub-additives) ────────
     const seenIns = new Set<string>();
+    const compMatches: ComprehensiveMatchResult[] = [];
 
-    generalData.table1.rows.forEach((row) => {
+    comprehensiveData.forEach((entry) => {
       if (
-        row.ins.toLowerCase().includes(q) ||
-        row.name.toLowerCase().includes(q)
+        entry.ins.toLowerCase().includes(q) ||
+        entry.name.toLowerCase().includes(q)
       ) {
-        if (!seenIns.has(row.ins)) {
-          seenIns.add(row.ins);
-          generalMatches.push({ kind: "general-match", ins: row.ins, label: row.name, detail: "" });
+        if (!seenIns.has(entry.ins)) {
+          seenIns.add(entry.ins);
+          compMatches.push({
+            kind: "comprehensive-match",
+            ins: entry.ins,
+            name: entry.name,
+            isGeneral: generalInsSet.has(entry.ins.toLowerCase()),
+          });
         }
       }
     });
 
-    // ── 3. Search General Additives table2 (INS + color + food) ──────────────
+    found.push(...compMatches);
+
+    // ── 3. Search General Additives table2 food description ──────────────────
+    const generalMatches: GeneralMatchResult[] = [];
     generalData.table2.rows.forEach((row) => {
-      if (
-        row.ins.toLowerCase().includes(q) ||
-        row.color.toLowerCase().includes(q) ||
-        row.food.toLowerCase().includes(q)
-      ) {
-        if (!seenIns.has(row.ins)) {
-          seenIns.add(row.ins);
-          generalMatches.push({ kind: "general-match", ins: row.ins, label: row.color, detail: row.food });
-        } else {
-          // Update existing entry with food detail if empty
-          const existing = generalMatches.find((m) => m.ins === row.ins);
-          if (existing && !existing.detail) existing.detail = row.food;
-        }
+      if (row.food.toLowerCase().includes(q) && !seenIns.has(row.ins)) {
+        seenIns.add(row.ins);
+        generalMatches.push({ kind: "general-match", ins: row.ins, label: row.color, detail: row.food });
       }
     });
-
     found.push(...generalMatches);
 
     // ── 4. If any general additive matched → show items with "نعم" ────────────
-    if (generalMatches.length > 0) {
+    const anyGeneralMatch = compMatches.some((m) => m.isGeneral) || generalMatches.length > 0;
+    if (anyGeneralMatch) {
       appData.forEach((category, categoryIndex) => {
         category.subItems.forEach((item, itemIndex) => {
           const key = `${categoryIndex}-${itemIndex}`;
-          // Only add if not already shown as a regular result
           if (itemResultKeys.has(key)) return;
           if (item.data?.row2.C !== "نعم") return;
-
           found.push({ kind: "allows-general", categoryIndex, categoryName: category.name.trim(), itemIndex, item });
         });
       });
@@ -222,6 +235,32 @@ export default function AdditiveSearchScreen() {
           </View>
           {result.item.data?.row2.A ? <Text style={styles.itemCode}>{result.item.data.row2.A}</Text> : null}
         </Pressable>
+      );
+    }
+
+    // ── Comprehensive additive match ─────────────────────────────────────────
+    if (result.kind === "comprehensive-match") {
+      return (
+        <View style={[styles.resultCard, result.isGeneral ? styles.generalCard : styles.compCard]}>
+          <View style={styles.resultHeader}>
+            <Feather name="tag" size={16} color={result.isGeneral ? "#7c4e0e" : "#0e5f5f"} />
+            <Text style={[styles.resultItemName, { color: result.isGeneral ? "#7c4e0e" : colors.light.text }]} numberOfLines={2}>
+              {highlight(result.name, query.trim()) as any}
+            </Text>
+          </View>
+          <View style={styles.generalBadgeRow}>
+            {result.isGeneral && (
+              <View style={styles.generalGreenBadge}>
+                <Text style={styles.generalGreenBadgeText}>مضاف عام</Text>
+              </View>
+            )}
+            <View style={result.isGeneral ? styles.generalBadge : styles.compBadge}>
+              <Text style={result.isGeneral ? styles.generalBadgeText : styles.compBadgeText}>
+                INS {result.ins}
+              </Text>
+            </View>
+          </View>
+        </View>
       );
     }
 
@@ -320,12 +359,12 @@ export default function AdditiveSearchScreen() {
           query.trim().length >= 2 && results.length > 0 ? (
             <View style={styles.resultCountRow}>
               <Text style={styles.resultCount}>
-                {results.filter((r) => r.kind !== "general-match").length} بند
+                {results.filter((r) => r.kind === "item" || r.kind === "allows-general").length} بند
               </Text>
-              {results.some((r) => r.kind === "general-match") && (
+              {results.some((r) => r.kind === "comprehensive-match" || r.kind === "general-match") && (
                 <View style={styles.generalGreenBadge}>
                   <Text style={styles.generalGreenBadgeText}>
-                    {results.filter((r) => r.kind === "general-match").length} مضاف عام
+                    {results.filter((r) => r.kind === "comprehensive-match" || r.kind === "general-match").length} مادة مضافة
                   </Text>
                 </View>
               )}
@@ -389,6 +428,13 @@ const styles = StyleSheet.create({
   generalCard: {
     borderWidth: 1.5, borderColor: "#7c4e0e33", backgroundColor: "#fffaf6",
   },
+  compCard: {
+    borderWidth: 1.5, borderColor: "#0e7c7c33", backgroundColor: "#f5fafa",
+  },
+  compBadge: {
+    backgroundColor: "#0e7c7c22", borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3,
+  },
+  compBadgeText: { fontSize: 11, fontWeight: "500", color: "#0e5f5f", textAlign: "right" },
   resultHeader: { flexDirection: "row", alignItems: "flex-start", gap: 8 },
   resultItemName: { flex: 1, fontSize: 15, fontWeight: "600", color: colors.light.text, textAlign: "right", lineHeight: 22 },
   categoryBadge: {
