@@ -3,13 +3,14 @@ import crypto from "crypto";
 import { db } from "@workspace/db";
 import { otpRequests, deviceTokens } from "@workspace/db";
 import { eq, and, gt } from "drizzle-orm";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 const router: IRouter = Router();
 
 const ALLOWED_DOMAIN = "sfda.gov.sa";
 const OTP_EXPIRY_MINUTES = 10;
 const MAX_ATTEMPTS = 5;
+const GMAIL_USER = "2500otp@gmail.com";
 
 function hashOtp(otp: string): string {
   return crypto.createHash("sha256").update(otp).digest("hex");
@@ -23,29 +24,13 @@ function generateToken(): string {
   return crypto.randomUUID();
 }
 
-// Resend client via Replit Connectors (no raw API key needed)
-async function getUncachableResendClient(): Promise<{ client: Resend; fromEmail: string }> {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY
-    ? "repl " + process.env.REPL_IDENTITY
-    : process.env.WEB_REPL_RENEWAL
-    ? "depl " + process.env.WEB_REPL_RENEWAL
-    : null;
-
-  if (!hostname || !xReplitToken) throw new Error("Replit connector environment not available");
-
-  const data = await fetch(
-    `https://${hostname}/api/v2/connection?include_secrets=true&connector_names=resend`,
-    { headers: { Accept: "application/json", "X-Replit-Token": xReplitToken } }
-  ).then((r) => r.json());
-
-  const settings = data?.items?.[0]?.settings;
-  if (!settings?.api_key) throw new Error("Resend not connected");
-
-  return {
-    client: new Resend(settings.api_key),
-    fromEmail: settings.from_email ?? "noreply@sfda.gov.sa",
-  };
+function createMailTransporter() {
+  const appPassword = process.env.GMAIL_APP_PASSWORD;
+  if (!appPassword) throw new Error("GMAIL_APP_PASSWORD secret not set");
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user: GMAIL_USER, pass: appPassword.replace(/\s+/g, "") },
+  });
 }
 
 // POST /api/auth/request-otp
@@ -90,9 +75,9 @@ router.post("/auth/request-otp", async (req, res) => {
       expiresAt,
     });
 
-    const { client: resend } = await getUncachableResendClient();
-    await resend.emails.send({
-      from: `SFDA Food Additives <onboarding@resend.dev>`,
+    const transporter = createMailTransporter();
+    await transporter.sendMail({
+      from: `دليل المضافات الغذائية <${GMAIL_USER}>`,
       to: normalizedEmail,
       subject: "رمز التحقق - دليل المضافات الغذائية",
       html: `
