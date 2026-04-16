@@ -367,7 +367,8 @@ function AdditiveChecker({
       // 2. Check inherited parent categories (closest first)
       for (const parent of parentLevels) {
         const parentMap = buildPermittedMap(parent.lines);
-        const inherited = checkAgainstMap(keys, parentMap, parent.allowsGeneral);
+        // Never inherit "allows general additives" — only the item's own C field controls that.
+        const inherited = checkAgainstMap(keys, parentMap, false);
         if (inherited.found) {
           const parentNote = `من التصنيف الرئيسي (${parent.code})`;
           const detail = inherited.reason ? `: ${inherited.reason}` : "";
