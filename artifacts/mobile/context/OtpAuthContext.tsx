@@ -5,6 +5,9 @@ import { API_BASE } from "@/constants/api";
 
 const DEVICE_TOKEN_KEY = "sfda_device_token";
 
+// Set to true to re-enable OTP / admin-password authentication.
+const AUTH_ENABLED = false;
+
 type OtpAuthContextType = {
   isVerified: boolean;
   checkDone: boolean;
@@ -35,6 +38,11 @@ export function OtpAuthProvider({ children }: { children: React.ReactNode }) {
   const [checkDone, setCheckDone] = useState(false);
 
   useEffect(() => {
+    if (!AUTH_ENABLED) {
+      setIsVerified(true);
+      setCheckDone(true);
+      return;
+    }
     checkStoredToken();
   }, []);
 
