@@ -20,7 +20,7 @@ import { getInheritedAdditives, ParentAdditives } from "@/constants/category-uti
 
 type AdditiveEntry = { ins: string; name: string };
 type Badge = AdditiveEntry;
-type VerifyResult = Badge & { permitted: boolean; reason: string };
+type VerifyResult = Badge & { permitted: boolean; reason: string; isInherited?: boolean };
 
 // Valid INS number: starts with a digit (filters out Arabic header/section rows in table2)
 const isValidIns = (ins: string) => /^\d/.test(String(ins));
@@ -371,7 +371,7 @@ function AdditiveChecker({
         if (inherited.found) {
           const parentNote = `من التصنيف الرئيسي (${parent.code})`;
           const detail = inherited.reason ? `: ${inherited.reason}` : "";
-          return { ...badge, permitted: true, reason: `${parentNote}${detail}` };
+          return { ...badge, permitted: true, reason: `${parentNote}${detail}`, isInherited: true };
         }
       }
 
@@ -489,7 +489,13 @@ function AdditiveChecker({
               <View style={styles.resultRight}>
                 <Text style={styles.resultCode}>E{r.ins.toUpperCase()} — {r.name}</Text>
                 {r.reason ? (
-                  <Text style={styles.resultReason} numberOfLines={2}>{r.reason}</Text>
+                  r.isInherited ? (
+                    <View style={styles.inheritedReasonBadge}>
+                      <Text style={styles.inheritedReasonText} numberOfLines={2}>{r.reason}</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.resultReason} numberOfLines={2}>{r.reason}</Text>
+                  )
                 ) : null}
               </View>
             </View>
@@ -739,4 +745,9 @@ const styles = StyleSheet.create({
   resultRight: { flex: 1, alignItems: "flex-end", gap: 2 },
   resultCode: { fontSize: 13, fontWeight: "700", color: colors.light.text, textAlign: "right" },
   resultReason: { fontSize: 11, color: colors.light.mutedForeground, textAlign: "right", lineHeight: 16 },
+  inheritedReasonBadge: {
+    backgroundColor: "#fef3c7", borderRadius: 6, paddingHorizontal: 8,
+    paddingVertical: 3, alignSelf: "flex-end",
+  },
+  inheritedReasonText: { fontSize: 11, fontWeight: "500", color: "#6b5b00", textAlign: "right", lineHeight: 16 },
 });
