@@ -45,13 +45,28 @@ export function OtpAuthProvider({ children }: { children: React.ReactNode }) {
         setCheckDone(true);
         return;
       }
-      const res = await fetch(`${API_BASE}/auth/check-device`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      const data = await res.json();
-      setIsVerified(data.valid === true);
+      // Retry up to 4 times with increasing delays to handle server restarts
+      // that happen right after a publish (server briefly unavailable).
+      const delays = [0, 2000, 4000, 6000];
+      let lastError: unknown;
+      for (const delay of delays) {
+        if (delay > 0) await new Promise((r) => setTimeout(r, delay));
+        try {
+          const res = await fetch(`${API_BASE}/auth/check-device`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+          const data = await res.json();
+          setIsVerified(data.valid === true);
+          setCheckDone(true);
+          return;
+        } catch (err) {
+          lastError = err;
+        }
+      }
+      console.error("check-device failed after retries:", lastError);
+      setIsVerified(false);
     } catch {
       setIsVerified(false);
     } finally {
