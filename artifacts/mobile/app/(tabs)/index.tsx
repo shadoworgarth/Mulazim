@@ -222,7 +222,7 @@ export default function HomeScreen() {
                     { backgroundColor: color + "22" },
                   ]}
                 >
-                  <Feather name="list" size={20} color={color} />
+                  <Text style={[styles.categoryNumber, { color }]}>{index + 1}</Text>
                 </View>
               </View>
             </Pressable>
@@ -360,6 +360,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+  },
+  categoryNumber: {
+    fontSize: 20,
+    fontWeight: "700",
   },
   cardText: {
     flex: 1,
