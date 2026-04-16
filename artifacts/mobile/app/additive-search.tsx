@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import appData, { SubItem } from "@/constants/data";
 import colors from "@/constants/colors";
+import { getParentCodes, getAdditivesByCode } from "@/constants/category-utils";
 
 const generalData = require("../assets/general-additives.json") as {
   table1: { rows: { ins: string; name: string }[] };
@@ -130,6 +131,7 @@ type ItemResult = {
   itemIndex: number;
   item: SubItem;
   matchedAdditive: string;
+  inheritedFrom?: string;  // parent category code when match is inherited
 };
 
 type GeneralMatchResult = {
@@ -476,27 +478,55 @@ export default function AdditiveSearchScreen() {
     const itemCards: SearchResult[] = [];
     appData.forEach((category, categoryIndex) => {
       category.subItems.forEach((item, itemIndex) => {
-        if (!item.data?.row2.D) return;
-        const additivesText = item.data.row2.D.toLowerCase();
-        if (!matchesQuery(additivesText, q)) return;
+        const key = `${categoryIndex}-${itemIndex}`;
 
-        const lines = item.data.row2.D
-          .split(/[\r\n]+/)
-          .map((s) => s.trim())
-          .filter(Boolean);
-        const matchedLine =
-          lines.find((l) => matchesQuery(l.toLowerCase(), q)) ??
-          item.data!.row2.D.slice(0, 80);
+        // 2a. Direct match in this item's own additive list
+        if (item.data?.row2.D) {
+          const additivesText = item.data.row2.D.toLowerCase();
+          if (matchesQuery(additivesText, q)) {
+            const lines = item.data.row2.D
+              .split(/[\r\n]+/)
+              .map((s) => s.trim())
+              .filter(Boolean);
+            const matchedLine =
+              lines.find((l) => matchesQuery(l.toLowerCase(), q)) ??
+              item.data!.row2.D.slice(0, 80);
+            itemCards.push({
+              kind: "item",
+              categoryIndex,
+              categoryName: category.name.trim(),
+              itemIndex,
+              item,
+              matchedAdditive: matchedLine,
+            });
+            itemResultKeys.add(key);
+            return;
+          }
+        }
 
-        itemCards.push({
-          kind: "item",
-          categoryIndex,
-          categoryName: category.name.trim(),
-          itemIndex,
-          item,
-          matchedAdditive: matchedLine,
-        });
-        itemResultKeys.add(`${categoryIndex}-${itemIndex}`);
+        // 2b. Inherited match — check if any ancestor category has the additive
+        const itemCode = item.data?.row2.A?.trim();
+        if (!itemCode) return;
+        for (const parentCode of getParentCodes(itemCode)) {
+          const parentData = getAdditivesByCode(parentCode);
+          if (!parentData || parentData.lines.length === 0) continue;
+          const parentText = parentData.lines.join("\n").toLowerCase();
+          if (!matchesQuery(parentText, q)) continue;
+          const matchedLine =
+            parentData.lines.find((l) => matchesQuery(l.toLowerCase(), q)) ??
+            parentData.lines[0];
+          itemCards.push({
+            kind: "item",
+            categoryIndex,
+            categoryName: category.name.trim(),
+            itemIndex,
+            item,
+            matchedAdditive: matchedLine,
+            inheritedFrom: parentCode,
+          });
+          itemResultKeys.add(key);
+          break; // closest ancestor wins; no need to check further up
+        }
       });
     });
 
@@ -563,6 +593,12 @@ export default function AdditiveSearchScreen() {
           <View style={styles.categoryBadge}>
             <Text style={styles.categoryBadgeText} numberOfLines={1}>{result.categoryName}</Text>
           </View>
+          {result.inheritedFrom ? (
+            <View style={styles.inheritedBadge}>
+              <Feather name="corner-left-up" size={12} color="#6b5b00" />
+              <Text style={styles.inheritedBadgeText}>من التصنيف الرئيسي ({result.inheritedFrom})</Text>
+            </View>
+          ) : null}
           <View style={styles.matchRow}>
             <Feather name="check-circle" size={14} color="#0e7c7c" style={styles.matchIcon} />
             <View style={styles.matchTextWrap}>{highlight(result.matchedAdditive, query.trim())}</View>
@@ -818,6 +854,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3, alignSelf: "flex-end",
   },
   categoryBadgeText: { fontSize: 11, fontWeight: "500", color: "#0e7c7c", textAlign: "right" },
+  inheritedBadge: {
+    flexDirection: "row", alignItems: "center", gap: 4, alignSelf: "flex-end",
+    backgroundColor: "#fef3c7", borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3,
+  },
+  inheritedBadgeText: { fontSize: 11, fontWeight: "500", color: "#6b5b00", textAlign: "right" },
   generalBadgeRow: {
     flexDirection: "row", gap: 6, justifyContent: "flex-end",
   },

@@ -15,6 +15,7 @@ import appData from "@/constants/data";
 import colors from "@/constants/colors";
 import generalAdditives from "@/assets/general-additives.json";
 import comprehensiveAdditives from "@/assets/comprehensive-additives.json";
+import { getInheritedAdditives, ParentAdditives } from "@/constants/category-utils";
 
 
 type AdditiveEntry = { ins: string; name: string };
@@ -247,9 +248,11 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 function AdditiveChecker({
   additives,
   itemAllowsGeneral,
+  itemCode,
 }: {
   additives: string[];
   itemAllowsGeneral: boolean;
+  itemCode?: string;
 }) {
   const [query, setQuery] = useState("");
   const [badges, setBadges] = useState<Badge[]>([]);
@@ -278,77 +281,101 @@ function AdditiveChecker({
     setResults(null);
   }
 
-  function handleVerify() {
-    const permMap = buildPermittedMap(additives);
-    const res: VerifyResult[] = badges.map(badge => {
-      const keys = insLookupKeys(badge.ins);
+  function checkAgainstMap(
+    keys: string[],
+    permMap: Map<string, string>,
+    allowsGeneral: boolean,
+  ): { found: boolean; reason: string } {
+    const inItem = keys.some(k => permMap.has(k));
+    const inGeneral = allowsGeneral && keys.some(k => GA_GENERAL_SET.has(k));
 
-      // 1. Direct lookup in this item's permitted list
-      const inItem = keys.some(k => permMap.has(k));
-      const inGeneral = itemAllowsGeneral && keys.some(k => GA_GENERAL_SET.has(k));
-
-      // 2. Family-aware lookup: if badge belongs to a family, check if any
-      //    sibling member appears in the permitted list (they always share items)
-      let familyReason = "";
-      let inFamily = false;
-      if (!inItem && !inGeneral) {
-        // Family-aware: only fires when ≥2 family members appear in the permitted
-        // list, confirming the whole family was listed (not just one specific member).
+    let familyReason = "";
+    let inFamily = false;
+    if (!inItem && !inGeneral) {
+      for (const k of keys) {
+        const fi = CODE_TO_FAMILY.get(k);
+        if (fi !== undefined) {
+          const family = FAMILY_GROUPS[fi];
+          let siblingCount = 0;
+          let matchLine = "";
+          for (const sibling of family.codes) {
+            const sibKeys = insLookupKeys(sibling);
+            const hit = sibKeys.find(sk => permMap.has(sk));
+            if (hit) {
+              siblingCount++;
+              if (!matchLine) matchLine = permMap.get(hit) || "";
+              if (siblingCount >= 2) break;
+            }
+          }
+          if (siblingCount >= 2) {
+            familyReason = `${family.name}: ${matchLine}`;
+            inFamily = true;
+            break;
+          }
+        }
+      }
+      if (!inFamily && allowsGeneral) {
         for (const k of keys) {
           const fi = CODE_TO_FAMILY.get(k);
           if (fi !== undefined) {
             const family = FAMILY_GROUPS[fi];
-            let siblingCount = 0;
-            let matchLine = "";
+            let sibCount = 0;
             for (const sibling of family.codes) {
               const sibKeys = insLookupKeys(sibling);
-              const hit = sibKeys.find(sk => permMap.has(sk));
-              if (hit) {
-                siblingCount++;
-                if (!matchLine) matchLine = permMap.get(hit) || "";
-                if (siblingCount >= 2) break;
+              if (sibKeys.some(sk => GA_GENERAL_SET.has(sk))) {
+                sibCount++;
+                if (sibCount >= 2) break;
               }
             }
-            if (siblingCount >= 2) {
-              familyReason = `${family.name}: ${matchLine}`;
+            if (sibCount >= 2) {
+              familyReason = `${family.name} — مضاف عام مسموح به (GMP)`;
               inFamily = true;
               break;
             }
           }
         }
-        // Also check general set via family siblings (≥2 siblings in general set)
-        if (!inFamily && itemAllowsGeneral) {
-          for (const k of keys) {
-            const fi = CODE_TO_FAMILY.get(k);
-            if (fi !== undefined) {
-              const family = FAMILY_GROUPS[fi];
-              let sibCount = 0;
-              for (const sibling of family.codes) {
-                const sibKeys = insLookupKeys(sibling);
-                if (sibKeys.some(sk => GA_GENERAL_SET.has(sk))) {
-                  sibCount++;
-                  if (sibCount >= 2) break;
-                }
-              }
-              if (sibCount >= 2) {
-                familyReason = `${family.name} — مضاف عام مسموح به (GMP)`;
-                inFamily = true;
-                break;
-              }
-            }
-          }
+      }
+    }
+
+    const found = inItem || inGeneral || inFamily;
+    const reason = inItem
+      ? keys.map(k => permMap.get(k)).find(Boolean) || ""
+      : inGeneral
+        ? "مضاف عام مسموح به (GMP)"
+        : inFamily
+          ? familyReason
+          : "";
+    return { found, reason };
+  }
+
+  function handleVerify() {
+    const permMap = buildPermittedMap(additives);
+    // Inherited parent maps, ordered closest ancestor first
+    const parentLevels: ParentAdditives[] = itemCode
+      ? getInheritedAdditives(itemCode)
+      : [];
+
+    const res: VerifyResult[] = badges.map(badge => {
+      const keys = insLookupKeys(badge.ins);
+
+      // 1. Check this item's own additives
+      const direct = checkAgainstMap(keys, permMap, itemAllowsGeneral);
+      if (direct.found) {
+        return { ...badge, permitted: true, reason: direct.reason };
+      }
+
+      // 2. Check inherited parent categories (closest first)
+      for (const parent of parentLevels) {
+        const parentMap = buildPermittedMap(parent.lines);
+        const inherited = checkAgainstMap(keys, parentMap, parent.allowsGeneral);
+        if (inherited.found) {
+          const parentNote = `من التصنيف الرئيسي (${parent.code})`;
+          const detail = inherited.reason ? `: ${inherited.reason}` : "";
+          return { ...badge, permitted: true, reason: `${parentNote}${detail}` };
         }
       }
 
-      const permitted = inItem || inGeneral || inFamily;
-      const reason = inItem
-        ? keys.map(k => permMap.get(k)).find(Boolean) || ""
-        : inGeneral
-          ? "مضاف عام مسموح به (GMP)"
-          : inFamily
-            ? familyReason
-            : "";
-      return { ...badge, permitted, reason };
+      return { ...badge, permitted: false, reason: "" };
     });
     setResults(res);
   }
@@ -530,6 +557,7 @@ export default function DetailScreen() {
           <AdditiveChecker
             additives={additives}
             itemAllowsGeneral={row2.C === "نعم"}
+            itemCode={row2.A?.trim() || undefined}
           />
         </View>
       </View>
