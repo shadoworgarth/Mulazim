@@ -90,9 +90,9 @@ router.post("/auth/request-otp", async (req, res) => {
       expiresAt,
     });
 
-    const { client: resend, fromEmail } = await getUncachableResendClient();
+    const { client: resend } = await getUncachableResendClient();
     await resend.emails.send({
-      from: `SFDA Food Additives <${fromEmail}>`,
+      from: `SFDA Food Additives <onboarding@resend.dev>`,
       to: normalizedEmail,
       subject: "رمز التحقق - دليل المضافات الغذائية",
       html: `
