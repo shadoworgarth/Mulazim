@@ -311,24 +311,33 @@ export default function AdditiveSearchScreen() {
 
         {/* Selected additive chips */}
         {selectedAdditives.length > 0 && (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.chipsScroll}
-            contentContainerStyle={styles.chipsRow}
-          >
-            {selectedAdditives.map((a) => (
-              <View key={a.ins} style={styles.chip}>
-                <Pressable onPress={() => removeAdditive(a.ins)} hitSlop={8}>
-                  <Feather name="x" size={13} color="#b2d8d8" />
-                </Pressable>
-                <Text style={styles.chipText} numberOfLines={1}>{a.name.split(",")[0]}</Text>
-                <View style={styles.chipInsBadge}>
-                  <Text style={styles.chipIns}>INS {a.ins}</Text>
+          <View style={styles.chipsContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.chipsScroll}
+              contentContainerStyle={styles.chipsRow}
+            >
+              {selectedAdditives.map((a) => (
+                <View key={a.ins} style={styles.chip}>
+                  <Pressable onPress={() => removeAdditive(a.ins)} hitSlop={8}>
+                    <Feather name="x" size={13} color="#b2d8d8" />
+                  </Pressable>
+                  <Text style={styles.chipText} numberOfLines={1}>{a.name.split(",")[0]}</Text>
+                  <View style={styles.chipInsBadge}>
+                    <Text style={styles.chipIns}>INS {a.ins}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </ScrollView>
+              ))}
+            </ScrollView>
+            <Pressable
+              onPress={() => setSelectedAdditives([])}
+              style={({ pressed }) => [styles.clearAllBtn, { opacity: pressed ? 0.7 : 1 }]}
+              hitSlop={6}
+            >
+              <Feather name="trash-2" size={14} color="#b2d8d8" />
+            </Pressable>
+          </View>
         )}
       </View>
 
@@ -463,8 +472,13 @@ const styles = StyleSheet.create({
     borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, gap: 8,
   },
   searchInput: { flex: 1, fontSize: 14, color: colors.light.text, padding: 0 },
-  chipsScroll: { marginTop: 12 },
+  chipsContainer: { flexDirection: "row", alignItems: "center", marginTop: 12, gap: 8 },
+  chipsScroll: { flex: 1 },
   chipsRow: { flexDirection: "row", gap: 8, paddingBottom: 2 },
+  clearAllBtn: {
+    backgroundColor: "#0e4a4a", borderRadius: 20, padding: 7,
+    alignItems: "center", justifyContent: "center",
+  },
   chip: {
     flexDirection: "row", alignItems: "center", gap: 6,
     backgroundColor: "#1a5a5a", borderRadius: 20,
