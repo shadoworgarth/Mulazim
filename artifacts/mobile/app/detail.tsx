@@ -20,7 +20,7 @@ import { getInheritedAdditives, ParentAdditives } from "@/constants/category-uti
 
 type AdditiveEntry = { ins: string; name: string };
 type Badge = AdditiveEntry;
-type VerifyResult = Badge & { permitted: boolean; reason: string; isInherited?: boolean };
+type VerifyResult = Badge & { permitted: boolean; reason: string; isInherited?: boolean; isGeneral?: boolean };
 
 // Valid INS number: starts with a digit (filters out Arabic header/section rows in table2)
 const isValidIns = (ins: string) => /^\d/.test(String(ins));
@@ -285,7 +285,7 @@ function AdditiveChecker({
     keys: string[],
     permMap: Map<string, string>,
     allowsGeneral: boolean,
-  ): { found: boolean; reason: string } {
+  ): { found: boolean; reason: string; isGeneral?: boolean } {
     const inItem = keys.some(k => permMap.has(k));
     const inGeneral = allowsGeneral && keys.some(k => GA_GENERAL_SET.has(k));
 
@@ -345,7 +345,7 @@ function AdditiveChecker({
         : inFamily
           ? familyReason
           : "";
-    return { found, reason };
+    return { found, reason, isGeneral: !inItem && inGeneral };
   }
 
   function handleVerify() {
@@ -361,7 +361,7 @@ function AdditiveChecker({
       // 1. Check this item's own additives
       const direct = checkAgainstMap(keys, permMap, itemAllowsGeneral);
       if (direct.found) {
-        return { ...badge, permitted: true, reason: direct.reason };
+        return { ...badge, permitted: true, reason: direct.reason, isGeneral: direct.isGeneral };
       }
 
       // 2. Check inherited parent categories (closest first)
@@ -472,35 +472,43 @@ function AdditiveChecker({
       {results && results.length > 0 && (
         <View style={styles.resultsWrap}>
           <Text style={styles.resultsTitle}>نتائج التحقق</Text>
-          {results.map((r, i) => (
-            <View
-              key={i}
-              style={[styles.resultRow, r.permitted ? styles.resultGreen : styles.resultRed]}
-            >
-              <View style={styles.resultLeft}>
-                <Feather
-                  name={r.permitted ? "check-circle" : "x-circle"}
-                  size={20}
-                  color={r.permitted ? "#1a7a4a" : "#b91c1c"}
-                />
-                <Text style={[styles.resultStatus, r.permitted ? styles.statusGreen : styles.statusRed]}>
-                  {r.permitted ? "مسموح" : "غير مسموح"}
-                </Text>
+          {results.map((r, i) => {
+            const rowStyle = r.permitted
+              ? (r.isGeneral ? styles.resultAmber : styles.resultGreen)
+              : styles.resultRed;
+            const iconColor = r.permitted
+              ? (r.isGeneral ? "#b45309" : "#1a7a4a")
+              : "#b91c1c";
+            const statusStyle = r.permitted
+              ? (r.isGeneral ? styles.statusAmber : styles.statusGreen)
+              : styles.statusRed;
+            return (
+              <View key={i} style={[styles.resultRow, rowStyle]}>
+                <View style={styles.resultLeft}>
+                  <Feather
+                    name={r.permitted ? "check-circle" : "x-circle"}
+                    size={20}
+                    color={iconColor}
+                  />
+                  <Text style={[styles.resultStatus, statusStyle]}>
+                    {r.permitted ? "مسموح" : "غير مسموح"}
+                  </Text>
+                </View>
+                <View style={styles.resultRight}>
+                  <Text style={styles.resultCode}>E{r.ins.toUpperCase()} — {r.name}</Text>
+                  {r.reason ? (
+                    r.isInherited ? (
+                      <View style={styles.inheritedReasonBadge}>
+                        <Text style={styles.inheritedReasonText} numberOfLines={2}>{r.reason}</Text>
+                      </View>
+                    ) : (
+                      <Text style={[styles.resultReason, r.isGeneral && { color: "#92400e" }]} numberOfLines={2}>{r.reason}</Text>
+                    )
+                  ) : null}
+                </View>
               </View>
-              <View style={styles.resultRight}>
-                <Text style={styles.resultCode}>E{r.ins.toUpperCase()} — {r.name}</Text>
-                {r.reason ? (
-                  r.isInherited ? (
-                    <View style={styles.inheritedReasonBadge}>
-                      <Text style={styles.inheritedReasonText} numberOfLines={2}>{r.reason}</Text>
-                    </View>
-                  ) : (
-                    <Text style={styles.resultReason} numberOfLines={2}>{r.reason}</Text>
-                  )
-                ) : null}
-              </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
       )}
     </View>
@@ -739,10 +747,12 @@ const styles = StyleSheet.create({
   },
   resultGreen: { backgroundColor: "#f0faf5", borderColor: "#bbf0d9" },
   resultRed: { backgroundColor: "#fff5f5", borderColor: "#fecaca" },
+  resultAmber: { backgroundColor: "#fffbeb", borderColor: "#fde68a" },
   resultLeft: { flexDirection: "row", alignItems: "center", gap: 6, flexShrink: 0 },
   resultStatus: { fontSize: 13, fontWeight: "700" },
   statusGreen: { color: "#1a7a4a" },
   statusRed: { color: "#b91c1c" },
+  statusAmber: { color: "#b45309" },
   resultRight: { flex: 1, alignItems: "flex-end", gap: 2 },
   resultCode: { fontSize: 13, fontWeight: "700", color: colors.light.text, textAlign: "right" },
   resultReason: { fontSize: 11, color: colors.light.mutedForeground, textAlign: "right", lineHeight: 16 },
