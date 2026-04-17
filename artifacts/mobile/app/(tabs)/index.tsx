@@ -6,7 +6,6 @@ import {
   ImageBackground,
   Platform,
   Pressable,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -34,7 +33,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
-  const [categoriesExpanded, setCategoriesExpanded] = useState(true);
 
   const q = search.trim();
 
@@ -113,7 +111,7 @@ export default function HomeScreen() {
         </Pressable>
       </ImageBackground>
 
-      {/* Search Results */}
+      {/* Search Results (sub-items) */}
       {q ? (
         <FlatList
           data={subItemResults}
@@ -162,87 +160,80 @@ export default function HomeScreen() {
           }
         />
       ) : (
-        <ScrollView
+        <FlatList
+          data={appData}
+          keyExtractor={(_, i) => i.toString()}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-        >
-          {/* General Additives Card (always visible) */}
-          <Pressable
-            style={({ pressed }) => [
-              styles.card,
-              styles.generalCard,
-              { opacity: pressed ? 0.85 : 1 },
-            ]}
-            onPress={() => router.push("/general-additives")}
-          >
-            <View style={[styles.cardAccent, { backgroundColor: "#7c4e0e" }]} />
-            <View style={styles.cardContent}>
-              <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
-              <View style={styles.cardText}>
-                <Text style={styles.cardTitle}>المضافات العامة</Text>
-                <Text style={styles.cardCount}>182 مادة مضافة • 55 لون</Text>
-              </View>
-              <View style={[styles.categoryIcon, { backgroundColor: "#7c4e0e22" }]}>
-                <Feather name="star" size={20} color="#7c4e0e" />
-              </View>
-            </View>
-          </Pressable>
-
-          {/* Collapsible Categories Section */}
-          <View style={styles.sectionWrapper}>
-            {/* Section Toggle Header */}
+          ListHeaderComponent={
             <Pressable
               style={({ pressed }) => [
-                styles.sectionHeader,
-                categoriesExpanded && styles.sectionHeaderExpanded,
-                { opacity: pressed ? 0.8 : 1 },
+                styles.card,
+                styles.generalCard,
+                { opacity: pressed ? 0.85 : 1 },
               ]}
-              onPress={() => setCategoriesExpanded((v) => !v)}
+              onPress={() => router.push("/general-additives")}
             >
-              <Feather
-                name={categoriesExpanded ? "chevron-up" : "chevron-down"}
-                size={18}
-                color="#0e7c7c"
-              />
-              <Text style={styles.sectionHeaderText}>
-                تصنيفات الغذاء ({appData.length})
-              </Text>
+              <View style={[styles.cardAccent, { backgroundColor: "#7c4e0e" }]} />
+              <View style={styles.cardContent}>
+                <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
+                <View style={styles.cardText}>
+                  <Text style={styles.cardTitle}>المضافات العامة</Text>
+                  <Text style={styles.cardCount}>182 مادة مضافة • 55 لون</Text>
+                </View>
+                <View style={[styles.categoryIcon, { backgroundColor: "#7c4e0e22" }]}>
+                  <Feather name="star" size={20} color="#7c4e0e" />
+                </View>
+              </View>
             </Pressable>
-
-            {/* Category Cards */}
-            {categoriesExpanded &&
-              appData.map((item, index) => {
-                const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
-                return (
-                  <Pressable
-                    key={index}
-                    style={({ pressed }) => [
-                      styles.card,
-                      index < appData.length - 1 && styles.cardInSection,
-                      { opacity: pressed ? 0.85 : 1 },
+          }
+          renderItem={({ item, index }) => {
+            const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+            return (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.card,
+                  { opacity: pressed ? 0.85 : 1 },
+                ]}
+                onPress={() => handleCategory(index)}
+              >
+                <View style={[styles.cardAccent, { backgroundColor: color }]} />
+                <View style={styles.cardContent}>
+                  <Feather
+                    name="chevron-left"
+                    size={20}
+                    color={colors.light.mutedForeground}
+                  />
+                  <View style={styles.cardText}>
+                    <Text style={styles.cardTitle} numberOfLines={2}>
+                      {item.name.trim()}
+                    </Text>
+                    <Text style={styles.cardCount}>
+                      {item.subItems.length} صنف
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.categoryIcon,
+                      { backgroundColor: color + "22" },
                     ]}
-                    onPress={() => handleCategory(index)}
                   >
-                    <View style={[styles.cardAccent, { backgroundColor: color }]} />
-                    <View style={styles.cardContent}>
-                      <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
-                      <View style={styles.cardText}>
-                        <Text style={styles.cardTitle} numberOfLines={2}>
-                          {item.name.trim()}
-                        </Text>
-                        <Text style={styles.cardCount}>{item.subItems.length} صنف</Text>
-                      </View>
-                      <View style={[styles.categoryIcon, { backgroundColor: color + "22" }]}>
-                        <Text style={[styles.categoryNumber, { color }]}>{index + 1}</Text>
-                      </View>
-                    </View>
-                  </Pressable>
-                );
-              })}
-          </View>
-
-          <Text style={styles.footer}>اعداد وتصميم عبدالعزيز الدوسري</Text>
-        </ScrollView>
+                    <Text style={[styles.categoryNumber, { color }]}>{index + 1}</Text>
+                  </View>
+                </View>
+              </Pressable>
+            );
+          }}
+          ListFooterComponent={
+            <Text style={styles.footer}>اعداد وتصميم عبدالعزيز الدوسري</Text>
+          }
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <Feather name="inbox" size={48} color={colors.light.mutedForeground} />
+              <Text style={styles.emptyText}>لا توجد نتائج</Text>
+            </View>
+          }
+        />
       )}
     </View>
   );
@@ -339,11 +330,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  cardInSection: {
-    borderRadius: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e8f0f0",
-  },
   generalCard: {
     borderWidth: 1.5,
     borderColor: "#7c4e0e33",
@@ -390,36 +376,6 @@ const styles = StyleSheet.create({
     color: colors.light.mutedForeground,
     textAlign: "right",
     marginTop: 2,
-  },
-  sectionWrapper: {
-    borderRadius: 14,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    backgroundColor: "#e8f4f4",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#c8e0e0",
-  },
-  sectionHeaderExpanded: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#c8e0e0",
-  },
-  sectionHeaderText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#0e7c7c",
-    textAlign: "right",
   },
   resultsCount: {
     fontSize: 12,
