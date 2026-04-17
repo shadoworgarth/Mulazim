@@ -6,6 +6,7 @@ import {
   ImageBackground,
   Platform,
   Pressable,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -33,7 +34,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
-  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
+  const [categoriesExpanded, setCategoriesExpanded] = useState(true);
 
   const q = search.trim();
 
@@ -51,24 +52,8 @@ export default function HomeScreen() {
       )
     : [];
 
-  const toggleCategory = (index: number) => {
-    setExpandedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
-      } else {
-        next.add(index);
-      }
-      return next;
-    });
-  };
-
-  const handleSubItem = (categoryIndex: number, subItemIndex: number, hasData: boolean) => {
-    if (hasData) {
-      router.push({ pathname: "/detail", params: { categoryIndex, itemIndex: subItemIndex } });
-    } else {
-      router.push({ pathname: "/items", params: { categoryIndex } });
-    }
+  const handleCategory = (index: number) => {
+    router.push({ pathname: "/items", params: { categoryIndex: index } });
   };
 
   const handleSubItemResult = (result: SubItemResult) => {
@@ -80,77 +65,6 @@ export default function HomeScreen() {
     } else {
       router.push({ pathname: "/items", params: { categoryIndex: result.categoryIndex } });
     }
-  };
-
-  const renderCategoryItem = ({ item, index }: { item: typeof appData[0]; index: number }) => {
-    const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
-    const isExpanded = expandedCategories.has(index);
-
-    return (
-      <View style={styles.accordionWrapper}>
-        {/* Category Header */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.card,
-            isExpanded && styles.cardExpanded,
-            { opacity: pressed ? 0.85 : 1 },
-          ]}
-          onPress={() => toggleCategory(index)}
-        >
-          <View style={[styles.cardAccent, { backgroundColor: color }]} />
-          <View style={styles.cardContent}>
-            <Feather
-              name={isExpanded ? "chevron-down" : "chevron-left"}
-              size={20}
-              color={colors.light.mutedForeground}
-            />
-            <View style={styles.cardText}>
-              <Text style={styles.cardTitle} numberOfLines={2}>
-                {item.name.trim()}
-              </Text>
-              <Text style={styles.cardCount}>
-                {item.subItems.length} صنف
-              </Text>
-            </View>
-            <View style={[styles.categoryIcon, { backgroundColor: color + "22" }]}>
-              <Text style={[styles.categoryNumber, { color }]}>{index + 1}</Text>
-            </View>
-          </View>
-        </Pressable>
-
-        {/* Sub-items (expanded) */}
-        {isExpanded && (
-          <View style={[styles.subItemsContainer, { borderColor: color + "44" }]}>
-            {item.subItems.map((sub, subIdx) => (
-              <Pressable
-                key={subIdx}
-                style={({ pressed }) => [
-                  styles.subItem,
-                  subIdx < item.subItems.length - 1 && styles.subItemBorder,
-                  { opacity: pressed ? 0.75 : 1 },
-                ]}
-                onPress={() => handleSubItem(index, subIdx, !!sub.data)}
-              >
-                <Feather
-                  name={sub.data ? "chevron-left" : "minus"}
-                  size={14}
-                  color={sub.data ? color : colors.light.mutedForeground}
-                />
-                <Text
-                  style={[
-                    styles.subItemText,
-                    !sub.data && styles.subItemTextMuted,
-                  ]}
-                  numberOfLines={2}
-                >
-                  {sub.name.trim()}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        )}
-      </View>
-    );
   };
 
   return (
@@ -199,7 +113,7 @@ export default function HomeScreen() {
         </Pressable>
       </ImageBackground>
 
-      {/* Search Results (sub-items) */}
+      {/* Search Results */}
       {q ? (
         <FlatList
           data={subItemResults}
@@ -248,44 +162,87 @@ export default function HomeScreen() {
           }
         />
       ) : (
-        <FlatList
-          data={appData}
-          keyExtractor={(_, i) => i.toString()}
+        <ScrollView
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-          ListHeaderComponent={
+        >
+          {/* General Additives Card (always visible) */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.card,
+              styles.generalCard,
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
+            onPress={() => router.push("/general-additives")}
+          >
+            <View style={[styles.cardAccent, { backgroundColor: "#7c4e0e" }]} />
+            <View style={styles.cardContent}>
+              <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
+              <View style={styles.cardText}>
+                <Text style={styles.cardTitle}>المضافات العامة</Text>
+                <Text style={styles.cardCount}>182 مادة مضافة • 55 لون</Text>
+              </View>
+              <View style={[styles.categoryIcon, { backgroundColor: "#7c4e0e22" }]}>
+                <Feather name="star" size={20} color="#7c4e0e" />
+              </View>
+            </View>
+          </Pressable>
+
+          {/* Collapsible Categories Section */}
+          <View style={styles.sectionWrapper}>
+            {/* Section Toggle Header */}
             <Pressable
               style={({ pressed }) => [
-                styles.card,
-                styles.generalCard,
-                { opacity: pressed ? 0.85 : 1 },
+                styles.sectionHeader,
+                categoriesExpanded && styles.sectionHeaderExpanded,
+                { opacity: pressed ? 0.8 : 1 },
               ]}
-              onPress={() => router.push("/general-additives")}
+              onPress={() => setCategoriesExpanded((v) => !v)}
             >
-              <View style={[styles.cardAccent, { backgroundColor: "#7c4e0e" }]} />
-              <View style={styles.cardContent}>
-                <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
-                <View style={styles.cardText}>
-                  <Text style={styles.cardTitle}>المضافات العامة</Text>
-                  <Text style={styles.cardCount}>182 مادة مضافة • 55 لون</Text>
-                </View>
-                <View style={[styles.categoryIcon, { backgroundColor: "#7c4e0e22" }]}>
-                  <Feather name="star" size={20} color="#7c4e0e" />
-                </View>
-              </View>
+              <Feather
+                name={categoriesExpanded ? "chevron-up" : "chevron-down"}
+                size={18}
+                color="#0e7c7c"
+              />
+              <Text style={styles.sectionHeaderText}>
+                تصنيفات الغذاء ({appData.length})
+              </Text>
             </Pressable>
-          }
-          renderItem={renderCategoryItem}
-          ListFooterComponent={
-            <Text style={styles.footer}>اعداد وتصميم عبدالعزيز الدوسري</Text>
-          }
-          ListEmptyComponent={
-            <View style={styles.empty}>
-              <Feather name="inbox" size={48} color={colors.light.mutedForeground} />
-              <Text style={styles.emptyText}>لا توجد نتائج</Text>
-            </View>
-          }
-        />
+
+            {/* Category Cards */}
+            {categoriesExpanded &&
+              appData.map((item, index) => {
+                const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+                return (
+                  <Pressable
+                    key={index}
+                    style={({ pressed }) => [
+                      styles.card,
+                      index < appData.length - 1 && styles.cardInSection,
+                      { opacity: pressed ? 0.85 : 1 },
+                    ]}
+                    onPress={() => handleCategory(index)}
+                  >
+                    <View style={[styles.cardAccent, { backgroundColor: color }]} />
+                    <View style={styles.cardContent}>
+                      <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
+                      <View style={styles.cardText}>
+                        <Text style={styles.cardTitle} numberOfLines={2}>
+                          {item.name.trim()}
+                        </Text>
+                        <Text style={styles.cardCount}>{item.subItems.length} صنف</Text>
+                      </View>
+                      <View style={[styles.categoryIcon, { backgroundColor: color + "22" }]}>
+                        <Text style={[styles.categoryNumber, { color }]}>{index + 1}</Text>
+                      </View>
+                    </View>
+                  </Pressable>
+                );
+              })}
+          </View>
+
+          <Text style={styles.footer}>اعداد وتصميم عبدالعزيز الدوسري</Text>
+        </ScrollView>
       )}
     </View>
   );
@@ -371,9 +328,6 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === "web" ? 34 : 24,
     gap: 10,
   },
-  accordionWrapper: {
-    gap: 0,
-  },
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 14,
@@ -385,9 +339,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  cardExpanded: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
+  cardInSection: {
+    borderRadius: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e8f0f0",
   },
   generalCard: {
     borderWidth: 1.5,
@@ -436,35 +391,35 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginTop: 2,
   },
-  subItemsContainer: {
-    backgroundColor: "#f7fbfb",
-    borderLeftWidth: 2,
-    borderRightWidth: 2,
-    borderBottomWidth: 2,
-    borderBottomLeftRadius: 14,
-    borderBottomRightRadius: 14,
+  sectionWrapper: {
+    borderRadius: 14,
     overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  subItem: {
+  sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-end",
+    backgroundColor: "#e8f4f4",
     paddingHorizontal: 16,
-    paddingVertical: 11,
-    gap: 10,
-  },
-  subItemBorder: {
+    paddingVertical: 12,
+    gap: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#e8f0f0",
+    borderBottomColor: "#c8e0e0",
   },
-  subItemText: {
-    flex: 1,
+  sectionHeaderExpanded: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#c8e0e0",
+  },
+  sectionHeaderText: {
     fontSize: 14,
-    color: colors.light.text,
+    fontWeight: "700",
+    color: "#0e7c7c",
     textAlign: "right",
-    lineHeight: 20,
-  },
-  subItemTextMuted: {
-    color: colors.light.mutedForeground,
   },
   resultsCount: {
     fontSize: 12,
