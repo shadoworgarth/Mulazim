@@ -417,12 +417,12 @@ export default function AdditiveSearchScreen() {
                     <Feather
                       name="check-circle"
                       size={14}
-                      color={check.isGeneral ? "#b45309" : "#0e7c7c"}
+                      color={check.isGeneral ? "#1d4ed8" : "#0e7c7c"}
                       style={styles.matchIcon}
                     />
                     <View style={styles.matchTextWrap}>
                       {check.isGeneral ? (
-                        <Text style={[styles.matchText, { color: "#92400e" }]}>
+                        <Text style={[styles.matchText, { color: "#1e3a8a" }]}>
                           INS {check.ins} — مضاف عام مسموح
                         </Text>
                       ) : (
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", alignItems: "flex-start", gap: 6,
     backgroundColor: "#f0faf8", borderRadius: 8, padding: 8,
   },
-  matchRowGeneral: { backgroundColor: "#fffbeb", borderWidth: 1, borderColor: "#fde68a" },
+  matchRowGeneral: { backgroundColor: "#eff6ff", borderWidth: 1, borderColor: "#bfdbfe" },
   matchIcon: { marginTop: 1, flexShrink: 0 },
   matchTextWrap: { flex: 1 },
   matchText: { fontSize: 12, color: colors.light.text, lineHeight: 18 },

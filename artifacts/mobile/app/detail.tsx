@@ -477,7 +477,7 @@ function AdditiveChecker({
               ? (r.isGeneral ? styles.resultAmber : styles.resultGreen)
               : styles.resultRed;
             const iconColor = r.permitted
-              ? (r.isGeneral ? "#b45309" : "#1a7a4a")
+              ? (r.isGeneral ? "#1d4ed8" : "#1a7a4a")
               : "#b91c1c";
             const statusStyle = r.permitted
               ? (r.isGeneral ? styles.statusAmber : styles.statusGreen)
@@ -502,7 +502,7 @@ function AdditiveChecker({
                         <Text style={styles.inheritedReasonText} numberOfLines={2}>{r.reason}</Text>
                       </View>
                     ) : (
-                      <Text style={[styles.resultReason, r.isGeneral && { color: "#92400e" }]} numberOfLines={2}>{r.reason}</Text>
+                      <Text style={[styles.resultReason, r.isGeneral && { color: "#1e3a8a" }]} numberOfLines={2}>{r.reason}</Text>
                     )
                   ) : null}
                 </View>
@@ -747,12 +747,12 @@ const styles = StyleSheet.create({
   },
   resultGreen: { backgroundColor: "#f0faf5", borderColor: "#bbf0d9" },
   resultRed: { backgroundColor: "#fff5f5", borderColor: "#fecaca" },
-  resultAmber: { backgroundColor: "#fffbeb", borderColor: "#fde68a" },
+  resultAmber: { backgroundColor: "#eff6ff", borderColor: "#bfdbfe" },
   resultLeft: { flexDirection: "row", alignItems: "center", gap: 6, flexShrink: 0 },
   resultStatus: { fontSize: 13, fontWeight: "700" },
   statusGreen: { color: "#1a7a4a" },
   statusRed: { color: "#b91c1c" },
-  statusAmber: { color: "#b45309" },
+  statusAmber: { color: "#1d4ed8" },
   resultRight: { flex: 1, alignItems: "flex-end", gap: 2 },
   resultCode: { fontSize: 13, fontWeight: "700", color: colors.light.text, textAlign: "right" },
   resultReason: { fontSize: 11, color: colors.light.mutedForeground, textAlign: "right", lineHeight: 16 },
