@@ -6,3 +6,27 @@ id = "_668LUsgjfxNzbyjItJxP"
 uri = "file://artifacts/mobile/assets/images/icon.png"
 type = "image"
 title = "inspector companion app icon"
+
+[[generated]]
+id = "tcXVRvJ9xbeFW2Wa6yl1N"
+uri = "file://attached_assets/icon_option_1.png"
+type = "image"
+title = "arabic letter meem icon"
+
+[[generated]]
+id = "axHIdlnxjUZztbRJA03AK"
+uri = "file://attached_assets/icon_option_2.png"
+type = "image"
+title = "magnifying glass food plate icon"
+
+[[generated]]
+id = "JYxrrxMzyhN1zGCwrrWOb"
+uri = "file://attached_assets/icon_option_3.png"
+type = "image"
+title = "inspector badge star icon"
+
+[[generated]]
+id = "ptUJgwLDDTUEaICUG_leq"
+uri = "file://attached_assets/icon_option_4.png"
+type = "image"
+title = "clipboard hand inspector icon"
