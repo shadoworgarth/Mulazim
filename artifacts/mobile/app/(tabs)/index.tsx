@@ -23,6 +23,8 @@ interface FeatureCard {
   subtitle: string;
   icon: string;
   iconLib: "feather" | "mci";
+  icon2?: string;
+  iconLib2?: "feather" | "mci";
   color: string;
   bg: string;
   route: string;
@@ -36,6 +38,8 @@ const FEATURE_CARDS: FeatureCard[] = [
     subtitle: "15 تصنيفاً • أكثر من 182 مادة",
     icon: "food-drumstick",
     iconLib: "mci",
+    icon2: "food-apple",
+    iconLib2: "mci",
     color: "#0e7c7c",
     bg: "#e0f4f4",
     route: "/food-guide",
@@ -82,19 +86,18 @@ export default function HomeScreen() {
               ]}
               onPress={() => card.enabled && router.push(card.route as any)}
             >
-              <View style={[styles.iconWrap, { backgroundColor: card.bg }]}>
+              <View style={[styles.iconWrap, { backgroundColor: card.bg, flexDirection: card.icon2 ? "row" : undefined, gap: card.icon2 ? 2 : undefined }]}>
                 {card.iconLib === "mci" ? (
-                  <MaterialCommunityIcons
-                    name={card.icon as any}
-                    size={38}
-                    color={card.enabled ? card.color : "#aaa"}
-                  />
+                  <MaterialCommunityIcons name={card.icon as any} size={card.icon2 ? 28 : 38} color={card.enabled ? card.color : "#aaa"} />
                 ) : (
-                  <Feather
-                    name={card.icon as any}
-                    size={34}
-                    color={card.enabled ? card.color : "#aaa"}
-                  />
+                  <Feather name={card.icon as any} size={card.icon2 ? 24 : 34} color={card.enabled ? card.color : "#aaa"} />
+                )}
+                {card.icon2 && (
+                  card.iconLib2 === "mci" ? (
+                    <MaterialCommunityIcons name={card.icon2 as any} size={28} color={card.enabled ? card.color : "#aaa"} />
+                  ) : (
+                    <Feather name={card.icon2 as any} size={24} color={card.enabled ? card.color : "#aaa"} />
+                  )
                 )}
               </View>
               <Text
