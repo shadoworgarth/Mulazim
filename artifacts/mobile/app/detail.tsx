@@ -686,7 +686,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0f4f4", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
   },
   infoValueRow: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 6 },
-  infoValue: { fontSize: 14, color: colors.light.text, textAlign: "right", lineHeight: 20 },
+  infoValue: { flex: 1, fontSize: 14, color: colors.light.text, textAlign: "right", lineHeight: 20 },
   infoValueBold: { fontWeight: "700", fontSize: 15 },
   infoValueLink: { color: "#0e7c7c", textDecorationLine: "underline" },
   additiveRow: { flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, gap: 10 },
