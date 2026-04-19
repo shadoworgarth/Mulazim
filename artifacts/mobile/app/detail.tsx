@@ -486,8 +486,8 @@ function AdditiveChecker({
               ? (r.isGeneral ? styles.statusAmber : styles.statusGreen)
               : styles.statusRed;
             return (
-              <View key={i} style={styles.resultGroup}>
-                <View style={[styles.resultRow, rowStyle]}>
+              <View key={i} style={[styles.resultRow, rowStyle]}>
+                <View style={styles.resultRowMain}>
                   <View style={styles.resultLeft}>
                     <Feather
                       name={r.permitted ? "check-circle" : "x-circle"}
@@ -512,9 +512,9 @@ function AdditiveChecker({
                   </View>
                 </View>
                 {CHILDREN_WARNING_SET.has(r.ins) ? (
-                  <View style={styles.childrenWarning}>
-                    <Feather name="alert-triangle" size={11} color="#c2410c" />
-                    <Text style={styles.childrenWarningText}>{CHILDREN_WARNING_TEXT}</Text>
+                  <View style={styles.inlineWarning}>
+                    <Feather name="alert-triangle" size={10} color="#c2410c" />
+                    <Text style={styles.inlineWarningText}>{CHILDREN_WARNING_TEXT}</Text>
                   </View>
                 ) : null}
               </View>
@@ -753,18 +753,15 @@ const styles = StyleSheet.create({
   resultsTitle: { fontSize: 13, fontWeight: "700", color: colors.light.text, textAlign: "right" },
   resultRow: {
     borderRadius: 10, padding: 12,
-    flexDirection: "row", alignItems: "center", gap: 10,
+    flexDirection: "column", gap: 0,
     borderWidth: 1,
   },
-  resultGroup: { gap: 4 },
-  childrenWarning: {
+  resultRowMain: { flexDirection: "row", alignItems: "center", gap: 10 },
+  inlineWarning: {
     flexDirection: "row", alignItems: "flex-start", gap: 5,
-    backgroundColor: "#fff7ed", borderRadius: 8, padding: 8,
-    borderWidth: 1, borderColor: "#fed7aa",
+    borderTopWidth: 1, borderTopColor: "#fed7aa", paddingTop: 8, marginTop: 8,
   },
-  childrenWarningText: {
-    flex: 1, fontSize: 11, color: "#9a3412", textAlign: "right", lineHeight: 16,
-  },
+  inlineWarningText: { flex: 1, fontSize: 10.5, color: "#9a3412", textAlign: "right", lineHeight: 15 },
   resultGreen: { backgroundColor: "#f0faf5", borderColor: "#bbf0d9" },
   resultRed: { backgroundColor: "#fff5f5", borderColor: "#fecaca" },
   resultAmber: { backgroundColor: "#eff6ff", borderColor: "#bfdbfe" },

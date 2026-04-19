@@ -428,28 +428,30 @@ export default function AdditiveSearchScreen() {
                     </View>
                   ) : null}
                   <View style={[styles.matchRow, check.isGeneral ? styles.matchRowGeneral : {}]}>
-                    <Feather
-                      name="check-circle"
-                      size={14}
-                      color={check.isGeneral ? "#1d4ed8" : "#0e7c7c"}
-                      style={styles.matchIcon}
-                    />
-                    <View style={styles.matchTextWrap}>
-                      {check.isGeneral ? (
-                        <Text style={[styles.matchText, { color: "#1e3a8a" }]}>
-                          INS {check.ins} — مضاف عام مسموح
-                        </Text>
-                      ) : (
-                        <Text style={styles.matchText} numberOfLines={2}>{check.matchedLine}</Text>
-                      )}
+                    <View style={styles.matchRowContent}>
+                      <Feather
+                        name="check-circle"
+                        size={14}
+                        color={check.isGeneral ? "#1d4ed8" : "#0e7c7c"}
+                        style={styles.matchIcon}
+                      />
+                      <View style={styles.matchTextWrap}>
+                        {check.isGeneral ? (
+                          <Text style={[styles.matchText, { color: "#1e3a8a" }]}>
+                            INS {check.ins} — مضاف عام مسموح
+                          </Text>
+                        ) : (
+                          <Text style={styles.matchText} numberOfLines={2}>{check.matchedLine}</Text>
+                        )}
+                      </View>
                     </View>
+                    {CHILDREN_WARNING_SET.has(check.ins) ? (
+                      <View style={styles.inlineWarning}>
+                        <Feather name="alert-triangle" size={10} color="#c2410c" />
+                        <Text style={styles.inlineWarningText}>{CHILDREN_WARNING_TEXT}</Text>
+                      </View>
+                    ) : null}
                   </View>
-                  {CHILDREN_WARNING_SET.has(check.ins) ? (
-                    <View style={styles.childrenWarning}>
-                      <Feather name="alert-triangle" size={11} color="#c2410c" />
-                      <Text style={styles.childrenWarningText}>{CHILDREN_WARNING_TEXT}</Text>
-                    </View>
-                  ) : null}
                 </View>
               ))}
               {result.item.data?.row2.A ? (
@@ -564,13 +566,18 @@ const styles = StyleSheet.create({
   },
   inheritedBadgeText: { fontSize: 11, fontWeight: "500", color: "#6b5b00", textAlign: "right" },
   matchRow: {
-    flexDirection: "row", alignItems: "flex-start", gap: 6,
-    backgroundColor: "#f0faf8", borderRadius: 8, padding: 8,
+    backgroundColor: "#f0faf8", borderRadius: 8, padding: 8, gap: 6,
   },
   matchRowGeneral: { backgroundColor: "#eff6ff", borderWidth: 1, borderColor: "#bfdbfe" },
+  matchRowContent: { flexDirection: "row", alignItems: "flex-start", gap: 6 },
   matchIcon: { marginTop: 1, flexShrink: 0 },
   matchTextWrap: { flex: 1 },
   matchText: { fontSize: 12, color: colors.light.text, lineHeight: 18 },
+  inlineWarning: {
+    flexDirection: "row", alignItems: "flex-start", gap: 5,
+    borderTopWidth: 1, borderTopColor: "#fed7aa", paddingTop: 6, marginTop: 2,
+  },
+  inlineWarningText: { flex: 1, fontSize: 10.5, color: "#9a3412", textAlign: "right", lineHeight: 15 },
   itemCode: { fontSize: 11, color: "#0e7c7c", textAlign: "right" },
   childrenWarning: {
     flexDirection: "row", alignItems: "flex-start", gap: 5,
