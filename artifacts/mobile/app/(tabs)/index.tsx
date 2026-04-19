@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -21,7 +21,8 @@ interface FeatureCard {
   id: string;
   title: string;
   subtitle: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: string;
+  iconLib: "feather" | "mci";
   color: string;
   bg: string;
   route: string;
@@ -33,7 +34,8 @@ const FEATURE_CARDS: FeatureCard[] = [
     id: "food-guide",
     title: "دليل المضافات الغذائية",
     subtitle: "15 تصنيفاً • أكثر من 182 مادة",
-    icon: "book-open",
+    icon: "food-drumstick",
+    iconLib: "mci",
     color: "#0e7c7c",
     bg: "#e0f4f4",
     route: "/food-guide",
@@ -81,11 +83,19 @@ export default function HomeScreen() {
               onPress={() => card.enabled && router.push(card.route as any)}
             >
               <View style={[styles.iconWrap, { backgroundColor: card.bg }]}>
-                <Feather
-                  name={card.icon}
-                  size={34}
-                  color={card.enabled ? card.color : "#aaa"}
-                />
+                {card.iconLib === "mci" ? (
+                  <MaterialCommunityIcons
+                    name={card.icon as any}
+                    size={38}
+                    color={card.enabled ? card.color : "#aaa"}
+                  />
+                ) : (
+                  <Feather
+                    name={card.icon as any}
+                    size={34}
+                    color={card.enabled ? card.color : "#aaa"}
+                  />
+                )}
               </View>
               <Text
                 style={[
