@@ -653,7 +653,6 @@ export default function DetailScreen() {
 
       {/* Category */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>التصنيف الرئيسي</Text>
         <View style={styles.card}>
           <Text style={styles.categoryText}>{category.name.trim()}</Text>
         </View>
