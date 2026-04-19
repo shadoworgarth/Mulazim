@@ -321,17 +321,28 @@ export default function AdditiveSearchScreen() {
               style={styles.chipsScroll}
               contentContainerStyle={styles.chipsRow}
             >
-              {selectedAdditives.map((a) => (
-                <View key={a.ins} style={styles.chip}>
-                  <Pressable onPress={() => removeAdditive(a.ins)} hitSlop={8}>
-                    <Feather name="x" size={13} color="#b2d8d8" />
-                  </Pressable>
-                  <Text style={styles.chipText} numberOfLines={1}>{a.name.split(",")[0]}</Text>
-                  <View style={styles.chipInsBadge}>
-                    <Text style={styles.chipIns}>INS {a.ins}</Text>
+              {selectedAdditives.map((a) => {
+                const hasWarning = CHILDREN_WARNING_SET.has(a.ins);
+                return (
+                  <View key={a.ins} style={[styles.chip, hasWarning && styles.chipWarn]}>
+                    <View style={styles.chipMainRow}>
+                      <Pressable onPress={() => removeAdditive(a.ins)} hitSlop={8}>
+                        <Feather name="x" size={13} color={hasWarning ? "#fdba74" : "#b2d8d8"} />
+                      </Pressable>
+                      <Text style={styles.chipText} numberOfLines={1}>{a.name.split(",")[0]}</Text>
+                      <View style={[styles.chipInsBadge, hasWarning && styles.chipInsBadgeWarn]}>
+                        <Text style={[styles.chipIns, hasWarning && styles.chipInsWarn]}>INS {a.ins}</Text>
+                      </View>
+                    </View>
+                    {hasWarning && (
+                      <View style={styles.chipWarningRow}>
+                        <Feather name="alert-triangle" size={10} color="#f97316" />
+                        <Text style={styles.chipWarningText}>{CHILDREN_WARNING_TEXT}</Text>
+                      </View>
+                    )}
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </ScrollView>
             <Pressable
               onPress={() => setSelectedAdditives([])}
@@ -483,21 +494,36 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, fontSize: 14, color: colors.light.text, padding: 0 },
   chipsContainer: { flexDirection: "row", alignItems: "center", marginTop: 12, gap: 8 },
   chipsScroll: { flex: 1 },
-  chipsRow: { flexDirection: "row", gap: 8, paddingBottom: 2 },
+  chipsRow: { flexDirection: "row", gap: 8, paddingBottom: 2, alignItems: "flex-start" },
   clearAllBtn: {
     backgroundColor: "#d97706", borderRadius: 20, padding: 7,
     alignItems: "center", justifyContent: "center",
   },
   chip: {
+    backgroundColor: "#1a5a5a", borderRadius: 14,
+    paddingHorizontal: 10, paddingVertical: 7, maxWidth: 220,
+  },
+  chipWarn: {
+    backgroundColor: "#431407", borderWidth: 1, borderColor: "#f97316",
+  },
+  chipMainRow: {
     flexDirection: "row", alignItems: "center", gap: 6,
-    backgroundColor: "#1a5a5a", borderRadius: 20,
-    paddingHorizontal: 10, paddingVertical: 6,
+  },
+  chipWarningRow: {
+    flexDirection: "row", alignItems: "flex-start", gap: 4,
+    marginTop: 5, paddingTop: 5,
+    borderTopWidth: 1, borderTopColor: "#c2410c44",
+  },
+  chipWarningText: {
+    flex: 1, fontSize: 9.5, color: "#fb923c", lineHeight: 13, textAlign: "right",
   },
   chipText: { fontSize: 12, color: "#ffffff", fontWeight: "500", maxWidth: 110 },
   chipInsBadge: {
     backgroundColor: "#0e7c7c55", borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2,
   },
+  chipInsBadgeWarn: { backgroundColor: "#c2410c55" },
   chipIns: { fontSize: 10, color: "#b2d8d8", fontWeight: "600" },
+  chipInsWarn: { color: "#fdba74" },
   listContent: { padding: 16, paddingBottom: Platform.OS === "web" ? 34 : 24, gap: 10 },
   sectionLabel: {
     fontSize: 12, fontWeight: "600", color: colors.light.mutedForeground,
