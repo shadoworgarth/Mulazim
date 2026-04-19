@@ -25,6 +25,9 @@ type VerifyResult = Badge & { permitted: boolean; reason: string; isInherited?: 
 // Valid INS number: starts with a digit (filters out Arabic header/section rows in table2)
 const isValidIns = (ins: string) => /^\d/.test(String(ins));
 
+const CHILDREN_WARNING_SET = new Set(["102", "110", "122", "129"]);
+const CHILDREN_WARNING_TEXT = "قد يكون له تأثير سلبي على النشاط والتركيز لدى الأطفال";
+
 // Full autocomplete database — all 406 entries from every item + general additives
 const GA_DB: AdditiveEntry[] = comprehensiveAdditives as AdditiveEntry[];
 
@@ -483,29 +486,37 @@ function AdditiveChecker({
               ? (r.isGeneral ? styles.statusAmber : styles.statusGreen)
               : styles.statusRed;
             return (
-              <View key={i} style={[styles.resultRow, rowStyle]}>
-                <View style={styles.resultLeft}>
-                  <Feather
-                    name={r.permitted ? "check-circle" : "x-circle"}
-                    size={20}
-                    color={iconColor}
-                  />
-                  <Text style={[styles.resultStatus, statusStyle]}>
-                    {r.permitted ? "مسموح" : "غير مسموح"}
-                  </Text>
+              <View key={i} style={styles.resultGroup}>
+                <View style={[styles.resultRow, rowStyle]}>
+                  <View style={styles.resultLeft}>
+                    <Feather
+                      name={r.permitted ? "check-circle" : "x-circle"}
+                      size={20}
+                      color={iconColor}
+                    />
+                    <Text style={[styles.resultStatus, statusStyle]}>
+                      {r.permitted ? "مسموح" : "غير مسموح"}
+                    </Text>
+                  </View>
+                  <View style={styles.resultRight}>
+                    <Text style={styles.resultCode}>E{r.ins.toUpperCase()} — {r.name}</Text>
+                    {r.reason ? (
+                      r.isInherited ? (
+                        <View style={styles.inheritedReasonBadge}>
+                          <Text style={styles.inheritedReasonText} numberOfLines={2}>{r.reason}</Text>
+                        </View>
+                      ) : (
+                        <Text style={[styles.resultReason, r.isGeneral && { color: "#1e3a8a" }]} numberOfLines={2}>{r.reason}</Text>
+                      )
+                    ) : null}
+                  </View>
                 </View>
-                <View style={styles.resultRight}>
-                  <Text style={styles.resultCode}>E{r.ins.toUpperCase()} — {r.name}</Text>
-                  {r.reason ? (
-                    r.isInherited ? (
-                      <View style={styles.inheritedReasonBadge}>
-                        <Text style={styles.inheritedReasonText} numberOfLines={2}>{r.reason}</Text>
-                      </View>
-                    ) : (
-                      <Text style={[styles.resultReason, r.isGeneral && { color: "#1e3a8a" }]} numberOfLines={2}>{r.reason}</Text>
-                    )
-                  ) : null}
-                </View>
+                {CHILDREN_WARNING_SET.has(r.ins) ? (
+                  <View style={styles.childrenWarning}>
+                    <Feather name="alert-triangle" size={11} color="#c2410c" />
+                    <Text style={styles.childrenWarningText}>{CHILDREN_WARNING_TEXT}</Text>
+                  </View>
+                ) : null}
               </View>
             );
           })}
@@ -744,6 +755,15 @@ const styles = StyleSheet.create({
     borderRadius: 10, padding: 12,
     flexDirection: "row", alignItems: "center", gap: 10,
     borderWidth: 1,
+  },
+  resultGroup: { gap: 4 },
+  childrenWarning: {
+    flexDirection: "row", alignItems: "flex-start", gap: 5,
+    backgroundColor: "#fff7ed", borderRadius: 8, padding: 8,
+    borderWidth: 1, borderColor: "#fed7aa",
+  },
+  childrenWarningText: {
+    flex: 1, fontSize: 11, color: "#9a3412", textAlign: "right", lineHeight: 16,
   },
   resultGreen: { backgroundColor: "#f0faf5", borderColor: "#bbf0d9" },
   resultRed: { backgroundColor: "#fff5f5", borderColor: "#fecaca" },

@@ -33,6 +33,9 @@ const generalInsSet = new Set<string>([
   ...generalData.table2.rows.map((r) => r.ins.toLowerCase()),
 ]);
 
+const CHILDREN_WARNING_SET = new Set(["102", "110", "122", "129"]);
+const CHILDREN_WARNING_TEXT = "قد يكون له تأثير سلبي على النشاط والتركيز لدى الأطفال";
+
 // ── Range-aware matching helpers ─────────────────────────────────────────────
 
 const ROMAN: Record<string, number> = {
@@ -430,6 +433,12 @@ export default function AdditiveSearchScreen() {
                       )}
                     </View>
                   </View>
+                  {CHILDREN_WARNING_SET.has(check.ins) ? (
+                    <View style={styles.childrenWarning}>
+                      <Feather name="alert-triangle" size={11} color="#c2410c" />
+                      <Text style={styles.childrenWarningText}>{CHILDREN_WARNING_TEXT}</Text>
+                    </View>
+                  ) : null}
                 </View>
               ))}
               {result.item.data?.row2.A ? (
@@ -537,6 +546,14 @@ const styles = StyleSheet.create({
   matchTextWrap: { flex: 1 },
   matchText: { fontSize: 12, color: colors.light.text, lineHeight: 18 },
   itemCode: { fontSize: 11, color: "#0e7c7c", textAlign: "right" },
+  childrenWarning: {
+    flexDirection: "row", alignItems: "flex-start", gap: 5,
+    backgroundColor: "#fff7ed", borderRadius: 6, padding: 7,
+    borderWidth: 1, borderColor: "#fed7aa",
+  },
+  childrenWarningText: {
+    flex: 1, fontSize: 11, color: "#9a3412", textAlign: "right", lineHeight: 16,
+  },
   emptyState: { alignItems: "center", paddingTop: 60, gap: 12, paddingHorizontal: 20 },
   emptyTitle: { fontSize: 17, fontWeight: "600", color: colors.light.text, textAlign: "center" },
   emptySubtitle: { fontSize: 14, color: colors.light.mutedForeground, textAlign: "center", lineHeight: 22 },
