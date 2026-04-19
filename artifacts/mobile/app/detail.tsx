@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -465,7 +465,7 @@ function AdditiveChecker({
             style={({ pressed }) => [styles.verifyBtn, pressed && { opacity: 0.8 }]}
             onPress={handleVerify}
           >
-            <Feather name="check-circle" size={16} color="#fff" />
+            <MaterialCommunityIcons name="check-circle" size={18} color="#fff" />
             <Text style={styles.verifyBtnText}>تحقق ({badges.length})</Text>
           </Pressable>
         </View>
@@ -489,9 +489,9 @@ function AdditiveChecker({
               <View key={i} style={[styles.resultRow, rowStyle]}>
                 <View style={styles.resultRowMain}>
                   <View style={styles.resultLeft}>
-                    <Feather
-                      name={r.permitted ? "check-circle" : "x-circle"}
-                      size={20}
+                    <MaterialCommunityIcons
+                      name={r.permitted ? "check-circle" : "close-circle"}
+                      size={22}
                       color={iconColor}
                     />
                     <Text style={[styles.resultStatus, statusStyle]}>

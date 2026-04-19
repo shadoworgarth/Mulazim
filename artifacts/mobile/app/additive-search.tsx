@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import {
@@ -429,9 +429,9 @@ export default function AdditiveSearchScreen() {
                   ) : null}
                   <View style={[styles.matchRow, check.isGeneral ? styles.matchRowGeneral : {}]}>
                     <View style={styles.matchRowContent}>
-                      <Feather
+                      <MaterialCommunityIcons
                         name="check-circle"
-                        size={14}
+                        size={16}
                         color={check.isGeneral ? "#1d4ed8" : "#0e7c7c"}
                         style={styles.matchIcon}
                       />
