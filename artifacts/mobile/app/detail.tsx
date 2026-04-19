@@ -239,9 +239,6 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.infoRow}>
       <Text style={styles.infoValue}>{value || "—"}</Text>
-      <View style={styles.infoLabelWrap}>
-        <Text style={styles.infoLabel}>{label}</Text>
-      </View>
     </View>
   );
 }
@@ -619,9 +616,6 @@ export default function DetailScreen() {
                 {row2.C === "نعم" && (
                   <Feather name="external-link" size={14} color="#0e7c7c" style={{ marginTop: 2 }} />
                 )}
-              </View>
-              <View style={styles.infoLabelWrap}>
-                <Text style={styles.infoLabel}>{row1.C}</Text>
               </View>
             </Pressable>
           ) : null}
