@@ -66,7 +66,7 @@ export default function HomeScreen() {
         resizeMode="contain"
       >
         <Text style={styles.headerTitle}>ملازم</Text>
-        <Text style={styles.headerSubtitle}>مساعدك في الرقابة الغذائية</Text>
+        <Text style={styles.headerSubtitle}>مساعدك في الرقابة والتفتيش</Text>
       </ImageBackground>
 
       {/* Cards Grid */}
