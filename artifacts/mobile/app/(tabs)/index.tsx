@@ -109,9 +109,6 @@ export default function HomeScreen() {
               >
                 {card.title}
               </Text>
-              <Text style={styles.cardSubtitle} numberOfLines={1}>
-                {card.subtitle}
-              </Text>
             </Pressable>
           ))}
         </View>
