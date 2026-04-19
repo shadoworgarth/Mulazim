@@ -109,7 +109,7 @@ export default function OtpAuthScreen() {
           <View style={styles.logoCircle}>
             <Feather name="shield" size={36} color="#0e7c7c" />
           </View>
-          <Text style={styles.title}>دليل المضافات الغذائية</Text>
+          <Text style={styles.title}>ملازم</Text>
         </View>
 
         {/* Card */}

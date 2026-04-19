@@ -79,7 +79,7 @@ export default function HomeScreen() {
         imageStyle={styles.headerImage}
         resizeMode="contain"
       >
-        <Text style={styles.headerTitle}>دليل المضافات الغذائية</Text>
+        <Text style={styles.headerTitle}>ملازم</Text>
         <Text style={styles.headerSubtitle}>اختر التصنيف لعرض الأصناف</Text>
 
         {/* Category Search */}
