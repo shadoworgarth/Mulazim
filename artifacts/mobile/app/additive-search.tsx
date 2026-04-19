@@ -22,9 +22,9 @@ const generalData = require("../assets/general-additives.json") as {
   table2: { rows: { ins: string; color: string; food: string }[] };
 };
 
-const comprehensiveData = require("../assets/comprehensive-additives.json") as {
+const comprehensiveData = (require("../assets/comprehensive-additives.json") as {
   ins: string; name: string; funcClass?: string;
-}[];
+}[]).filter((e) => /^\d/.test(e.ins));
 
 type AdditiveEntry = { ins: string; name: string };
 
