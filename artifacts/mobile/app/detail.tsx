@@ -1,4 +1,3 @@
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -404,7 +403,7 @@ function AdditiveChecker({
               onPress={() => removeBadge(b.ins)}
             >
               <Text style={styles.badgeText}>E{b.ins.toUpperCase()}</Text>
-              <Feather name="x" size={12} color="#0e7c7c" />
+              <Text style={{ fontSize: 13, color: "#0e7c7c", lineHeight: 14 }}>×</Text>
             </Pressable>
           ))}
         </View>
@@ -423,7 +422,7 @@ function AdditiveChecker({
           autoCorrect={false}
           returnKeyType="search"
         />
-        <Feather name="search" size={18} color="#999" style={styles.searchIcon} />
+        <Text style={[{ fontSize: 15, color: "#999" }, styles.searchIcon]}>🔍</Text>
       </View>
 
       {/* Suggestions */}
@@ -438,7 +437,7 @@ function AdditiveChecker({
                 style={({ pressed }) => [styles.addBtn, pressed && { opacity: 0.7 }]}
                 onPress={() => addBadge(s)}
               >
-                <Feather name="plus" size={16} color="#fff" />
+                <Text style={{ fontSize: 20, color: "#fff", lineHeight: 22 }}>+</Text>
               </Pressable>
               <View style={styles.suggestionText}>
                 <Text style={styles.suggestionName} numberOfLines={1}>{s.name}</Text>
@@ -462,7 +461,7 @@ function AdditiveChecker({
             style={({ pressed }) => [styles.verifyBtn, pressed && { opacity: 0.8 }]}
             onPress={handleVerify}
           >
-            <MaterialCommunityIcons name="check-circle" size={18} color="#fff" />
+            <Text style={{ fontSize: 16, color: "#fff" }}>✓</Text>
             <Text style={styles.verifyBtnText}>تحقق ({badges.length})</Text>
           </Pressable>
         </View>
@@ -486,11 +485,7 @@ function AdditiveChecker({
               <View key={i} style={[styles.resultRow, rowStyle]}>
                 <View style={styles.resultRowMain}>
                   <View style={styles.resultLeft}>
-                    <MaterialCommunityIcons
-                      name={r.permitted ? "check-circle" : "close-circle"}
-                      size={22}
-                      color={iconColor}
-                    />
+                    <Text style={{ fontSize: 20, color: iconColor }}>{r.permitted ? "✓" : "✕"}</Text>
                     <Text style={[styles.resultStatus, statusStyle]}>
                       {r.permitted ? "مسموح" : "غير مسموح"}
                     </Text>
@@ -510,7 +505,7 @@ function AdditiveChecker({
                 </View>
                 {CHILDREN_WARNING_SET.has(r.ins) ? (
                   <View style={styles.inlineWarning}>
-                    <Feather name="alert-triangle" size={10} color="#c2410c" />
+                    <Text style={{ fontSize: 11, color: "#c2410c" }}>⚠</Text>
                     <Text style={styles.inlineWarningText}>{CHILDREN_WARNING_TEXT}</Text>
                   </View>
                 ) : null}
@@ -614,7 +609,7 @@ export default function DetailScreen() {
                   {row2.C || "—"}
                 </Text>
                 {row2.C === "نعم" && (
-                  <Feather name="external-link" size={14} color="#0e7c7c" style={{ marginTop: 2 }} />
+                  <Text style={{ fontSize: 14, color: "#0e7c7c", marginTop: 2 }}>↗</Text>
                 )}
               </View>
             </Pressable>

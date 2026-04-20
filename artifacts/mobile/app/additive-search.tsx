@@ -1,4 +1,3 @@
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import {
@@ -294,7 +293,7 @@ export default function AdditiveSearchScreen() {
           أضف مادة أو أكثر لعرض الأصناف الغذائية المسموح بها لجميعها
         </Text>
         <View style={styles.searchBox}>
-          <Feather name="search" size={18} color="#0e7c7c" />
+          <Text style={{ fontSize: 16, color: "#0e7c7c" }}>🔍</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="اسم المادة المضافة أو رمز INS"
@@ -307,7 +306,7 @@ export default function AdditiveSearchScreen() {
           />
           {query.length > 0 && (
             <Pressable onPress={() => setQuery("")}>
-              <Feather name="x-circle" size={18} color={colors.light.mutedForeground} />
+              <Text style={{ fontSize: 18, color: colors.light.mutedForeground }}>✕</Text>
             </Pressable>
           )}
         </View>
@@ -327,7 +326,7 @@ export default function AdditiveSearchScreen() {
                   <View key={a.ins} style={[styles.chip, hasWarning && styles.chipWarn]}>
                     <View style={styles.chipMainRow}>
                       <Pressable onPress={() => removeAdditive(a.ins)} hitSlop={8}>
-                        <Feather name="x" size={13} color={hasWarning ? "#fdba74" : "#b2d8d8"} />
+                        <Text style={{ fontSize: 14, color: hasWarning ? "#fdba74" : "#b2d8d8", lineHeight: 16 }}>×</Text>
                       </Pressable>
                       <Text style={styles.chipText} numberOfLines={1}>{a.name.split(",")[0]}</Text>
                       <View style={[styles.chipInsBadge, hasWarning && styles.chipInsBadgeWarn]}>
@@ -336,7 +335,7 @@ export default function AdditiveSearchScreen() {
                     </View>
                     {hasWarning && (
                       <View style={styles.chipWarningRow}>
-                        <Feather name="alert-triangle" size={10} color="#f97316" />
+                        <Text style={{ fontSize: 11, color: "#f97316" }}>⚠</Text>
                         <Text style={styles.chipWarningText}>{CHILDREN_WARNING_TEXT}</Text>
                       </View>
                     )}
@@ -349,7 +348,7 @@ export default function AdditiveSearchScreen() {
               style={({ pressed }) => [styles.clearAllBtn, { opacity: pressed ? 0.7 : 1 }]}
               hitSlop={6}
             >
-              <Feather name="trash-2" size={14} color="#b2d8d8" />
+              <Text style={{ fontSize: 16, color: "#b2d8d8" }}>🗑</Text>
             </Pressable>
           </View>
         )}
@@ -374,7 +373,7 @@ export default function AdditiveSearchScreen() {
               onPress={() => addAdditive({ ins: entry.ins, name: entry.name })}
             >
               <View style={styles.suggestionRow}>
-                <Feather name="plus-circle" size={16} color="#0e7c7c" />
+                <Text style={{ fontSize: 18, color: "#0e7c7c", lineHeight: 20 }}>+</Text>
                 <Text style={styles.suggestionName} numberOfLines={2}>{entry.name}</Text>
                 <View style={styles.suggestionInsBadge}>
                   <Text style={styles.suggestionIns}>INS {entry.ins}</Text>
@@ -384,7 +383,7 @@ export default function AdditiveSearchScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Feather name="search" size={48} color={colors.light.mutedForeground} />
+              <Text style={{ fontSize: 48, color: colors.light.mutedForeground }}>🔍</Text>
               <Text style={styles.emptyTitle}>لا توجد نتائج</Text>
               <Text style={styles.emptySubtitle}>جرب البحث بجزء من اسم المادة المضافة أو رمز INS</Text>
             </View>
@@ -413,7 +412,7 @@ export default function AdditiveSearchScreen() {
               }
             >
               <View style={styles.resultHeader}>
-                <Feather name="chevron-left" size={16} color={colors.light.mutedForeground} />
+                <Text style={{ fontSize: 18, color: colors.light.mutedForeground }}>›</Text>
                 <Text style={styles.resultItemName} numberOfLines={2}>{result.item.name.trim()}</Text>
               </View>
               <View style={styles.categoryBadge}>
@@ -423,18 +422,13 @@ export default function AdditiveSearchScreen() {
                 <View key={idx} style={styles.checkGroup}>
                   {check.inheritedFrom ? (
                     <View style={styles.inheritedBadge}>
-                      <Feather name="corner-left-up" size={12} color="#6b5b00" />
+                      <Text style={{ fontSize: 12, color: "#6b5b00" }}>↑</Text>
                       <Text style={styles.inheritedBadgeText}>من التصنيف الرئيسي ({check.inheritedFrom})</Text>
                     </View>
                   ) : null}
                   <View style={[styles.matchRow, check.isGeneral ? styles.matchRowGeneral : {}]}>
                     <View style={styles.matchRowContent}>
-                      <MaterialCommunityIcons
-                        name="check-circle"
-                        size={16}
-                        color={check.isGeneral ? "#1d4ed8" : "#0e7c7c"}
-                        style={styles.matchIcon}
-                      />
+                      <Text style={[{ fontSize: 15, color: check.isGeneral ? "#1d4ed8" : "#0e7c7c" }, styles.matchIcon]}>✓</Text>
                       <View style={styles.matchTextWrap}>
                         {check.isGeneral ? (
                           <Text style={[styles.matchText, { color: "#1e3a8a" }]}>
@@ -447,7 +441,7 @@ export default function AdditiveSearchScreen() {
                     </View>
                     {CHILDREN_WARNING_SET.has(check.ins) ? (
                       <View style={styles.inlineWarning}>
-                        <Feather name="alert-triangle" size={10} color="#c2410c" />
+                        <Text style={{ fontSize: 11, color: "#c2410c" }}>⚠</Text>
                         <Text style={styles.inlineWarningText}>{CHILDREN_WARNING_TEXT}</Text>
                       </View>
                     ) : null}
@@ -462,7 +456,7 @@ export default function AdditiveSearchScreen() {
           ListEmptyComponent={
             selectedAdditives.length > 0 ? (
               <View style={styles.emptyState}>
-                <Feather name="x-circle" size={48} color="#cc4444" />
+                <Text style={{ fontSize: 48, color: "#cc4444" }}>✕</Text>
                 <Text style={styles.emptyTitle}>لا يوجد تطابق</Text>
                 <Text style={styles.emptySubtitle}>
                   لا يوجد صنف غذائي يسمح بجميع المواد المضافة المحددة معاً
@@ -470,7 +464,7 @@ export default function AdditiveSearchScreen() {
               </View>
             ) : (
               <View style={styles.emptyState}>
-                <Feather name="plus-circle" size={48} color={colors.light.mutedForeground} />
+                <Text style={{ fontSize: 48, color: colors.light.mutedForeground }}>+</Text>
                 <Text style={styles.emptyTitle}>ابدأ بإضافة مادة مضافة</Text>
                 <Text style={styles.emptySubtitle}>
                   ابحث عن مادة مضافة واضغط عليها لإضافتها، يمكنك إضافة أكثر من مادة
