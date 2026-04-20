@@ -79,11 +79,6 @@ export default function ItemsScreen() {
                 {item.data?.row2.A ? (
                   <Text style={styles.itemCode}>{item.data.row2.A}</Text>
                 ) : null}
-                {item.data?.row2.C === "نعم" ? (
-                  <View style={styles.generalBadge}>
-                    <Text style={styles.generalBadgeText}>يسمح بالمضافات العامة</Text>
-                  </View>
-                ) : null}
               </View>
               <View
                 style={[
@@ -206,18 +201,5 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: colors.light.mutedForeground,
-  },
-  generalBadge: {
-    alignSelf: "flex-end",
-    backgroundColor: "#e0f4f4",
-    borderRadius: 6,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    marginTop: 5,
-  },
-  generalBadgeText: {
-    fontSize: 11,
-    color: "#0e7c7c",
-    fontWeight: "600",
   },
 });
