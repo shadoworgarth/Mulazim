@@ -612,6 +612,9 @@ export default function DetailScreen() {
                   <Text style={{ fontSize: 14, color: "#0e7c7c", marginTop: 2 }}>↗</Text>
                 )}
               </View>
+              {row1.C ? (
+                <Text style={styles.infoRowLabel} numberOfLines={1}>{row1.C}</Text>
+              ) : null}
             </Pressable>
           ) : null}
         </View>
@@ -682,6 +685,7 @@ const styles = StyleSheet.create({
   },
   infoValueRow: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 6 },
   infoValue: { flex: 1, fontSize: 14, color: colors.light.text, textAlign: "right", lineHeight: 20 },
+  infoRowLabel: { fontSize: 13, color: "#555", textAlign: "right", flexShrink: 1 },
   infoValueBold: { fontWeight: "700", fontSize: 15 },
   infoValueLink: { color: "#0e7c7c", textDecorationLine: "underline" },
   additiveRow: { flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, gap: 10 },
