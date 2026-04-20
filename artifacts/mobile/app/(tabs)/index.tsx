@@ -33,7 +33,7 @@ const FEATURE_CARDS: FeatureCard[] = [
     id: "food-guide",
     title: "دليل المضافات الغذائية",
     subtitle: "15 تصنيفاً • أكثر من 182 مادة",
-    emojis: ["🍗", "🍎", "🥛", "🌾"],
+    emojis: ["🍗", "🍎", "🥩", "🧀"],
     color: "#0e7c7c",
     bg: "#e0f4f4",
     route: "/food-guide",
