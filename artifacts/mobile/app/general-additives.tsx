@@ -1,4 +1,3 @@
-import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   Platform,
@@ -125,7 +124,7 @@ export default function GeneralAdditivesScreen() {
     <View style={styles.container}>
       {/* Search bar */}
       <View style={styles.searchBar}>
-        <Feather name="search" size={17} color="#0e7c7c" />
+        <Text style={{ fontSize: 16, color: "#0e7c7c" }}>🔍</Text>
         <TextInput
           style={styles.searchInput}
           placeholder="بحث باسم المادة أو رقم INS..."
@@ -135,7 +134,7 @@ export default function GeneralAdditivesScreen() {
         />
         {search.length > 0 && (
           <Pressable onPress={() => setSearch("")}>
-            <Feather name="x" size={17} color={colors.light.mutedForeground} />
+            <Text style={{ fontSize: 17, color: colors.light.mutedForeground }}>✕</Text>
           </Pressable>
         )}
       </View>
@@ -180,7 +179,7 @@ export default function GeneralAdditivesScreen() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Feather name="search" size={40} color={colors.light.mutedForeground} />
+            <Text style={{ fontSize: 40, color: colors.light.mutedForeground }}>🔍</Text>
             <Text style={styles.emptyText}>لا توجد نتائج</Text>
           </View>
         }

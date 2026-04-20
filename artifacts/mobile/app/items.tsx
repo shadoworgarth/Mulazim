@@ -1,4 +1,3 @@
-import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
@@ -68,11 +67,7 @@ export default function ItemsScreen() {
           >
             <View style={styles.cardInner}>
               {hasData && (
-                <Feather
-                  name="chevron-left"
-                  size={20}
-                  color={colors.light.mutedForeground}
-                />
+                <Text style={{ fontSize: 18, color: colors.light.mutedForeground }}>›</Text>
               )}
               <View style={styles.cardBody}>
                 <Text
@@ -106,7 +101,7 @@ export default function ItemsScreen() {
       }}
       ListEmptyComponent={
         <View style={styles.center}>
-          <Feather name="inbox" size={48} color={colors.light.mutedForeground} />
+          <Text style={{ fontSize: 48, color: colors.light.mutedForeground }}>📥</Text>
           <Text style={styles.emptyText}>لا توجد أصناف</Text>
         </View>
       }

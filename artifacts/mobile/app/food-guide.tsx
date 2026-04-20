@@ -1,4 +1,3 @@
-import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -84,7 +83,7 @@ export default function HomeScreen() {
 
         {/* Category Search */}
         <View style={styles.searchContainer}>
-          <Feather name="search" size={18} color="#0e7c7c" />
+          <Text style={{ fontSize: 16, color: "#0e7c7c" }}>🔍</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="بحث في الأصناف والمنتجات..."
@@ -103,11 +102,11 @@ export default function HomeScreen() {
           ]}
           onPress={() => router.push("/additive-search")}
         >
-          <Feather name="zap" size={16} color="#0e7c7c" />
+          <Text style={{ fontSize: 15, color: "#0e7c7c" }}>⚡</Text>
           <Text style={styles.additiveSearchBtnText}>
             بحث عن مادة مضافة في جميع الأصناف
           </Text>
-          <Feather name="arrow-left" size={14} color="#0e7c7c" />
+          <Text style={{ fontSize: 14, color: "#0e7c7c" }}>←</Text>
         </Pressable>
       </ImageBackground>
 
@@ -131,11 +130,7 @@ export default function HomeScreen() {
               >
                 <View style={[styles.cardAccent, { backgroundColor: item.hasData ? color : colors.light.muted }]} />
                 <View style={styles.cardContent}>
-                  <Feather
-                    name={item.hasData ? "chevron-left" : "list"}
-                    size={20}
-                    color={colors.light.mutedForeground}
-                  />
+                  <Text style={{ fontSize: 18, color: colors.light.mutedForeground }}>{item.hasData ? "›" : "☰"}</Text>
                   <View style={styles.cardText}>
                     <Text style={[styles.cardTitle, !item.hasData && { color: colors.light.mutedForeground }]} numberOfLines={2}>
                       {item.subItemName.trim()}
@@ -143,7 +138,7 @@ export default function HomeScreen() {
                     <Text style={styles.cardCount}>{item.categoryName.trim()}</Text>
                   </View>
                   <View style={[styles.categoryIcon, { backgroundColor: (item.hasData ? color : "#888") + "22" }]}>
-                    <Feather name={item.hasData ? "file-text" : "folder"} size={18} color={item.hasData ? color : "#888"} />
+                    <Text style={{ fontSize: 16, color: item.hasData ? color : "#888" }}>{item.hasData ? "📄" : "📁"}</Text>
                   </View>
                 </View>
               </Pressable>
@@ -151,7 +146,7 @@ export default function HomeScreen() {
           }}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Feather name="search" size={48} color={colors.light.mutedForeground} />
+              <Text style={{ fontSize: 48, color: colors.light.mutedForeground }}>🔍</Text>
               <Text style={styles.emptyText}>لا توجد نتائج</Text>
             </View>
           }
@@ -176,13 +171,13 @@ export default function HomeScreen() {
             >
               <View style={[styles.cardAccent, { backgroundColor: "#7c4e0e" }]} />
               <View style={styles.cardContent}>
-                <Feather name="chevron-left" size={20} color={colors.light.mutedForeground} />
+                <Text style={{ fontSize: 18, color: colors.light.mutedForeground }}>›</Text>
                 <View style={styles.cardText}>
                   <Text style={styles.cardTitle}>المضافات العامة</Text>
                   <Text style={styles.cardCount}>182 مادة مضافة • 55 لون</Text>
                 </View>
                 <View style={[styles.categoryIcon, { backgroundColor: "#7c4e0e22" }]}>
-                  <Feather name="star" size={20} color="#7c4e0e" />
+                  <Text style={{ fontSize: 18, color: "#7c4e0e" }}>⭐</Text>
                 </View>
               </View>
             </Pressable>
@@ -199,11 +194,7 @@ export default function HomeScreen() {
               >
                 <View style={[styles.cardAccent, { backgroundColor: color }]} />
                 <View style={styles.cardContent}>
-                  <Feather
-                    name="chevron-left"
-                    size={20}
-                    color={colors.light.mutedForeground}
-                  />
+                  <Text style={{ fontSize: 18, color: colors.light.mutedForeground }}>›</Text>
                   <View style={styles.cardText}>
                     <Text style={styles.cardTitle} numberOfLines={2}>
                       {item.name.trim()}
@@ -229,7 +220,7 @@ export default function HomeScreen() {
           }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Feather name="inbox" size={48} color={colors.light.mutedForeground} />
+              <Text style={{ fontSize: 48, color: colors.light.mutedForeground }}>📥</Text>
               <Text style={styles.emptyText}>لا توجد نتائج</Text>
             </View>
           }
