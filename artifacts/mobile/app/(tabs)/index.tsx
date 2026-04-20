@@ -21,7 +21,7 @@ interface FeatureCard {
   id: string;
   title: string;
   subtitle: string;
-  emoji: string;
+  emojis: [string, string, string, string];
   color: string;
   bg: string;
   route: string;
@@ -33,7 +33,7 @@ const FEATURE_CARDS: FeatureCard[] = [
     id: "food-guide",
     title: "دليل المضافات الغذائية",
     subtitle: "15 تصنيفاً • أكثر من 182 مادة",
-    emoji: "🍗🍎",
+    emojis: ["🍗", "🍎", "🥛", "🌾"],
     color: "#0e7c7c",
     bg: "#e0f4f4",
     route: "/food-guide",
@@ -81,7 +81,12 @@ export default function HomeScreen() {
               onPress={() => card.enabled && router.push(card.route as any)}
             >
               <View style={[styles.iconWrap, { backgroundColor: card.bg }]}>
-                <Text style={styles.cardEmoji}>{card.emoji}</Text>
+                <View style={styles.emojiGrid}>
+                  <Text style={styles.cardEmoji}>{card.emojis[0]}</Text>
+                  <Text style={styles.cardEmoji}>{card.emojis[1]}</Text>
+                  <Text style={styles.cardEmoji}>{card.emojis[2]}</Text>
+                  <Text style={styles.cardEmoji}>{card.emojis[3]}</Text>
+                </View>
               </View>
               <Text
                 style={[
@@ -180,9 +185,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  emojiGrid: {
+    width: "100%",
+    height: "100%",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+  },
   cardEmoji: {
-    fontSize: 28,
-    letterSpacing: 2,
+    fontSize: 22,
+    width: "44%",
+    textAlign: "center",
   },
   cardTitle: {
     fontSize: 13,
