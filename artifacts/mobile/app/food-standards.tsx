@@ -17,22 +17,37 @@ type Regulation = {
   arabic: string;
 };
 
-const extractStandardKey = (standard: string): [number, number] => {
-  const stripped = standard.replace(/[:/]\d{4}\s*$/, "").trim();
-  const matches = stripped.match(/\d+/g);
-  if (!matches || matches.length === 0) return [Number.MAX_SAFE_INTEGER, 0];
-  const main = parseInt(matches[0], 10);
-  const part = matches.length > 1 ? parseInt(matches[1], 10) : 0;
-  return [main, part];
+const stripStandardSuffixes = (s: string): string =>
+  s
+    .replace(/[/+]\s*Amd\s*\d+/gi, "")
+    .replace(/:\d{4}/g, "")
+    .replace(/\/\d{4}\b/g, "")
+    .trim();
+
+const extractStandardToken = (standard: string): string => {
+  const stripped = stripStandardSuffixes(standard);
+  const tokens = stripped.split(/\s+/);
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    if (/^\d+(-\d+)*$/.test(tokens[i])) return tokens[i];
+  }
+  return "";
+};
+
+const extractStandardKey = (standard: string): [number, number, number] => {
+  const stdToken = extractStandardToken(standard);
+  if (!stdToken) return [Number.MAX_SAFE_INTEGER, 0, 0];
+  const parts = stdToken.split("-").map((p) => parseInt(p, 10));
+  return [parts[0], parts[1] || 0, parts[2] || 0];
 };
 
 const ALL: Regulation[] = (regulationsData as Regulation[])
   .slice()
   .sort((a, b) => {
-    const [ma, pa] = extractStandardKey(a.standard);
-    const [mb, pb] = extractStandardKey(b.standard);
+    const [ma, pa, sa] = extractStandardKey(a.standard);
+    const [mb, pb, sb] = extractStandardKey(b.standard);
     if (ma !== mb) return ma - mb;
     if (pa !== pb) return pa - pb;
+    if (sa !== sb) return sa - sb;
     return a.standard.localeCompare(b.standard);
   });
 
@@ -46,12 +61,8 @@ const normalize = (s: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const extractStandardNumberStr = (standard: string): string => {
-  const stripped = standard.replace(/[:/]\d{4}\s*$/, "").trim();
-  const tokens = stripped.split(/\s+/);
-  const last = tokens[tokens.length - 1] || "";
-  return /\d/.test(last) ? last : "";
-};
+const extractStandardNumberStr = (standard: string): string =>
+  extractStandardToken(standard);
 
 const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
 
