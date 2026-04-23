@@ -22,6 +22,7 @@ interface FeatureCard {
   title: string;
   subtitle: string;
   emojis: [string, string, string, string];
+  singleEmoji?: boolean;
   color: string;
   bg: string;
   route: string;
@@ -44,6 +45,7 @@ const FEATURE_CARDS: FeatureCard[] = [
     title: "مكتبة المفتش",
     subtitle: "",
     emojis: ["📖", "📖", "📖", "📖"],
+    singleEmoji: true,
     color: "#7c5e0e",
     bg: "#f4ecd8",
     route: "/inspector-library",
@@ -91,12 +93,16 @@ export default function HomeScreen() {
               onPress={() => card.enabled && router.push(card.route as any)}
             >
               <View style={[styles.iconWrap, { backgroundColor: card.bg }]}>
-                <View style={styles.emojiGrid}>
-                  <Text style={styles.cardEmoji}>{card.emojis[0]}</Text>
-                  <Text style={styles.cardEmoji}>{card.emojis[1]}</Text>
-                  <Text style={styles.cardEmoji}>{card.emojis[2]}</Text>
-                  <Text style={styles.cardEmoji}>{card.emojis[3]}</Text>
-                </View>
+                {card.singleEmoji ? (
+                  <Text style={styles.singleEmoji}>{card.emojis[0]}</Text>
+                ) : (
+                  <View style={styles.emojiGrid}>
+                    <Text style={styles.cardEmoji}>{card.emojis[0]}</Text>
+                    <Text style={styles.cardEmoji}>{card.emojis[1]}</Text>
+                    <Text style={styles.cardEmoji}>{card.emojis[2]}</Text>
+                    <Text style={styles.cardEmoji}>{card.emojis[3]}</Text>
+                  </View>
+                )}
               </View>
               <Text
                 style={[
@@ -208,6 +214,10 @@ const styles = StyleSheet.create({
   cardEmoji: {
     fontSize: 22,
     width: "44%",
+    textAlign: "center",
+  },
+  singleEmoji: {
+    fontSize: 40,
     textAlign: "center",
   },
   cardTitle: {
