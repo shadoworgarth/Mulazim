@@ -20,8 +20,8 @@ type Regulation = {
 const stripStandardSuffixes = (s: string): string =>
   s
     .replace(/[/+]\s*Amd\s*\d+/gi, "")
-    .replace(/:\d{4}/g, "")
-    .replace(/\/\d{4}\b/g, "")
+    .replace(/:\s*\d{4}/g, "")
+    .replace(/\/\s*\d{4}\b/g, "")
     .trim();
 
 const extractStandardToken = (standard: string): string => {
