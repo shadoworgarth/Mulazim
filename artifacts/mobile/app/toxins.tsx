@@ -35,13 +35,6 @@ export default function ToxinsScreen() {
               {toxins.length} ملوث متاح
             </Text>
           </View>
-          <View style={styles.sourceNote}>
-            <Text style={styles.sourceText}>
-              المصدر: اللائحة الفنية الخليجية GSO 193:2021 — الملوثات والسموم في
-              الأغذية والأعلاف. الحدود القصوى المعروضة لأغراض مرجعية؛ يُرجى
-              الرجوع إلى اللائحة الرسمية للالتزام النظامي.
-            </Text>
-          </View>
         </View>
       }
       renderItem={({ item, index }) => (
@@ -93,20 +86,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#c2185b",
     textAlign: "right",
-  },
-  sourceNote: {
-    backgroundColor: "#fff8e1",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-    borderRightWidth: 3,
-    borderRightColor: "#f9a825",
-  },
-  sourceText: {
-    fontSize: 11.5,
-    color: "#5d4e1f",
-    textAlign: "right",
-    lineHeight: 18,
   },
   card: {
     backgroundColor: "#ffffff",
