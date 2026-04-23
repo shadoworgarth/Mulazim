@@ -54,6 +54,8 @@ function AuthGate() {
       <Stack.Screen name="regulations" options={{ title: "اللوائح الفنية والمواصفات القياسية" }} />
       <Stack.Screen name="food-standards" options={{ title: "قائمة اللوائح والمواصفات الغذائية" }} />
       <Stack.Screen name="medical-devices-standards" options={{ title: "مواصفات الأجهزة والمستلزمات الطبية" }} />
+      <Stack.Screen name="toxins" options={{ title: "الملوثات والسموم في الأغذية والأعلاف" }} />
+      <Stack.Screen name="toxin-detail" options={{ title: "تفاصيل الملوث" }} />
       <Stack.Screen name="scan-result" options={{ title: "نتائج المسح" }} />
     </Stack>
   );

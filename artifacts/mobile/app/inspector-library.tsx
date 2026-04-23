@@ -29,6 +29,14 @@ const LIBRARY_CARDS: LibraryCard[] = [
     route: "/regulations",
     enabled: true,
   },
+  {
+    id: "toxins",
+    title: "الملوثات والسموم في الأغذية والأعلاف",
+    emojis: ["🧪", "🌾", "⚠️", "📊"],
+    bg: "#fce4ec",
+    route: "/toxins",
+    enabled: true,
+  },
 ];
 
 export default function InspectorLibraryScreen() {
