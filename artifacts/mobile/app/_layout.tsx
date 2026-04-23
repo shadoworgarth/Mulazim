@@ -53,6 +53,7 @@ function AuthGate() {
       <Stack.Screen name="inspector-library" options={{ title: "مكتبة المفتش" }} />
       <Stack.Screen name="regulations" options={{ title: "اللوائح الفنية والمواصفات القياسية" }} />
       <Stack.Screen name="food-standards" options={{ title: "قائمة اللوائح والمواصفات الغذائية" }} />
+      <Stack.Screen name="medical-devices-standards" options={{ title: "مواصفات الأجهزة والمستلزمات الطبية" }} />
       <Stack.Screen name="scan-result" options={{ title: "نتائج المسح" }} />
     </Stack>
   );

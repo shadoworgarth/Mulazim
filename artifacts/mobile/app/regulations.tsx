@@ -35,7 +35,7 @@ const CATEGORIES: CategoryCard[] = [
     emojis: ["🩺", "💉", "🩻", "🧪"],
     bg: "#fde8ea",
     route: "/medical-devices-standards",
-    enabled: false,
+    enabled: true,
   },
 ];
 
