@@ -17,7 +17,24 @@ type Regulation = {
   arabic: string;
 };
 
-const ALL: Regulation[] = regulationsData as Regulation[];
+const extractStandardKey = (standard: string): [number, number] => {
+  const stripped = standard.replace(/[:/]\d{4}\s*$/, "").trim();
+  const matches = stripped.match(/\d+/g);
+  if (!matches || matches.length === 0) return [Number.MAX_SAFE_INTEGER, 0];
+  const main = parseInt(matches[0], 10);
+  const part = matches.length > 1 ? parseInt(matches[1], 10) : 0;
+  return [main, part];
+};
+
+const ALL: Regulation[] = (regulationsData as Regulation[])
+  .slice()
+  .sort((a, b) => {
+    const [ma, pa] = extractStandardKey(a.standard);
+    const [mb, pb] = extractStandardKey(b.standard);
+    if (ma !== mb) return ma - mb;
+    if (pa !== pb) return pa - pb;
+    return a.standard.localeCompare(b.standard);
+  });
 
 const normalize = (s: string) =>
   s
