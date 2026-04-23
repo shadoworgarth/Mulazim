@@ -29,6 +29,14 @@ const CATEGORIES: CategoryCard[] = [
     route: "/food-standards",
     enabled: true,
   },
+  {
+    id: "medical-devices-standards",
+    title: "مواصفات الأجهزة والمستلزمات الطبية",
+    emojis: ["🩺", "💉", "🩻", "🧪"],
+    bg: "#fde8ea",
+    route: "/medical-devices-standards",
+    enabled: false,
+  },
 ];
 
 export default function RegulationsScreen() {
