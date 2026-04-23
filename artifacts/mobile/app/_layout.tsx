@@ -51,6 +51,7 @@ function AuthGate() {
       <Stack.Screen name="general-additives" options={{ title: "المضافات العامة" }} />
       <Stack.Screen name="food-guide" options={{ title: "دليل المضافات الغذائية" }} />
       <Stack.Screen name="inspector-library" options={{ title: "مكتبة المفتش" }} />
+      <Stack.Screen name="regulations" options={{ title: "اللوائح الفنية والمواصفات القياسية" }} />
       <Stack.Screen name="scan-result" options={{ title: "نتائج المسح" }} />
     </Stack>
   );
