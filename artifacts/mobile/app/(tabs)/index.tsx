@@ -39,6 +39,16 @@ const FEATURE_CARDS: FeatureCard[] = [
     route: "/food-guide",
     enabled: true,
   },
+  {
+    id: "inspector-library",
+    title: "مكتبة المفتش",
+    subtitle: "",
+    emojis: ["📖", "📖", "📖", "📖"],
+    color: "#7c5e0e",
+    bg: "#f4ecd8",
+    route: "/inspector-library",
+    enabled: true,
+  },
 ];
 
 export default function HomeScreen() {
@@ -160,7 +170,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row-reverse",
     flexWrap: "wrap",
-    gap: 14,
+    justifyContent: "space-evenly",
+    rowGap: 14,
   },
   card: {
     width: 150,
