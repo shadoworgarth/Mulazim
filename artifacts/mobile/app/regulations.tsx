@@ -15,6 +15,7 @@ interface CategoryCard {
   id: string;
   title: string;
   emojis: [string, string, string, string];
+  singleEmoji?: boolean;
   bg: string;
   route: string;
   enabled: boolean;
@@ -24,7 +25,8 @@ const CATEGORIES: CategoryCard[] = [
   {
     id: "food-standards",
     title: "قائمة اللوائح والمواصفات الغذائية",
-    emojis: ["🍎", "🥖", "🥛", "🍖"],
+    emojis: ["🍎", "🍎", "🍎", "🍎"],
+    singleEmoji: true,
     bg: "#e0f4f4",
     route: "/food-standards",
     enabled: true,
@@ -32,7 +34,8 @@ const CATEGORIES: CategoryCard[] = [
   {
     id: "medical-devices-standards",
     title: "مواصفات الأجهزة والمستلزمات الطبية",
-    emojis: ["🩺", "💉", "🧪", "💊"],
+    emojis: ["🩺", "🩺", "🩺", "🩺"],
+    singleEmoji: true,
     bg: "#fde8ea",
     route: "/medical-devices-standards",
     enabled: true,
@@ -61,12 +64,16 @@ export default function RegulationsScreen() {
               onPress={() => card.enabled && router.push(card.route as any)}
             >
               <View style={[styles.iconWrap, { backgroundColor: card.bg }]}>
-                <View style={styles.emojiGrid}>
-                  <Text style={styles.cardEmoji}>{card.emojis[0]}</Text>
-                  <Text style={styles.cardEmoji}>{card.emojis[1]}</Text>
-                  <Text style={styles.cardEmoji}>{card.emojis[2]}</Text>
-                  <Text style={styles.cardEmoji}>{card.emojis[3]}</Text>
-                </View>
+                {card.singleEmoji ? (
+                  <Text style={styles.singleEmoji}>{card.emojis[0]}</Text>
+                ) : (
+                  <View style={styles.emojiGrid}>
+                    <Text style={styles.cardEmoji}>{card.emojis[0]}</Text>
+                    <Text style={styles.cardEmoji}>{card.emojis[1]}</Text>
+                    <Text style={styles.cardEmoji}>{card.emojis[2]}</Text>
+                    <Text style={styles.cardEmoji}>{card.emojis[3]}</Text>
+                  </View>
+                )}
               </View>
               <Text
                 style={[
@@ -142,6 +149,10 @@ const styles = StyleSheet.create({
   cardEmoji: {
     fontSize: 22,
     width: "44%",
+    textAlign: "center",
+  },
+  singleEmoji: {
+    fontSize: 40,
     textAlign: "center",
   },
   cardTitle: {
