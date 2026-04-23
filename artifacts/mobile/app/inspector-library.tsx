@@ -40,6 +40,15 @@ const LIBRARY_CARDS: LibraryCard[] = [
     route: "/toxins",
     enabled: true,
   },
+  {
+    id: "pesticides",
+    title: "الحدود القصوى لمتبقيات مبيدات الآفات في المنتجات الزراعية والغذائية",
+    emojis: ["🌾", "🌾", "🌾", "🌾"],
+    singleEmoji: true,
+    bg: "#e8f5e9",
+    route: "/pesticides",
+    enabled: true,
+  },
 ];
 
 export default function InspectorLibraryScreen() {

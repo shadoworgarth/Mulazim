@@ -56,6 +56,12 @@ function AuthGate() {
       <Stack.Screen name="medical-devices-standards" options={{ title: "مواصفات الأجهزة والمستلزمات الطبية" }} />
       <Stack.Screen name="toxins" options={{ title: "الملوثات والسموم في الأغذية والأعلاف" }} />
       <Stack.Screen name="toxin-detail" options={{ title: "تفاصيل الملوث" }} />
+      <Stack.Screen name="pesticides" options={{ title: "الحدود القصوى لمتبقيات مبيدات الآفات" }} />
+      <Stack.Screen name="pesticides-agriculture" options={{ title: "مبيدات المنتجات الزراعية والغذائية" }} />
+      <Stack.Screen name="pesticides-agriculture-detail" options={{ title: "تفاصيل المبيد" }} />
+      <Stack.Screen name="pesticides-dates" options={{ title: "مبيدات التمور" }} />
+      <Stack.Screen name="pesticides-children" options={{ title: "مبيدات أغذية الأطفال" }} />
+      <Stack.Screen name="pesticides-prohibited" options={{ title: "المبيدات المحظورة في أغذية الأطفال" }} />
       <Stack.Screen name="scan-result" options={{ title: "نتائج المسح" }} />
     </Stack>
   );
