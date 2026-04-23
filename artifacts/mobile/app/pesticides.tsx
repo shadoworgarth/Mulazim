@@ -68,8 +68,7 @@ export default function PesticidesScreen() {
       <View style={styles.sourceNote}>
         <Text style={styles.sourceText}>
           المصدر: الهيئة العامة للغذاء والدواء — الحدود القصوى لمتبقيات مبيدات
-          الآفات. البيانات مرجعية؛ يُرجى الرجوع إلى الوثيقة الرسمية للالتزام
-          النظامي.
+          الآفات. SFDA.FD 382/2019
         </Text>
       </View>
       <View style={styles.grid}>
