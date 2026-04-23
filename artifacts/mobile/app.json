@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ملازم",
-    "slug": "mobile",
+    "name": "Mulazim 2",
+    "slug": "mulazim2",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "mulazim2",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -14,10 +14,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.mulazim2.app"
     },
     "android": {
-      "package": "com.aldossari.mulazim",
+      "package": "com.mulazim2.app",
       "versionCode": 1
     },
     "web": {
