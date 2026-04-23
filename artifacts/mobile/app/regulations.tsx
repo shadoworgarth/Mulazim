@@ -46,6 +46,15 @@ const normalize = (s: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
+const extractStandardNumberStr = (standard: string): string => {
+  const stripped = standard.replace(/[:/]\d{4}\s*$/, "").trim();
+  const tokens = stripped.split(/\s+/);
+  const last = tokens[tokens.length - 1] || "";
+  return /\d/.test(last) ? last : "";
+};
+
+const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
+
 export default function RegulationsScreen() {
   const [query, setQuery] = useState("");
 
@@ -53,7 +62,8 @@ export default function RegulationsScreen() {
     () =>
       ALL.map((r) => ({
         ...r,
-        _n: normalize(`${r.standard} ${r.english} ${r.arabic}`),
+        _name: normalize(`${r.english} ${r.arabic}`),
+        _num: extractStandardNumberStr(r.standard),
       })),
     []
   );
@@ -62,7 +72,11 @@ export default function RegulationsScreen() {
     const q = normalize(query);
     if (!q) return normalizedAll.slice(0, 200);
     const tokens = q.split(" ").filter(Boolean);
-    return normalizedAll.filter((r) => tokens.every((t) => r._n.includes(t)));
+    return normalizedAll.filter((r) =>
+      tokens.every((t) =>
+        isNumericToken(t) ? r._num.includes(t) : r._name.includes(t)
+      )
+    );
   }, [query, normalizedAll]);
 
   return (
@@ -70,7 +84,7 @@ export default function RegulationsScreen() {
       <View style={styles.searchWrap}>
         <TextInput
           style={styles.input}
-          placeholder="ابحث بالاسم العربي أو الإنجليزي أو رقم المواصفة"
+          placeholder="ابحث بالاسم أو رقم المواصفة (بدون السنة)"
           placeholderTextColor="#94a3a3"
           value={query}
           onChangeText={setQuery}
