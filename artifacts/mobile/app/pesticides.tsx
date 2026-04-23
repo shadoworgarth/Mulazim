@@ -65,11 +65,6 @@ export default function PesticidesScreen() {
   const router = useRouter();
   return (
     <ScrollView contentContainerStyle={styles.content}>
-      <View style={styles.sourceNote}>
-        <Text style={styles.sourceText}>
-          {pesticides.source} — {pesticides.standard}
-        </Text>
-      </View>
       <View style={styles.grid}>
         {CARDS.map((card) => (
           <Pressable
@@ -100,20 +95,6 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
     paddingBottom: Platform.OS === "web" ? 34 : 24,
-  },
-  sourceNote: {
-    backgroundColor: "#fff8e1",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 14,
-    borderRightWidth: 3,
-    borderRightColor: "#f9a825",
-  },
-  sourceText: {
-    fontSize: 11.5,
-    color: "#5d4e1f",
-    textAlign: "right",
-    lineHeight: 18,
   },
   grid: {
     flexDirection: "row",
