@@ -67,8 +67,7 @@ export default function PesticidesScreen() {
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.sourceNote}>
         <Text style={styles.sourceText}>
-          المصدر: الهيئة العامة للغذاء والدواء — الحدود القصوى لمتبقيات مبيدات
-          الآفات. SFDA.FD 382/2019
+          {pesticides.source} — {pesticides.standard}
         </Text>
       </View>
       <View style={styles.grid}>

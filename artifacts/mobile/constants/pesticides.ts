@@ -18,6 +18,7 @@ export interface SimpleItem {
 
 export interface PesticidesData {
   source: string;
+  standard: string;
   sections: {
     agriculture: { title: string; substances: AgSubstance[] };
     dates: { title: string; items: SimpleItem[] };
