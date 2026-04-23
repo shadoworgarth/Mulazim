@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
   FlatList,
   Platform,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 
@@ -13,9 +14,17 @@ import pesticides from "@/constants/pesticides";
 const ITEMS = pesticides.sections.prohibited.items;
 
 export default function PesticidesProhibitedScreen() {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return ITEMS;
+    return ITEMS.filter((it) => it.name.toLowerCase().includes(q));
+  }, [query]);
+
   return (
     <FlatList
-      data={ITEMS}
+      data={filtered}
       keyExtractor={(_, i) => i.toString()}
       contentContainerStyle={styles.listContent}
       showsVerticalScrollIndicator={false}
@@ -29,6 +38,22 @@ export default function PesticidesProhibitedScreen() {
               {ITEMS.length} مبيد محظور
             </Text>
           </View>
+          <View style={styles.searchWrap}>
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="ابحث عن مبيد…"
+              placeholderTextColor="#9ca3af"
+              style={styles.searchInput}
+              textAlign="left"
+            />
+          </View>
+        </View>
+      }
+      ListEmptyComponent={
+        <View style={styles.center}>
+          <Text style={{ fontSize: 36 }}>🔍</Text>
+          <Text style={styles.emptyText}>لا توجد نتائج مطابقة</Text>
         </View>
       }
       renderItem={({ item }) => (
@@ -66,6 +91,19 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginTop: 4,
   },
+  searchWrap: {
+    marginBottom: 6,
+  },
+  searchInput: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: Platform.OS === "ios" ? 12 : 10,
+    fontSize: 14,
+    color: colors.light.text,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
   row: {
     backgroundColor: "#ffffff",
     borderRadius: 12,
@@ -92,5 +130,15 @@ const styles = StyleSheet.create({
     color: colors.light.text,
     textAlign: "left",
     lineHeight: 19,
+  },
+  center: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingTop: 40,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.light.mutedForeground,
   },
 });
