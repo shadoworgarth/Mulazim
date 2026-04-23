@@ -32,7 +32,7 @@ const CATEGORIES: CategoryCard[] = [
   {
     id: "medical-devices-standards",
     title: "مواصفات الأجهزة والمستلزمات الطبية",
-    emojis: ["🩺", "💉", "🩻", "🧪"],
+    emojis: ["🩺", "💉", "🧪", "💊"],
     bg: "#fde8ea",
     route: "/medical-devices-standards",
     enabled: true,
