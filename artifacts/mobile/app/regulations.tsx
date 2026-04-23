@@ -1,131 +1,78 @@
-import React, { useMemo, useState } from "react";
+import { useRouter } from "expo-router";
+import React from "react";
 import {
-  FlatList,
   Platform,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 
 import colors from "@/constants/colors";
-import regulationsData from "@/constants/regulations.json";
 
-type Regulation = {
-  standard: string;
-  english: string;
-  arabic: string;
-};
+interface CategoryCard {
+  id: string;
+  title: string;
+  emojis: [string, string, string, string];
+  bg: string;
+  route: string;
+  enabled: boolean;
+}
 
-const extractStandardKey = (standard: string): [number, number] => {
-  const stripped = standard.replace(/[:/]\d{4}\s*$/, "").trim();
-  const matches = stripped.match(/\d+/g);
-  if (!matches || matches.length === 0) return [Number.MAX_SAFE_INTEGER, 0];
-  const main = parseInt(matches[0], 10);
-  const part = matches.length > 1 ? parseInt(matches[1], 10) : 0;
-  return [main, part];
-};
-
-const ALL: Regulation[] = (regulationsData as Regulation[])
-  .slice()
-  .sort((a, b) => {
-    const [ma, pa] = extractStandardKey(a.standard);
-    const [mb, pb] = extractStandardKey(b.standard);
-    if (ma !== mb) return ma - mb;
-    if (pa !== pb) return pa - pb;
-    return a.standard.localeCompare(b.standard);
-  });
-
-const normalize = (s: string) =>
-  s
-    .toLowerCase()
-    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
-    .replace(/[إأآا]/g, "ا")
-    .replace(/ى/g, "ي")
-    .replace(/ة/g, "ه")
-    .replace(/\s+/g, " ")
-    .trim();
-
-const extractStandardNumberStr = (standard: string): string => {
-  const stripped = standard.replace(/[:/]\d{4}\s*$/, "").trim();
-  const tokens = stripped.split(/\s+/);
-  const last = tokens[tokens.length - 1] || "";
-  return /\d/.test(last) ? last : "";
-};
-
-const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
+const CATEGORIES: CategoryCard[] = [
+  {
+    id: "food-standards",
+    title: "قائمة اللوائح والمواصفات الغذائية",
+    emojis: ["🍎", "🥖", "🥛", "🍖"],
+    bg: "#e0f4f4",
+    route: "/food-standards",
+    enabled: true,
+  },
+];
 
 export default function RegulationsScreen() {
-  const [query, setQuery] = useState("");
-
-  const normalizedAll = useMemo(
-    () =>
-      ALL.map((r) => ({
-        ...r,
-        _name: normalize(`${r.english} ${r.arabic}`),
-        _num: extractStandardNumberStr(r.standard),
-      })),
-    []
-  );
-
-  const results = useMemo(() => {
-    const q = normalize(query);
-    if (!q) return normalizedAll.slice(0, 200);
-    const tokens = q.split(" ").filter(Boolean);
-    return normalizedAll.filter((r) =>
-      tokens.every((t) =>
-        isNumericToken(t) ? r._num.includes(t) : r._name.includes(t)
-      )
-    );
-  }, [query, normalizedAll]);
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchWrap}>
-        <TextInput
-          style={styles.input}
-          placeholder="ابحث بالاسم أو رقم المواصفة (بدون السنة)"
-          placeholderTextColor="#94a3a3"
-          value={query}
-          onChangeText={setQuery}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
-        <Text style={styles.countText}>
-          {query
-            ? `${results.length} نتيجة من ${ALL.length}`
-            : `إجمالي: ${ALL.length} مواصفة`}
-        </Text>
-      </View>
-
-      <FlatList
-        data={results}
-        keyExtractor={(item, idx) => `${item.standard}-${idx}`}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.standard} numberOfLines={2}>
-              {item.standard}
-            </Text>
-            {item.arabic ? (
-              <Text style={styles.arabic} numberOfLines={4}>
-                {item.arabic}
+      <ScrollView
+        contentContainerStyle={styles.grid}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.sectionLabel}>التصنيفات</Text>
+        <View style={styles.row}>
+          {CATEGORIES.map((card) => (
+            <Pressable
+              key={card.id}
+              style={({ pressed }) => [
+                styles.card,
+                !card.enabled && styles.cardDisabled,
+                { opacity: pressed && card.enabled ? 0.82 : 1 },
+              ]}
+              onPress={() => card.enabled && router.push(card.route as any)}
+            >
+              <View style={[styles.iconWrap, { backgroundColor: card.bg }]}>
+                <View style={styles.emojiGrid}>
+                  <Text style={styles.cardEmoji}>{card.emojis[0]}</Text>
+                  <Text style={styles.cardEmoji}>{card.emojis[1]}</Text>
+                  <Text style={styles.cardEmoji}>{card.emojis[2]}</Text>
+                  <Text style={styles.cardEmoji}>{card.emojis[3]}</Text>
+                </View>
+              </View>
+              <Text
+                style={[
+                  styles.cardTitle,
+                  !card.enabled && styles.cardTitleDisabled,
+                ]}
+                numberOfLines={3}
+              >
+                {card.title}
               </Text>
-            ) : null}
-            {item.english ? (
-              <Text style={styles.english} numberOfLines={4}>
-                {item.english}
-              </Text>
-            ) : null}
-          </View>
-        )}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <Text style={styles.empty}>لا توجد نتائج مطابقة</Text>
-        }
-        keyboardShouldPersistTaps="handled"
-        initialNumToRender={20}
-        windowSize={10}
-      />
+            </Pressable>
+          ))}
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -135,66 +82,68 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.light.background,
   },
-  searchWrap: {
-    padding: 14,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e8e8",
+  grid: {
+    padding: 18,
+    paddingBottom: Platform.OS === "web" ? 40 : 32,
   },
-  input: {
-    backgroundColor: "#f2f6f8",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: Platform.OS === "ios" ? 12 : 10,
-    fontSize: 14,
-    color: colors.light.text,
-    textAlign: "right",
-  },
-  countText: {
-    marginTop: 8,
-    fontSize: 12,
+  sectionLabel: {
+    fontSize: 13,
+    fontWeight: "600",
     color: colors.light.mutedForeground,
     textAlign: "right",
+    marginBottom: 12,
   },
-  listContent: {
-    padding: 14,
-    paddingBottom: 32,
+  row: {
+    flexDirection: "row-reverse",
+    flexWrap: "wrap",
+    justifyContent: "space-evenly",
+    rowGap: 14,
   },
   card: {
+    width: 150,
     backgroundColor: "#ffffff",
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
+    borderRadius: 18,
+    padding: 16,
+    alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-    gap: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    elevation: 3,
+    gap: 10,
   },
-  standard: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#0e7c7c",
-    textAlign: "left",
+  cardDisabled: {
+    backgroundColor: "#f5f5f5",
   },
-  arabic: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.light.text,
-    textAlign: "right",
-    lineHeight: 22,
+  iconWrap: {
+    width: 70,
+    height: 70,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  english: {
-    fontSize: 12,
-    color: colors.light.mutedForeground,
-    textAlign: "left",
-    lineHeight: 18,
+  emojiGrid: {
+    width: "100%",
+    height: "100%",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
   },
-  empty: {
+  cardEmoji: {
+    fontSize: 22,
+    width: "44%",
     textAlign: "center",
-    color: colors.light.mutedForeground,
-    paddingTop: 40,
-    fontSize: 14,
+  },
+  cardTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: colors.light.text,
+    textAlign: "center",
+    lineHeight: 19,
+  },
+  cardTitleDisabled: {
+    color: "#aaa",
   },
 });
