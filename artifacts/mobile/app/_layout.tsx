@@ -57,6 +57,10 @@ function AuthGate() {
       <Stack.Screen name="toxins" options={{ title: "الملوثات والسموم في الأغذية والأعلاف" }} />
       <Stack.Screen name="toxin-detail" options={{ title: "تفاصيل الملوث" }} />
       <Stack.Screen name="pesticides" options={{ title: "الحدود القصوى لمتبقيات مبيدات الآفات" }} />
+      <Stack.Screen name="pesticides-sfda" options={{ title: "SFDA — الحدود القصوى للمبيدات" }} />
+      <Stack.Screen name="pesticides-fao" options={{ title: "FAO Codex — قائمة المبيدات" }} />
+      <Stack.Screen name="pesticides-fao-detail" options={{ title: "تفاصيل المبيد" }} />
+      <Stack.Screen name="pesticides-fao-commodity" options={{ title: "بحث حسب المنتج الغذائي" }} />
       <Stack.Screen name="pesticides-agriculture" options={{ title: "مبيدات المنتجات الزراعية والغذائية" }} />
       <Stack.Screen name="pesticides-agriculture-detail" options={{ title: "تفاصيل المبيد" }} />
       <Stack.Screen name="pesticides-dates" options={{ title: "مبيدات التمور" }} />

@@ -12,8 +12,6 @@ import {
 import colors from "@/constants/colors";
 import pesticides from "@/constants/pesticides";
 
-const FAO_PESTICIDE_COUNT = 240;
-
 interface Card {
   id: string;
   title: string;
@@ -24,34 +22,46 @@ interface Card {
   route: string;
 }
 
-const sfdaCount =
-  pesticides.sections.agriculture.substances.length +
-  pesticides.sections.dates.items.length +
-  pesticides.sections.children.items.length +
-  pesticides.sections.prohibited.items.length;
-
 const CARDS: Card[] = [
   {
-    id: "sfda",
-    title: "الهيئة العامة للغذاء والدواء (SFDA)",
-    emoji: "🇸🇦",
+    id: "agriculture",
+    title: pesticides.sections.agriculture.title,
+    emoji: "🌾",
     bg: "#e8f5e9",
-    count: sfdaCount,
+    count: pesticides.sections.agriculture.substances.length,
     unit: "مبيد",
-    route: "/pesticides-sfda",
+    route: "/pesticides-agriculture",
   },
   {
-    id: "fao",
-    title: "دستور الأغذية (FAO Codex)",
-    emoji: "🌍",
-    bg: "#e3f2fd",
-    count: FAO_PESTICIDE_COUNT,
+    id: "dates",
+    title: pesticides.sections.dates.title,
+    emoji: "🌴",
+    bg: "#fff3e0",
+    count: pesticides.sections.dates.items.length,
     unit: "مبيد",
-    route: "/pesticides-fao",
+    route: "/pesticides-dates",
+  },
+  {
+    id: "children",
+    title: pesticides.sections.children.title,
+    emoji: "🍼",
+    bg: "#e3f2fd",
+    count: pesticides.sections.children.items.length,
+    unit: "مبيد",
+    route: "/pesticides-children",
+  },
+  {
+    id: "prohibited",
+    title: pesticides.sections.prohibited.title,
+    emoji: "🚫",
+    bg: "#ffebee",
+    count: pesticides.sections.prohibited.items.length,
+    unit: "مبيد محظور",
+    route: "/pesticides-prohibited",
   },
 ];
 
-export default function PesticidesScreen() {
+export default function PesticidesSfdaScreen() {
   const router = useRouter();
   return (
     <ScrollView contentContainerStyle={styles.content}>
@@ -103,7 +113,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 3,
     elevation: 1,
-    minHeight: 200,
+    minHeight: 180,
   },
   iconWrap: {
     width: 76,
