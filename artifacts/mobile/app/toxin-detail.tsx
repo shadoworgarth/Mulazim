@@ -77,7 +77,7 @@ export default function ToxinDetailScreen() {
           <Text style={styles.emptyText}>لا توجد نتائج مطابقة</Text>
         </View>
       }
-      renderItem={({ item }) => (
+      renderItem={({ item, index }) => (
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.productText} numberOfLines={3}>
@@ -86,6 +86,9 @@ export default function ToxinDetailScreen() {
             <View style={styles.limitPill}>
               <Text style={styles.limitValue}>{item.max_level}</Text>
               <Text style={styles.limitUnit}>{item.unit}</Text>
+            </View>
+            <View style={styles.rowBadge}>
+              <Text style={styles.rowBadgeText}>{index + 1}</Text>
             </View>
           </View>
           {item.applicable_part ? (
@@ -172,6 +175,21 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     alignItems: "flex-start",
     gap: 10,
+  },
+  rowBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    backgroundColor: "#f3e5f5",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    marginTop: 2,
+  },
+  rowBadgeText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#7b1fa2",
   },
   productText: {
     flex: 1,
