@@ -55,6 +55,10 @@ function buildCompare(query: string): CompareRow[] {
       const existing = sfdaMap.get(key);
       const dateEntry = { commodity: "Dates (Date Palm)", mrl: `${item.mrl} mg/kg` };
       if (existing) {
+        // Remove any agriculture entry that was also for "date" to avoid duplicates
+        existing.entries = existing.entries.filter(
+          (e) => !e.commodity.toLowerCase().match(/^dates?(\s|$|.*palm)/)
+        );
         existing.entries.push(dateEntry);
       } else {
         sfdaMap.set(key, { name: item.name, entries: [dateEntry] });
