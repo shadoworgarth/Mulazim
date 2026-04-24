@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import {
+  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -12,12 +13,14 @@ import {
 import colors from "@/constants/colors";
 import pesticides from "@/constants/pesticides";
 
+const SFDA_LOGO = require("../assets/sfda-logo.png");
 const FAO_PESTICIDE_COUNT = 240;
 
 interface Card {
   id: string;
   title: string;
-  emoji: string;
+  emoji?: string;
+  image?: number;
   bg: string;
   count: number;
   unit: string;
@@ -33,9 +36,9 @@ const sfdaCount =
 const CARDS: Card[] = [
   {
     id: "sfda",
-    title: "الهيئة العامة للغذاء والدواء (SFDA)",
-    emoji: "🇸🇦",
-    bg: "#e8f5e9",
+    title: "SFDA.FD 382_2019",
+    image: SFDA_LOGO,
+    bg: "#ffffff",
     count: sfdaCount,
     unit: "مبيد",
     route: "/pesticides-sfda",
@@ -66,7 +69,15 @@ export default function PesticidesScreen() {
             onPress={() => router.push(card.route as any)}
           >
             <View style={[styles.iconWrap, { backgroundColor: card.bg }]}>
-              <Text style={styles.cardEmoji}>{card.emoji}</Text>
+              {card.image ? (
+                <Image
+                  source={card.image}
+                  style={styles.cardImage}
+                  resizeMode="contain"
+                />
+              ) : (
+                <Text style={styles.cardEmoji}>{card.emoji}</Text>
+              )}
             </View>
             <Text style={styles.cardTitle} numberOfLines={4}>
               {card.title}
@@ -116,6 +127,10 @@ const styles = StyleSheet.create({
   cardEmoji: {
     fontSize: 40,
     textAlign: "center",
+  },
+  cardImage: {
+    width: 60,
+    height: 60,
   },
   cardTitle: {
     fontSize: 13,
