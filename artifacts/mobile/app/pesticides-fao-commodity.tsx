@@ -16,7 +16,7 @@ import colors from "@/constants/colors";
 import { faoPesticides, searchByCommodity, FaoCommodityHit } from "@/constants/fao-codex";
 
 const RESULT_LIMIT = 500;
-const CHIP_LIMIT = 6;
+const CHIP_LIMIT = 2;
 
 function getUniqueCommodities(query: string): string[] {
   const q = query.trim().toLowerCase();

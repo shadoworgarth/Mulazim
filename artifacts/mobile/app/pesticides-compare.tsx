@@ -181,7 +181,7 @@ function buildRows(
   return rows;
 }
 
-const CHIP_LIMIT = 6;
+const CHIP_LIMIT = 2;
 
 export default function PesticidesCompareScreen() {
   const [query, setQuery] = useState("");

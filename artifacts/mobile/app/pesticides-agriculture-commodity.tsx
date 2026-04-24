@@ -17,7 +17,7 @@ import pesticides from "@/constants/pesticides";
 
 const SUBSTANCES = pesticides.sections.agriculture.substances;
 const RESULT_LIMIT = 500;
-const CHIP_LIMIT = 6;
+const CHIP_LIMIT = 2;
 
 interface Result {
   substanceIndex: number;
