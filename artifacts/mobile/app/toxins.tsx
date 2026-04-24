@@ -37,6 +37,13 @@ export default function ToxinsScreen() {
           </View>
         </View>
       }
+      ListFooterComponent={
+        <View style={styles.referenceBox}>
+          <Text style={styles.referenceText}>
+            {"المراجع: CXS 193-1995\nCOMMISSION REGULATION (EC) No 1881/2006\nولمزيد من المعلومات يرجى الاطلاع على لائحة الملوثات والسموم:\nSFDA.FD GSO 193:2021"}
+          </Text>
+        </View>
+      }
       renderItem={({ item, index }) => (
         <Pressable
           style={({ pressed }) => [
@@ -132,5 +139,19 @@ const styles = StyleSheet.create({
     color: "#c2185b",
     textAlign: "right",
     marginTop: 3,
+  },
+  referenceBox: {
+    marginTop: 16,
+    backgroundColor: "#fffde7",
+    borderWidth: 1,
+    borderColor: "#fdd835",
+    borderRadius: 12,
+    padding: 14,
+  },
+  referenceText: {
+    fontSize: 12,
+    color: "#5d4037",
+    textAlign: "right",
+    lineHeight: 20,
   },
 });
