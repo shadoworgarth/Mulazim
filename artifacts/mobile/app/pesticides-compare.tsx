@@ -13,6 +13,7 @@ import { faoPesticides } from "@/constants/fao-codex";
 import pesticides from "@/constants/pesticides";
 
 const SFDA_SUBSTANCES = pesticides.sections.agriculture.substances;
+const SFDA_DATES = pesticides.sections.dates.items;
 const RESULT_LIMIT = 300;
 
 interface CompareRow {
@@ -32,6 +33,8 @@ function buildCompare(query: string): CompareRow[] {
 
   // Collect SFDA matches: map normalized substance name -> entries
   const sfdaMap = new Map<string, { name: string; entries: { commodity: string; mrl: string }[] }>();
+
+  // Agriculture substances
   for (const sub of SFDA_SUBSTANCES) {
     const matched = sub.entries.filter((e) =>
       e.commodity.toLowerCase().includes(q),
@@ -42,6 +45,20 @@ function buildCompare(query: string): CompareRow[] {
         name: sub.substance,
         entries: matched.map((e) => ({ commodity: e.commodity, mrl: e.mrl })),
       });
+    }
+  }
+
+  // Dates substances — all apply to "Dates (Date Palm)"
+  if ("dates".includes(q) || q.includes("date")) {
+    for (const item of SFDA_DATES) {
+      const key = normalize(item.name);
+      const existing = sfdaMap.get(key);
+      const dateEntry = { commodity: "Dates (Date Palm)", mrl: `${item.mrl} mg/kg` };
+      if (existing) {
+        existing.entries.push(dateEntry);
+      } else {
+        sfdaMap.set(key, { name: item.name, entries: [dateEntry] });
+      }
     }
   }
 
