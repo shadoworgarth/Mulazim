@@ -40,6 +40,24 @@ export default function PesticidesAgricultureScreen() {
               {SUBSTANCES.length} مبيد متاح
             </Text>
           </View>
+          <Pressable
+            style={({ pressed }) => [
+              styles.commodityBtn,
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
+            onPress={() =>
+              router.push("/pesticides-agriculture-commodity" as any)
+            }
+          >
+            <Text style={styles.commodityBtnIcon}>🥦</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.commodityBtnTitle}>بحث حسب المنتج الغذائي</Text>
+              <Text style={styles.commodityBtnSub}>
+                اعرض جميع المبيدات لمنتج معين
+              </Text>
+            </View>
+            <Text style={styles.commodityBtnArrow}>›</Text>
+          </Pressable>
           <View style={styles.searchWrap}>
             <TextInput
               value={query}
@@ -182,5 +200,41 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: colors.light.mutedForeground,
+  },
+  commodityBtn: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#c8e6c9",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  commodityBtnIcon: {
+    fontSize: 26,
+  },
+  commodityBtnTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#2e7d32",
+    textAlign: "right",
+  },
+  commodityBtnSub: {
+    fontSize: 11,
+    color: colors.light.mutedForeground,
+    textAlign: "right",
+    marginTop: 2,
+  },
+  commodityBtnArrow: {
+    fontSize: 22,
+    color: "#2e7d32",
   },
 });
