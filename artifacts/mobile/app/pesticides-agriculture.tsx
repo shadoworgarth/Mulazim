@@ -80,7 +80,7 @@ export default function PesticidesAgricultureScreen() {
                 {item.substance}
               </Text>
               <Text style={styles.itemCount}>
-                {item.entries.length} حد أقصى
+                {item.entries.length} منتج
               </Text>
             </View>
             <View style={styles.indexBadge}>
