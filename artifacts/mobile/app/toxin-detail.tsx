@@ -97,6 +97,12 @@ export default function ToxinDetailScreen() {
               <Text style={styles.fieldValue}>{item.applicable_part}</Text>
             </View>
           ) : null}
+          {(item as any).radionuclides ? (
+            <View style={styles.fieldBlock}>
+              <Text style={styles.fieldLabel}>النويدات المشعة الممثلة</Text>
+              <Text style={styles.fieldValue}>{(item as any).radionuclides}</Text>
+            </View>
+          ) : null}
           {item.notes ? (
             <View style={styles.fieldBlock}>
               <Text style={styles.fieldLabel}>ملاحظات</Text>
