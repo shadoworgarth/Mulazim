@@ -80,15 +80,15 @@ export default function ToxinDetailScreen() {
       renderItem={({ item, index }) => (
         <View style={styles.card}>
           <View style={styles.cardHeader}>
+            <View style={styles.rowBadge}>
+              <Text style={styles.rowBadgeText}>{index + 1}</Text>
+            </View>
             <Text style={styles.productText} numberOfLines={3}>
               {item.product}
             </Text>
             <View style={styles.limitPill}>
               <Text style={styles.limitValue}>{item.max_level}</Text>
               <Text style={styles.limitUnit}>{item.unit}</Text>
-            </View>
-            <View style={styles.rowBadge}>
-              <Text style={styles.rowBadgeText}>{index + 1}</Text>
             </View>
           </View>
           {item.applicable_part ? (
