@@ -88,6 +88,27 @@ export default function PesticidesScreen() {
           </Pressable>
         ))}
       </View>
+      <Pressable
+        style={({ pressed }) => [
+          styles.compareCard,
+          { opacity: pressed ? 0.85 : 1 },
+        ]}
+        onPress={() => router.push("/pesticides-compare" as any)}
+      >
+        <View style={styles.compareIconWrap}>
+          <Text style={styles.compareEmoji}>🔍</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.compareTitle}>بحث مقارنة</Text>
+          <Text style={styles.compareSubtitle}>
+            قارن الحدود القصوى بين SFDA وFAO Codex لأي منتج
+          </Text>
+        </View>
+        <View style={styles.compareBadgesPreview}>
+          <View style={styles.previewGreen} />
+          <View style={styles.previewBlue} />
+        </View>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -144,5 +165,61 @@ const styles = StyleSheet.create({
     color: colors.light.mutedForeground,
     textAlign: "center",
     marginTop: 6,
+  },
+  compareCard: {
+    marginTop: 12,
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  compareIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  compareEmoji: {
+    fontSize: 28,
+  },
+  compareTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: colors.light.text,
+    textAlign: "right",
+  },
+  compareSubtitle: {
+    fontSize: 11,
+    color: colors.light.mutedForeground,
+    textAlign: "right",
+    marginTop: 3,
+    lineHeight: 16,
+  },
+  compareBadgesPreview: {
+    flexDirection: "column",
+    gap: 4,
+  },
+  previewGreen: {
+    width: 14,
+    height: 14,
+    borderRadius: 4,
+    backgroundColor: "#2e7d32",
+  },
+  previewBlue: {
+    width: 14,
+    height: 14,
+    borderRadius: 4,
+    backgroundColor: "#0d47a1",
   },
 });
