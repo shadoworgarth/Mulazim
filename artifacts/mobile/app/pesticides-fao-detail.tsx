@@ -58,7 +58,7 @@ export default function PesticidesFaoDetailScreen() {
               <Text style={styles.classText}>{pesticide.functionalClass}</Text>
             ) : null}
             <Text style={styles.subtitleText}>
-              {pesticide.mrls.length} MRL
+              {pesticide.mrls.length} Product
             </Text>
           </View>
 

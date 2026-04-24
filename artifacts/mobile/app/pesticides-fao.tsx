@@ -95,7 +95,7 @@ export default function PesticidesFaoScreen() {
           </View>
           <View style={styles.countPill}>
             <Text style={styles.countPillText}>{item.mrls.length}</Text>
-            <Text style={styles.countPillLabel}>MRLs</Text>
+            <Text style={styles.countPillLabel}>Products</Text>
           </View>
         </Pressable>
       )}
