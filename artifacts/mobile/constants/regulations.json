@@ -12,7 +12,7 @@
   {
     "standard": "SFDA.FD GSO CAC/RCP 79:2022",
     "english": "Code of Practice for the Reduction of 3-Monochloropropane-1,2- Diol Esters (3-MCPDEs) and Glycidyl Esters (GEs) in Refined Oils and Food Products Made with Refined Oils",
-    "arabic": "مدونة الممارسة لتقليل3 مونوكلوروبروبان– 2 ، 1 استرات الديول - (MCPD-3) واسترات الجليسيديل (GEs ) في الزيوت المكررة والمنتجات الغذائية"
+    "arabic": "مدونة الممارسة لتقليل 3 مونوكلوروبروبان – 2 ، 1 واسترات الجليسيديل (MCPD-3) - استرات الديول في الزيوت المكررة والمنتجات الغذائية ) (GEs"
   },
   {
     "standard": "SFDA.FD GSO CODEX STAN 270:2022",
@@ -66,8 +66,8 @@
   },
   {
     "standard": "SFDA.FD GSO 2055-3:2021",
-    "english": "Halal Products – part 3 – Requirements for Halal Accreditation Bodies Accrediting Halal Certification Bodies",
-    "arabic": "المنتجات الحلال - الجزء الثالث : اشتراطات جهات اعتماد جهات اصدار شهادات الحلال"
+    "english": "Halal products –– Part three: General Requirements for halal accreditation bodies accrediting halal certification bodies",
+    "arabic": "منتجات الحلال – الجزء الثالث: الاشتراطات العامة لجهات اعتماد جهات اصدار شهادات الحلال"
   },
   {
     "standard": "SFDA.FD GSO ISO 9874:2008",
@@ -137,7 +137,7 @@
   {
     "standard": "SFDA.FD GSO ISO 23905:2022",
     "english": "Cigarettes — Determination of selected phenolic compounds in cigarette mainstream smoke using HPLC-FLD",
-    "arabic": "السجائر- تحديد المركبات الفينولية المختارة في تيار دخان السجائر باستخدام طريقة HPLC-FLD أ"
+    "arabic": "السجائر - تحديد المركبات الفينولية المختارة في تيار HPLC-FLD دخان السجائر باستخدام طريقة"
   },
   {
     "standard": "SFDA.FD GSO ISO 23920:2022",
@@ -227,7 +227,7 @@
   {
     "standard": "SFDA.FD GSO ISO 23923:2022",
     "english": "Cigarettes — Determination of selected volatile organic compounds in the mainstream smoke of cigarettes with an intense smoking regime — Method using GC/MS",
-    "arabic": "السجائر- تحديد المركبات العضوية المتطايرة المختارة في الدخان السائد للسجائر ذات نظام التدخين المكثف- الطريقة باستخدام GC / MS"
+    "arabic": "السجائر - تحديد المركبات العضوية المتطايرة المختارة في الدخان السائد للسجائر ذات نظام التدخين المكثف - MS / GC الطريقة باستخدام"
   },
   {
     "standard": "SFDA.FD GSO ISO 23922:2022",
@@ -237,17 +237,17 @@
   {
     "standard": "SFDA.FD GSO ISO 23921:2022",
     "english": "Cigarettes — Determination of tobacco specific nitrosamines in mainstream cigarette smoke with an intense smoking regime — Method using LC-MS/M",
-    "arabic": "السجائر- تحديد النتروزامين الخاص بالتبغ في دخان السجائر السائد مع نظام تدخين مكثف- طريقة استخدام LC-MS / MS"
+    "arabic": "السجائر - تحديد النتروزامين الخاص بالتبغ في دخان السجائر السائد مع نظام تدخين مكثف - طريقة استخدام LC-MS / MS"
   },
   {
     "standard": "SFDA.FD GSO ISO 23904:2022",
     "english": "Cigarettes — Determination of selected phenolic compounds in cigarette mainstream smoke with an intense smoking regime using HPLC-FLD",
-    "arabic": "السجائر- تحديد المركبات الفينولية المختارة في تيار دخان السجائر بنظام تدخين مكثف باستخدام طريقة HPLC-FLD"
+    "arabic": "السجائر - تحديد المركبات الفينولية المختارة في تيار دخان السجائر بنظام تدخين مكثف باستخدام طريقة HPLC-FLD"
   },
   {
     "standard": "SFDA.FD GSO ISO 22980:2022",
     "english": "Tobacco — Determination of the content of total alkaloids as nicotine — Continuous-flow analysis method using KSCN/DCIC",
-    "arabic": "ال تبغ- تحديد محتوى القلويات الكلية كالنيكوتين- طريقة تحليل التدفق المستمر باستخدام طريقة KSCN / DCIC أ"
+    "arabic": "التبغ - تحديد محتوى القلويات الكلية كالنيكوتين - طريقة DCIC / KSCN تحليل التدفق المستمر باستخدام طريقة"
   },
   {
     "standard": "SFDA.FD GSO ISO 23919:2022",
@@ -262,7 +262,7 @@
   {
     "standard": "SFDA.FD GSO ISO 12869:2022",
     "english": "Water Quality — Detection And Quantification Of Legionella Spp. And/Or Legionella Pneumophila By Concentration And Genic Amplification By Quantitative Polymerase Chain Reaction (QPCR)",
-    "arabic": "جودة المياه– الكشف عن الفيلقية و/أو الفيلقية المستروحة والتقدير الكمي لها بواسطة التركيز والتضخيم الجيني بواسطة التفاعل التسلسلي المبلمر الكمي (QPCR) لأ"
+    "arabic": "جودة المياه – الكشف عن الفيلقية و/أو الفيلقية المستروحة والتقدير الكمي لها بواسطة التركيز والتضخيم الجيني بواسطة التفاعل التسلسلي المبلمر الكمي (QPCR)"
   },
   {
     "standard": "SFDA.FD GSO ISO 11746:2022",
@@ -277,7 +277,7 @@
   {
     "standard": "SFDA.FD GSO ISO 21569-3:2022",
     "english": "Horizontal Methods For Molecular Biomarker Analysis — Methods Of Analysis For The Detection Of Genetically Modified Organisms And Derived Products — Part 3: Construct-Specific Real-Time PCR Method For Detection Of P35S-Pat-Sequence For Screening For Genetically Modified Organisms",
-    "arabic": "طرق أفقية لتحليل المؤشر الحيوي الجزيئي- طرق تحليل للكشف عن الكائنات الحية المحورة وراثيًا والمنتجات المشتقة- .الجزء3 .: طريقة تفاعل السلسلة المتبلمرة المخصصة للبنية في الوقت P35S-Pat الفعلي من أجل اكتشاف وجود سلسلة لفحص الكائنات المحورة ورا ًثيا ا"
+    "arabic": "طرق أفقية لتحليل المؤشر الحيوي الجزيئي - طرق تحليل للكشف عن الكائنات الحية المحورة وراثيًا والمنتجات المشتقة - الجزء. :.3 طريقة تفاعل السلسلة الفعلي P35S-Pat المتبلمرة المخصصة للبنية في الوقت من أجل اكتشاف وجود سلسلة لفحص الكائنات المحورة وراثياً"
   },
   {
     "standard": "SFDA.FD GSO ISO 3632-2:2022",
@@ -542,7 +542,7 @@
   {
     "standard": "SFDA.FD GSO 2704:2022",
     "english": "Plant-based substitutes for meat and other products of animal origin (Vegan)",
-    "arabic": "البدائل النباتية لمنتجات اللحوم والمنتجات ذات الأصل الحيواني (Vegan)"
+    "arabic": "البدائل النباتية لمنتجات اللحوم والمنتجات ذات الأصل (Vegan) الحيواني"
   },
   {
     "standard": "SFDA.FD GSO 147:2022",
@@ -872,7 +872,7 @@
   {
     "standard": "SFDA.FD GSO ISO 21446:2021",
     "english": "Infant formula and adult nutritionals — Determination of trans and total (cis + trans) vitamin K1 content — Normal phase HPLC",
-    "arabic": "مستحضرات أغذية الرضع ومغذيات البالغين– تعيين محتوى الفيتامبن ك1 )(المتحولة والكلية- طريقة استشراب السائل العالي الأداء ذي الطور العادي (HPLC)"
+    "arabic": "مستحضرات أغذية الرضع ومغذيات البالغين – تعيين محتوى الفيتامبن ك1 )المتحولة والكلية( - طريقة استشراب السائل العالي الأداء ذي الطور العادي (HPLC)"
   },
   {
     "standard": "SFDA.FD GSO 2617:2021",
@@ -1027,7 +1027,7 @@
   {
     "standard": "SFDA.FD GSO ISO 18363-1:2021",
     "english": "Animal and vegetable fats and oils — Determination of fatty-acid-bound chloropropanediols (MCPDs) and glycidol by GC/MS — Part 1: Method using fast alkaline transesterification and measurement for 3-MCPD and differential measurement for glycidol",
-    "arabic": "الزيوت والدهون النباتية والحيوانية-- تقدير الكلورو بروبان ديول المرتبط بحمض دهني (MCPDs) والغليسيدول بواسطة الكروماتوغرافيا الغازية/ قياس الطيف الكتلي-- الجزء1 : طريقة باستخدام الأسترة التبادلية القولية السريعة وقياس 3 -MCPD والقياس التفاضلي للغليسيدول اا"
+    "arabic": "الزيوت والدهون النباتية والحيوانية -- تقدير الكلورو (MCPDs) بروبان ديول المرتبط بحمض دهني والغليسيدول بواسطة الكروماتوغرافيا الغازية/ قياس الطيف الكتلي -- الجزء :1 طريقة باستخدام الأسترة والقياس -MCPDالتبادلية القولية السريعة وقياس 3 التفاضلي للغليسيدول"
   },
   {
     "standard": "SFDA.FD GSO 2601:2021",
@@ -1077,7 +1077,7 @@
   {
     "standard": "SFDA.FD GSO ISO 15216-1:2021",
     "english": "Microbiology of the food chain — Horizontal method for determination of hepatitis A virus and norovirus using real-time RT-PCR — Part 1: Method for quantification",
-    "arabic": "نظام التغذية االفقية لعلم الأحياء الدقيقة الخاص بالغذاء والحيوان باستخدام (REAL-TIME RT-PCR) للكشف عن فيروس التهاب الكبد A :والنوروفيروس في الغذاء الجزء الأول- طرق التقدير الكمي- إ"
+    "arabic": "نظام التغذية الافقية لعلم الأحياء الدقيقة الخاص بالغذاء للكشف RT-PCR) (REAL-TIME والحيوان باستخدام والنوروفيروس في الغذاء: A عن فيروس التهاب الكبد -الجزء الأول - طرق التقدير الكمي"
   },
   {
     "standard": "SFDA.FD GSO 2598:2021",
@@ -2152,12 +2152,12 @@
   {
     "standard": "SFDA.FD/GSO ISO/TS 21569-2:2015",
     "english": "Horizontal methods for molecular biomarker analysis -- Methods of analysis for the detection of genetically modified organisms and derived products -- Part 2: Construct-specific real-time PCR method for detection of event FP967 in linseed and linseed prod",
-    "arabic": "طرق أفقية لتحليل المؤشر الحيوي الجزيئي– طرق تحليل للكشف عن الكائنات الحية المحورة وراثيًا والمنتجات المشتقة– الجزء2 : طريقة تفاعل السلسلة المتبلمرة المخصصة للبنية في الوقت الفعلي من أجل اكتشاف وجودFP967 ف ي بذر الكتان ومنتجاته ا أ لأ"
+    "arabic": "طرق أفقية لتحليل المؤشر الحيوي الجزيئي – طرق تحليل للكشف عن الكائنات الحية المحورة وراثيًا والمنتجات المشتقة – الجزء :2 طريقة تفاعل السلسلة المتبلمرة المخصصة للبنية في الوقت الفعلي من أجل في بذر الكتان ومنتجاتهFP967اكتشاف وجود"
   },
   {
     "standard": "SFDA.FD/GSO ISO/TS 20836:2013",
     "english": "Microbiology of food and animal feeding stuffs -- Polymerase chain reaction (PCR) for the detection of food-borne pathogens --Performance testing for thermal cyclers",
-    "arabic": "ميكروبيولوجي الأغذية وأعالف الحيوانا ت-- التفاعل البوليميرزي المتسلسل لكشف الميكروبات الممرضة التي تحملها االغذية (PCR) -- اختبار الأداء للدورات الحرارية أأا"
+    "arabic": "ميكروبيولوجي الأغذية وأعلاف الحيوانات -- التفاعل البوليميرزي المتسلسل لكشف الميكروبات الممرضة التي اختبار الأداء للدورات -- (PCR) تحملها الاغذية الحرارية"
   },
   {
     "standard": "SFDA.FD/GSO ISO/TS 19036:2014",
@@ -2177,7 +2177,7 @@
   {
     "standard": "SFDA.FD/GSO ISO/TS 17919:2015",
     "english": "Microbiology of the food chain -- Polymerase chain reaction (PCR) for the detection of food-borne pathogens -- Detection of botulinum type A, B, E and F neurotoxin-producing clostridia",
-    "arabic": "ميكروبيولوجيا السلسلة الغذائية-- تفاعل سلسلة البوليميراز (PCR) للكشف عن الكائنات الممرضة المنقولة بالغذاء-- الكشف عن المطثيات المنتجة للسموم )العصبية الوشيقية من النوع (أ)، (ب)، (ه) و(و ا لأ لأ"
+    "arabic": "ميكروبيولوجيا السلسلة الغذائية-- تفاعل سلسلة للكشف عن الكائنات الممرضة (PCR) البوليميراز المنقولة بالغذاء-- الكشف عن المطثيات المنتجة للسموم العصبية الوشيقية من النوع )أ(، )ب(، )ه( و)و("
   },
   {
     "standard": "SFDA.FD/GSO ISO/TS 17764-2:2014",
@@ -2292,22 +2292,22 @@
   {
     "standard": "SFDA.FD/GSO ISO 27085:2010",
     "english": "Animal feeding stuffs- Determination of calcium , sodium, phosphorus, magnesium, potassium , iron, zinc, copper, manganese, cobalt, molybdenum, arsenic , lead and cadmium by ICP - AES",
-    "arabic": "الأعالف الحيوانية– تقدير الكالسيوم والصوديوم والفوسفور والمغنيسيوم والبوتاسيوم والحديد والزينك والنحاس والمنجنيز والكوبالت والموليبدينوم والزرنيخ والرصاص والكادميوم عن طريق ICP - AES"
+    "arabic": "الأعلاف الحيوانية – تقدير الكالسيوم والصوديوم والفوسفور والمغنيسيوم والبوتاسيوم والحديد والزينك والنحاس والمنجنيز والكوبالت والموليبدينوم والزرنيخ AES - ICP والرصاص والكادميوم عن طريق"
   },
   {
     "standard": "SFDA.FD/GSO ISO 26642:2015",
     "english": "Food products - Determination of the glycaemic index (GI) and recommendation for food classification",
-    "arabic": "المنتجات الغذائية- تحديد مؤشر الجلوكوز (GI) والتوصية لتصنيف الأغذية"
+    "arabic": "(GI) المنتجات الغذائية - تحديد مؤشر الجلوكوز والتوصية لتصنيف الأغذية"
   },
   {
     "standard": "SFDA.FD/GSO ISO 26323:2010",
     "english": "Milk products -- Determination of the acidification activity of dairy cultures by continuous pH measurement (CpH)",
-    "arabic": "منتجات الحليب– تقدير النشاط الحمضي لمستنبتات الألبان بقياس الأس الهيدروجيني (PH) المستمر (CpH) ا"
+    "arabic": "منتجات الحليب – تقدير النشاط الحمضي لمستنبتات (CpH) المستمر (PH) الألبان بقياس الأس الهيدروجيني"
   },
   {
     "standard": "SFDA.FD/GSO ISO 24631- 1:2015",
     "english": "Radiofrequency identification of animals --Part 1: Evaluation of conformance of RFID transponders with ISO 11784 and ISO 11785 (including granting and use of a manufacturer code)",
-    "arabic": "التعرف على الحيوانات بالترددات الالسلكية-- الجزء1 : تقييم مطابقة أجهزة إرسال واستقبال RFID مع المواصفتين القياسيتين ISO 11784 وISO 11785 ( بما في ذلك منح واستخدام كود الصانع)"
+    "arabic": "التعرف على الحيوانات بالترددات اللاسلكية -- الجزء :1 مع RFID تقييم مطابقة أجهزة إرسال واستقبال بما ( 11785 ISOو 11784 ISO المواصفتين القياسيتين )في ذلك منح واستخدام كود الصانع"
   },
   {
     "standard": "SFDA.FD/GSO ISO 24557:2015",
@@ -2472,7 +2472,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 21528- 1:2013",
     "english": "Microbiology of food and animal feeding stuffs -- Horizontal methods for the detection and enumeration of Enterobacteriaceae -- Part 1: Detection and enumeration by MPN technique with pre-enrichment",
-    "arabic": "ميكروبيولوجي الأغذية والأعالف الحيوانية-- الطّريقة الأفقيّة لكشف وحساب إنتروباكتيرياسيا-- الجزء1 : الكشف والحساب بطريقة تقنية MPN مع ما قبل التخصيب أا"
+    "arabic": "ميكروبيولوجي الأغذية والأعلاف الحيوانية -- الطّريقة الأفقيّة لكشف وحساب إنتروباكتيرياسيا -- الجزء :1 مع ما قبل MPN الكشف والحساب بطريقة تقنية التخصيب"
   },
   {
     "standard": "SFDA.FD/GSO ISO 21527- 2:2016",
@@ -2547,7 +2547,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 20483:2013",
     "english": "Cereals and pulses -- Determination of the nitrogen content and calculation of the crude protein content -- Kjeldahl method",
-    "arabic": "الحبوب و البقول- تقدير محتوى النيتروجين وحساب محتوى البروتين الخام- طريقة Kjeldahl إ"
+    "arabic": "الحبوب و البقول - تقدير محتوى النيتروجين وحساب Kjeldahl محتوى البروتين الخام - طريقة"
   },
   {
     "standard": "SFDA.FD/GSO ISO 20370:2015",
@@ -2637,7 +2637,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 18054:2014",
     "english": "Oils of orris rhizome (Iris pallida Lam. or Iris germanica L.) -- Determination of irone content -- Method using gas chromatography on a capillary column",
-    "arabic": "زيوت الساق الأرضية للسوسن ((Iris pallida Lam. or Iris germanica L.) -- تقدير محتوى الحديد-- باستخدام طريقة الكروماتوجرافيا الغازية على االعمدة الشعرية"
+    "arabic": "Lam. pallida ((Iris زيوت الساق الأرضية للسوسن or Iris germanica L.) الحديد محتوى تقدير باستخدام طريقة الكروماتوجرافيا الغازية على الاعمدة الشعرية"
   },
   {
     "standard": "SFDA.FD/GSO ISO 17997- 2:2014",
@@ -2687,7 +2687,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 17412:2014",
     "english": "Oil of bitter fennel (Foeniculum vulgare Mill. ssp. vulgare var. vulgare)",
-    "arabic": "زيت الشمر المر (Foeniculum vulgare Mill. ssp. vulgare var. vulgare) ا لأ لأ"
+    "arabic": "المر الشمر زيت (Foeniculum vulgare Mill. ssp. vulgare var. vulgare)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 17410:2008",
@@ -2697,7 +2697,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 17382:2014",
     "english": "Oil of magnolia flower, China type (Michelia x alba DC)",
-    "arabic": "زيت زهرة منغوليا، النوع الصيني (Michelia x alba DC) ا لأا لأ"
+    "arabic": "alba x (Michelia زيت زهرة منغوليا، النوع الصيني DC)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 17375:2014",
@@ -2922,7 +2922,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 15303:2013",
     "english": "Animal and vegetable fats and oils --Detection and identification of a volatile organic contaminant by GC/MS",
-    "arabic": "الزيوت والدهون الحيوانية والنباتية-- كشف وتحديد الملوثات العضوية المتطايرة باستخدام GC/MS"
+    "arabic": "الزيوت والدهون الحيوانية والنباتية -- كشف وتحديد GC/MS الملوثات العضوية المتطايرة باستخدام"
   },
   {
     "standard": "SFDA.FD/GSO ISO 15302:2008",
@@ -3002,7 +3002,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 14911:2013",
     "english": "Water quality -- Determination of dissolved Li+, Na+, NH4+, K+, Mn2+, Ca2+, Mg2+, Sr2+ and Ba2+ using ion chromatography --Method for water and waste water",
-    "arabic": "جودة الماء– تقدير ذوائب Li+, Na+, NH4+, K+, Mn2+, Ca2+, Mg2+, Sr2+ و Ba2+ باستعمال الكروموتوغرافيا االيونية– طريقة للمياه و المياه الفائضة ا لأ"
+    "arabic": "K+, NH4+, Na+, Li+, جودة الماء – تقدير ذوائب Mn2+, Ca2+, Mg2+, Sr2+ و Ba2+ باستعمال الكروموتوغرافيا الايونية – طريقة للمياه و المياه الفائضة"
   },
   {
     "standard": "SFDA.FD/GSO ISO 14902:2014",
@@ -3032,7 +3032,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 14716:2014",
     "english": "Oil of galbanum (Ferula galbaniflua Boiss. et Buhse)",
-    "arabic": "زيت نبات القنة (Ferula galbaniflua Boiss. et Buhse)"
+    "arabic": "القنة نبات زيت (Ferula galbaniflua Boiss. et Buhse)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 14714:2014",
@@ -3147,7 +3147,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 13906:2015",
     "english": "Animal feeding stuffs -- Determination of acid detergent fibre (ADF) and acid detergent lignin (ADL) contents",
-    "arabic": "الأعالف الحيوانية-- تقدير محتويات الألياف الذائبة في المنظفات الحمضية (ADF) واللجنين ال ذائب في المنظفات الحمضية (ADL) ا لأ"
+    "arabic": "الأعلاف الحيوانية-- تقدير محتويات الألياف الذائبة في واللجنين الذائب في (ADF) المنظفات الحمضية (ADL) المنظفات الحمضية"
   },
   {
     "standard": "SFDA.FD/GSO ISO 13904:2008",
@@ -3237,7 +3237,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 13301:2014",
     "english": "Sensory analysis -- Methodology -- General guidance for measuring odour, flavour and",
-    "arabic": "التحليل الحسي-- المنهجية-- الدليل العام لقياس حدود كشف الرائحة، النكهة والمذاق بواسطة طريقة االختيار- الجبري ثالثي-الدرجات (3-AFC)"
+    "arabic": "التحليل الحسي -- المنهجية -- الدليل العام لقياس حدود كشف الرائحة، النكهة والمذاق بواسطة طريقة الاختيار- (3-AFC) الجبري ثلاثي-الدرجات"
   },
   {
     "standard": "SFDA.FD/GSO ISO 13300- 2:2014",
@@ -3262,7 +3262,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 12966- 3:2015",
     "english": "Animal and vegetable fats and oils -- Gas chromatography of fatty acid methyl esters - - Part 3: Preparation of methyl esters using trimethylsulfonium hydroxide (TMSH)",
-    "arabic": "الزيوت والدهون الحيوانية-- الكروماتوجراف الغازي إلسترات ميثيل الأحماض الدهنية-- الجزء3 : إعداد إسترات الميثيل باستخدام هيدروكسيد ثالثي ميثيل السلفونيوم (TMSH)"
+    "arabic": "الزيوت والدهون الحيوانية-- الكروماتوجراف الغازي لإسترات ميثيل الأحماض الدهنية-- الجزء :3 إعداد إسترات الميثيل باستخدام هيدروكسيد ثلاثي ميثيل (TMSH) السلفونيوم"
   },
   {
     "standard": "SFDA.FD/GSO ISO 12966- 2:2013",
@@ -3382,7 +3382,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 11866- 1:2014",
     "english": "Milk and milk products -- Enumeration of presumptive Escherichia coli -- Part 1: Most probable number technique using 4-methylumbelliferyl-beta-D-glucuronide (MUG)",
-    "arabic": "الحليب ومنتجاته-- إحصاء االيشيريشيا كولي االفتراضي-- الجزء1 ً: طريقة العدد االكثر احتماال باستخدام4 -methylumbelliferyl-beta-D- glucuronide (MUG)"
+    "arabic": "الحليب ومنتجاته -- إحصاء الايشيريشيا كولي الافتراضي -- الجزء :1 طريقة العدد الاكثر احتمالًا 4 باستخدام-methylumbelliferyl-beta-D- glucuronide (MUG)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 11865:2015",
@@ -3527,27 +3527,27 @@
   {
     "standard": "SFDA.FD/GSO ISO 11178:2014",
     "english": "Star anise (Illicium verum Hook. f.) --Specification",
-    "arabic": "اليانسون النجمي (Illicium verum Hook. f.) -- المواصفات"
+    "arabic": "النجمي اليانسون (Illicium verum Hook. f.) -- المواصفات"
   },
   {
     "standard": "SFDA.FD/GSO ISO 11165:2014",
     "english": "Dried sage (Salvia officinalis L.) --Specification",
-    "arabic": "المرامية المجففة (Salvia officinalis L.) -- المواصفات"
+    "arabic": "المجففة المرامية (Salvia officinalis L.) -- المواصفات"
   },
   {
     "standard": "SFDA.FD/GSO ISO 11164:2014",
     "english": "Dried rosemary (Rosmarinus officinalis L.) --Specification",
-    "arabic": "اكليل الجبل المجفف (Rosmarinus officinalis L.) -- المواصفات"
+    "arabic": "المجفف الجبل اكليل (Rosmarinus officinalis L.) -- المواصفات"
   },
   {
     "standard": "SFDA.FD/GSO ISO 11163:2014",
     "english": "Dried sweet basil (Ocimum basilicum L.) --Specification",
-    "arabic": "الحبق المجفف (Ocimum basilicum L.) -- المواصفات"
+    "arabic": "المجفف الحبق (Ocimum basilicum L.) -- المواصفات"
   },
   {
     "standard": "SFDA.FD/GSO ISO 11162:2014",
     "english": "Peppercorns (Piper nigrum L.) in brine --Specification and test methods",
-    "arabic": "حب الفلفل (Piper nigrum L.) في محلول ملحي-- المواصفات وطرق االخبار إإ"
+    "arabic": "في محلول ملحي -- L.) nigrum (Piper حب الفلفل المواصفات وطرق الاخبار"
   },
   {
     "standard": "SFDA.FD/GSO ISO 11136:2015",
@@ -3622,7 +3622,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 11023:2014",
     "english": "Liquorice extracts (Glycyrrhiza glabra L.) --Determination of glycyrrhizic acid content --Method using high-performance liquid chromatography",
-    "arabic": "مستخلصات العرقسوس (Glycyrrhiza glabra L.) -- تقدير محتوى حمض الجلسرهيزيك-- باستخدام طريقة الكروماتوجرافيا السائلة عالية-الأداء"
+    "arabic": "العرقسوس مستخلصات (Glycyrrhiza glabra L.) -- تقدير محتوى حمض الجلسرهيزيك -- باستخدام طريقة الكروماتوجرافيا السائلة عالية-الأداء"
   },
   {
     "standard": "SFDA.FD/GSO ISO 11021:2014",
@@ -4067,12 +4067,12 @@
   {
     "standard": "SFDA.FD/GSO ISO 8292- 2:2016",
     "english": "Animal and vegetable fats and oils --Determination of solid fat content by pulsed NMR -- Part 2: Indirect method",
-    "arabic": "الزيوت والدهون ال حيوانية والنباتية-- تقدير محتوى الدهون الصلبة بالرنين المغناطيسي النووي (NMR) النبضي-- الجزء2: طريقة غير مباشرة"
+    "arabic": "الزيوت والدهون الحيوانية والنباتية -- تقدير محتوى (NMR) الدهون الصلبة بالرنين المغناطيسي النووي النبضي -- الجزء :2 طريقة غير مباشرة"
   },
   {
     "standard": "SFDA.FD/GSO ISO 8292- 1:2016",
     "english": "Animal and vegetable fats and oils --Determination of solid fat content by pulsed NMR -- Part 1: Direct method",
-    "arabic": "الزيوت والدهون الحيوانية والنباتية-- تقدير محتوى الدهون الصلبة بالرنين المغناطيسي النووي (NMR) النبضي-- الجزء1: الطريقة المباشرة أ"
+    "arabic": "الزيوت والدهون الحيوانية والنباتية -- تقدير محتوى (NMR) الدهون الصلبة بالرنين المغناطيسي النووي النبضي -- الجزء :1 الطريقة المباشرة"
   },
   {
     "standard": "SFDA.FD/GSO ISO 8262- 3:2015",
@@ -4147,12 +4147,12 @@
   {
     "standard": "SFDA.FD/GSO ISO 7981- 2:2008",
     "english": "Water quality — Determination of polycyclic aromatic hydrocarbons (PAH) — Part 2:",
-    "arabic": "جودة المياه- تقدير الهيدروكربونات العطرية متعددة الحلقات (PAH)- الجزء الثاني: تقدير سداسي PAH"
+    "arabic": "جودة المياه- تقدير الهيدروكربونات العطرية متعددة PAH الجزء الثاني: تقدير سداسي (PAH)- الحلقات"
   },
   {
     "standard": "SFDA.FD/GSO ISO 7981- 1:2008",
     "english": "Water quality — Determination of polycyclic aromatic hydrocarbons (PAH) — Part 1: Determination of six PAH by high-performance thin-layer chromatography with fluorescence detection after liquid-liquid extraction",
-    "arabic": "جودة المياه- تقدير سداسي الهيدروكربونات العطرية متعددة الحلقات (PAH)- الجزء الأول: تقدير سداسي PAH بواسطة الكروماتوجراف السائل الدقيق عالي الإداء بالكشف الفلورى بعد استخالص سائل-سائل"
+    "arabic": "جودة المياه- تقدير سداسي الهيدروكربونات العطرية الجزء الأول: تقدير سداسي (PAH)- متعددة الحلقات بواسطة الكروماتوجراف السائل الدقيق عالي PAH الإداء بالكشف الفلورى بعد استخلاص سائل-سائل"
   },
   {
     "standard": "SFDA.FD/GSO ISO 7973:2015",
@@ -4792,7 +4792,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 6463:2012",
     "english": "Animal and vegetable fats and oils --Determination of butylhydroxyanisole (BHA) and butylhydroxytoluene (BHT) - Gas-liquid chromatographic method",
-    "arabic": "الدهون والزيوت الحيوانية والنباتية– تقدير (BHA) و(BHT – طريقة الغاز / السائل الكرو ماتوغرافي"
+    "arabic": "(BHA) الدهون والزيوت الحيوانية والنباتية – تقدير طريقة الغاز / السائل الكروماتوغرافي – (BHTو"
   },
   {
     "standard": "SFDA.FD/GSO ISO 6322- 3:1997",
@@ -5432,7 +5432,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 3760:2014",
     "english": "Oil of celery seed (Apium graveolens L.)",
-    "arabic": "زيت بذور الكرفس (Apium graveolens L.)"
+    "arabic": "الكرفس بذور زيت (Apium graveolens L.)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 3756:2014",
@@ -5517,7 +5517,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 3527:2015",
     "english": "Oil of parsley fruits (Petroselinum sativum Hoffm.)",
-    "arabic": "زيوت ثمرات البقدونس (Petroselinum sativum Hoffm) ا"
+    "arabic": "البقدونس ثمرات زيوت (Petroselinum sativum Hoffm)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 3524:2015",
@@ -5622,7 +5622,7 @@
   {
     "standard": "SFDA.FD/GSO ISO 3143:2015",
     "english": "Oil of clove stems [Syzygium aromaticum (L.) Merr. et Perry, syn. Eugenia caryophyllus (Sprengel) Bullock et S. Harrison]",
-    "arabic": "زيت جذوع القرفنل [Syzygium aromaticum (L.) Merr. et Perry, syn. Eugenia caryophyllus (Sprengel) Bullock et S. Harrison] أ"
+    "arabic": "القرفنل جذوع زيت [Syzygium aromaticum (L.) Merr. et Perry, syn. Eugenia caryophyllus (Sprengel) Bullock et S. Harrison]"
   },
   {
     "standard": "SFDA.FD/GSO ISO 3142:2015",
@@ -5687,22 +5687,22 @@
   {
     "standard": "SFDA.FD/GSO ISO 3033- 4:2014",
     "english": "Oil of spearmint -- Part 4: Scotch variety (Mentha x gracilis Sole)",
-    "arabic": "زيت النعناع-- الجزء4: متنوع اسكتلندي (Mentha x gracilis Sole)"
+    "arabic": "x (Mentha زيت النعناع -- الجزء :4 متنوع اسكتلندي gracilis Sole)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 3033- 3:2014",
     "english": "Oil of spearmint -- Part 3: Indian type (Mentha spicata L.), redistilled oil",
-    "arabic": "زيت النعناع-- الجزء3: النوع الهندي (Mentha spicata L.)، زيت معاد التقطير"
+    "arabic": "(Mentha زيت النعناع -- الجزء :3 النوع الهندي ، زيت معاد التقطيرL.) spicata"
   },
   {
     "standard": "SFDA.FD/GSO ISO 3033- 2:2014",
     "english": "Oil of spearmint -- Part 2: Chinese type (80 % and 60 %) (Mentha viridis L. var. crispa Benth.), redistilled oil",
-    "arabic": "زيت النعناع-- الجزء2 ( : النوع الصيني80 و% 60 )% (Mentha viridis L. var. crispa Benth.) ، زيت معاد التقطير"
+    "arabic": "زيت النعناع -- الجزء :2 النوع الصيني 80) % و60 (% (Mentha viridis L. var. crispa Benth.) ، زيت معاد التقطير"
   },
   {
     "standard": "SFDA.FD/GSO ISO 3033- 1:2014",
     "english": "Oil of spearmint -- Part 1: Native type (Mentha spicata L.)",
-    "arabic": "زيت النعناع-- الجزء1: النوع المحلي (Mentha spicata L.)"
+    "arabic": "(Mentha زيت النعناع -- الجزء :1 النوع المحلي spicata L.)"
   },
   {
     "standard": "SFDA.FD/GSO ISO 2971:2007",
