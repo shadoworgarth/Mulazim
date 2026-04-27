@@ -433,7 +433,7 @@ const ANIMAL_FEED_GUIDE: FeedGuideSection[] = [
   {
     id: "flavours",
     sectionCode: "4.2.1",
-    title: "منكهات العلف",
+    title: "معززات النكهات",
     rows: [
       {
         name: "Black honey",
@@ -456,7 +456,7 @@ const ANIMAL_FEED_GUIDE: FeedGuideSection[] = [
   {
     id: "colour",
     sectionCode: "4.2.2",
-    title: "ملونات العلف",
+    title: "معززات الألوان",
     rows: [
       {
         name: "Carotenoids (xanthophylls)",
