@@ -134,34 +134,12 @@ export default function AnimalFeedAdditivesScreen() {
           return (
             <View style={styles.card}>
               <View style={styles.cardTop}>
-                <View style={styles.cardTopLeft}>
-                  {item.eNumber !== "—" && (
-                    <View style={styles.eNumBadgesRow}>
-                      {item.eNumber.split(";").map((num) => (
-                        <View
-                          key={num}
-                          style={[
-                            styles.eNumBadge,
-                            { backgroundColor: col.bg, borderColor: col.badge },
-                          ]}
-                        >
-                          <Text style={[styles.eNumText, { color: col.text }]}>
-                            {num.trim()}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                  <View
-                    style={[
-                      styles.catBadge,
-                      { backgroundColor: col.badge },
-                    ]}
-                  >
-                    <Text style={styles.catBadgeText}>
-                      {CATEGORY_LABELS[item.category]}
-                    </Text>
-                  </View>
+                <View
+                  style={[styles.catBadge, { backgroundColor: col.badge }]}
+                >
+                  <Text style={styles.catBadgeText}>
+                    {CATEGORY_LABELS[item.category]}
+                  </Text>
                 </View>
                 <Text style={styles.groupLabel} numberOfLines={2}>
                   {item.functionalGroup}
@@ -169,6 +147,24 @@ export default function AnimalFeedAdditivesScreen() {
               </View>
 
               <Text style={styles.name}>{item.name}</Text>
+
+              {item.eNumber !== "—" && (
+                <View style={styles.eNumBadgesRow}>
+                  {item.eNumber.split(";").map((num) => (
+                    <View
+                      key={num}
+                      style={[
+                        styles.eNumBadge,
+                        { backgroundColor: col.bg, borderColor: col.badge },
+                      ]}
+                    >
+                      <Text style={[styles.eNumText, { color: col.text }]}>
+                        {num.trim()}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
 
               {item.provisions ? (
                 <Text style={styles.provisions}>{item.provisions}</Text>
@@ -260,11 +256,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: 8,
-  },
-  cardTopLeft: {
-    flexDirection: "column",
-    gap: 4,
-    flexShrink: 0,
   },
   eNumBadgesRow: {
     flexDirection: "row",
