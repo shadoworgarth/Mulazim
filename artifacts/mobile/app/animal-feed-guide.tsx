@@ -16,11 +16,37 @@ import ANIMAL_FEED_GUIDE, { FeedGuideRow } from "@/constants/animal-feed-guide";
 const ACCENT = "#f57f17";
 const ACCENT_LIGHT = "#fff8e1";
 
+// ─── Category definitions ────────────────────────────────────────────────────
+
 const CATEGORY_CHIPS = ["الدواجن", "المواشي"] as const;
 type CategoryChip = typeof CATEGORY_CHIPS[number];
 
+interface Subtype {
+  label: string;
+  keywords: string[];
+}
+
+const POULTRY_SUBTYPES: Subtype[] = [
+  { label: "البياض",       keywords: ["بياض"] },
+  { label: "الدجاج اللاحم", keywords: ["لاحم"] },
+  { label: "الرومي",       keywords: ["رومي"] },
+  { label: "صيصان الدواجن", keywords: ["صيصان"] },
+  { label: "الحمام",       keywords: ["حمام"] },
+  { label: "البط",         keywords: ["البط"] },
+  { label: "الأوز",        keywords: ["الأوز"] },
+];
+
+const LIVESTOCK_SUBTYPES: Subtype[] = [
+  { label: "أبقار الحلاب", keywords: ["أبقار", "حلاب"] },
+  { label: "العجول",       keywords: ["عجول"] },
+  { label: "الخراف",       keywords: ["خراف"] },
+  { label: "الأرانب",      keywords: ["أرانب"] },
+];
+
+// ─── Matching helpers ─────────────────────────────────────────────────────────
+
 const POULTRY_KEYWORDS = ["دواجن", "بياض", "رومي", "لاحم", "صيصان", "حمام"];
-const POULTRY_EXACT = ["البط", "الأوز"];
+const POULTRY_EXACT    = ["البط", "الأوز"];
 const LIVESTOCK_KEYWORDS = ["مواشي", "أبقار", "عجول", "خراف", "أرانب"];
 
 function isPoultry(animals: string): boolean {
@@ -32,11 +58,57 @@ function isLivestock(animals: string): boolean {
   return LIVESTOCK_KEYWORDS.some((k) => animals.includes(k));
 }
 
-function matchesCategory(animals: string, category: CategoryChip): boolean {
-  if (category === "الدواجن") return isPoultry(animals);
-  if (category === "المواشي") return isLivestock(animals);
+/**
+ * Returns true when the entry is a blanket rule (no specific animal listed),
+ * e.g. "الدواجن", "المواشي", "جميع أنواع الدواجن", "جميع الأنواع".
+ * Rows with "ما عدا" contain an exclusion clause so they are NOT fully general.
+ */
+function isFullyGeneral(animals: string): boolean {
+  if (animals.includes("ما عدا")) return false;
+  return (
+    animals === "الدواجن" ||
+    animals === "المواشي" ||
+    animals.includes("جميع")
+  );
+}
+
+/**
+ * Core filter: does this row's `animals` value match the selected category
+ * and (optionally) the selected sub-type?
+ *
+ * With no sub-type: any row belonging to that category.
+ * With a sub-type : rows that EITHER directly name that sub-type OR are a
+ *                   fully-general rule for the category (since general rules
+ *                   apply to every animal in the group, including the chosen one).
+ */
+function matchesFilter(
+  animals: string,
+  category: CategoryChip,
+  subtype: Subtype | null
+): boolean {
+  if (!subtype) {
+    // category-only: show all rows in that category
+    if (category === "الدواجن") return isPoultry(animals);
+    return isLivestock(animals);
+  }
+
+  // Sub-type selected ───────────────────────────────────────────────────────
+
+  // 1. The row explicitly names this sub-type
+  if (subtype.keywords.some((k) => animals.includes(k))) return true;
+
+  // 2. The row is a blanket general rule for the parent category
+  //    (e.g. "الدواجن", "جميع أنواع الدواجن") — these rules apply to ALL
+  //    animals in the group, including the selected sub-type
+  if (isFullyGeneral(animals)) {
+    if (category === "الدواجن") return isPoultry(animals) || animals.includes("جميع أنواع المواشي");
+    return isLivestock(animals) || animals.includes("جميع أنواع المواشي");
+  }
+
   return false;
 }
+
+// ─── UI components ────────────────────────────────────────────────────────────
 
 interface FilterSection {
   sectionId: string;
@@ -126,29 +198,51 @@ const ALL_COLLAPSED = Object.fromEntries(
   ANIMAL_FEED_GUIDE.map((s) => [s.id, true])
 );
 
+// ─── Main screen ──────────────────────────────────────────────────────────────
+
 export default function AnimalFeedGuideScreen() {
   const [collapsed, setCollapsed] =
     useState<Record<string, boolean>>(ALL_COLLAPSED);
   const [filteredCollapsed, setFilteredCollapsed] = useState<
     Record<string, boolean>
   >({});
+
   const [search, setSearch] = useState("");
-  const [selectedAnimal, setSelectedAnimal] = useState<CategoryChip | null>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<CategoryChip | null>(null);
+  const [selectedSubtype, setSelectedSubtype] = useState<Subtype | null>(null);
 
   const q = search.trim().toLowerCase();
-
-  const isFiltering = q.length > 0 || selectedAnimal !== null;
+  const isFiltering = q.length > 0 || selectedCategory !== null;
 
   const toggle = (id: string) =>
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
-
   const toggleFiltered = (id: string) =>
     setFilteredCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const selectAnimal = (animal: CategoryChip) => {
-    setSelectedAnimal((prev) => (prev === animal ? null : animal));
+  function handleCategoryPress(cat: CategoryChip) {
+    if (selectedCategory === cat) {
+      // deselect everything
+      setSelectedCategory(null);
+      setSelectedSubtype(null);
+    } else {
+      setSelectedCategory(cat);
+      setSelectedSubtype(null);
+    }
     setFilteredCollapsed({});
-  };
+  }
+
+  function handleSubtypePress(sub: Subtype) {
+    setSelectedSubtype((prev) => (prev?.label === sub.label ? null : sub));
+    setFilteredCollapsed({});
+  }
+
+  const subtypeList: Subtype[] =
+    selectedCategory === "الدواجن"
+      ? POULTRY_SUBTYPES
+      : selectedCategory === "المواشي"
+      ? LIVESTOCK_SUBTYPES
+      : [];
 
   const filteredSections = useMemo<FilterSection[]>(() => {
     if (!isFiltering) return [];
@@ -161,8 +255,11 @@ export default function AnimalFeedGuideScreen() {
             !q ||
             row.name.toLowerCase().includes(q) ||
             row.animals.toLowerCase().includes(q);
+
           const matchesAnimal =
-            !selectedAnimal || matchesCategory(row.animals, selectedAnimal);
+            !selectedCategory ||
+            matchesFilter(row.animals, selectedCategory, selectedSubtype);
+
           return matchesText && matchesAnimal;
         });
       if (matched.length > 0) {
@@ -175,7 +272,7 @@ export default function AnimalFeedGuideScreen() {
       }
     });
     return result;
-  }, [q, selectedAnimal, isFiltering]);
+  }, [q, selectedCategory, selectedSubtype, isFiltering]);
 
   const totalRows = ANIMAL_FEED_GUIDE.reduce(
     (acc, s) => acc + s.rows.length,
@@ -186,6 +283,10 @@ export default function AnimalFeedGuideScreen() {
     0
   );
 
+  // ── label shown in result count bar ──
+  const activeLabel = selectedSubtype?.label ?? selectedCategory ?? "";
+
+  // ── filters bar ──────────────────────────────────────────────────────────
   const filtersBar = (
     <View>
       <View style={styles.searchWrap}>
@@ -203,6 +304,7 @@ export default function AnimalFeedGuideScreen() {
         />
       </View>
 
+      {/* Category chips row */}
       <View style={styles.chipsSection}>
         <ScrollView
           horizontal
@@ -210,12 +312,12 @@ export default function AnimalFeedGuideScreen() {
           contentContainerStyle={styles.chipsRow}
         >
           {CATEGORY_CHIPS.map((cat) => {
-            const active = selectedAnimal === cat;
+            const active = selectedCategory === cat;
             return (
               <Pressable
                 key={cat}
                 style={[styles.chip, active && styles.chipActive]}
-                onPress={() => selectAnimal(cat)}
+                onPress={() => handleCategoryPress(cat)}
               >
                 <Text
                   style={[styles.chipText, active && styles.chipTextActive]}
@@ -228,6 +330,38 @@ export default function AnimalFeedGuideScreen() {
           })}
         </ScrollView>
       </View>
+
+      {/* Sub-type chips row — only when a category is active */}
+      {subtypeList.length > 0 && (
+        <View style={styles.subtypeSection}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipsRow}
+          >
+            {subtypeList.map((sub) => {
+              const active = selectedSubtype?.label === sub.label;
+              return (
+                <Pressable
+                  key={sub.label}
+                  style={[styles.subChip, active && styles.subChipActive]}
+                  onPress={() => handleSubtypePress(sub)}
+                >
+                  <Text
+                    style={[
+                      styles.subChipText,
+                      active && styles.subChipTextActive,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {sub.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
     </View>
   );
 
@@ -246,7 +380,7 @@ export default function AnimalFeedGuideScreen() {
             filteredSections.length > 0 ? (
               <Text style={styles.countText}>
                 {totalFilteredRows} نتيجة في {filteredSections.length} قسم
-                {selectedAnimal ? ` · ${selectedAnimal}` : ""}
+                {activeLabel ? ` · ${activeLabel}` : ""}
               </Text>
             ) : null
           }
@@ -294,10 +428,11 @@ export default function AnimalFeedGuideScreen() {
           )}
         />
       )}
-
     </View>
   );
 }
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   container: {
@@ -321,6 +456,9 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   chipsSection: {
+    paddingBottom: 6,
+  },
+  subtypeSection: {
     paddingBottom: 8,
   },
   chipsRow: {
@@ -328,38 +466,45 @@ const styles = StyleSheet.create({
     gap: 8,
     flexDirection: "row",
   },
+  // Category chips (solid fill when active)
   chip: {
     borderWidth: 1.5,
     borderColor: ACCENT,
     borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     backgroundColor: "#ffffff",
-    maxWidth: 200,
   },
   chipActive: {
     backgroundColor: ACCENT,
   },
   chipText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "700",
     color: ACCENT,
   },
   chipTextActive: {
     color: "#ffffff",
   },
-  chipMore: {
-    borderWidth: 1.5,
+  // Sub-type chips (smaller, outlined style)
+  subChip: {
+    borderWidth: 1,
     borderColor: ACCENT,
-    borderRadius: 20,
+    borderRadius: 16,
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 4,
     backgroundColor: ACCENT_LIGHT,
   },
-  chipMoreText: {
+  subChipActive: {
+    backgroundColor: ACCENT,
+  },
+  subChipText: {
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "600",
     color: ACCENT,
+  },
+  subChipTextActive: {
+    color: "#ffffff",
   },
   listContent: {
     paddingTop: 4,
