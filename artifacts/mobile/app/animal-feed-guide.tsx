@@ -45,8 +45,8 @@ const LIVESTOCK_SUBTYPES: Subtype[] = [
 
 // ─── Matching helpers ─────────────────────────────────────────────────────────
 
-const POULTRY_KEYWORDS = ["دواجن", "بياض", "رومي", "لاحم", "صيصان", "حمام"];
-const POULTRY_EXACT    = ["البط", "الأوز"];
+const POULTRY_KEYWORDS   = ["دواجن", "بياض", "رومي", "لاحم", "صيصان", "حمام"];
+const POULTRY_EXACT      = ["البط", "الأوز"];
 const LIVESTOCK_KEYWORDS = ["مواشي", "أبقار", "عجول", "خراف", "أرانب"];
 
 function isPoultry(animals: string): boolean {
@@ -58,11 +58,7 @@ function isLivestock(animals: string): boolean {
   return LIVESTOCK_KEYWORDS.some((k) => animals.includes(k));
 }
 
-/**
- * Returns true when the entry is a blanket rule (no specific animal listed),
- * e.g. "الدواجن", "المواشي", "جميع أنواع الدواجن", "جميع الأنواع".
- * Rows with "ما عدا" contain an exclusion clause so they are NOT fully general.
- */
+/** True when the row is a blanket rule with NO exclusion clause. */
 function isFullyGeneral(animals: string): boolean {
   if (animals.includes("ما عدا")) return false;
   return (
@@ -73,39 +69,76 @@ function isFullyGeneral(animals: string): boolean {
 }
 
 /**
- * Core filter: does this row's `animals` value match the selected category
- * and (optionally) the selected sub-type?
+ * Ordered from most-specific to least-specific so the first match wins.
+ * Each entry maps a trigger phrase to the sub-type labels it excludes.
+ */
+const EXCLUSION_RULES: { trigger: string; excludes: string[] }[] = [
+  {
+    trigger: "ما عدا البط والأوز والحمام والبياض",
+    excludes: ["البياض", "البط", "الأوز", "الحمام"],
+  },
+  {
+    trigger: "ما عدا البط والأوز",
+    excludes: ["البط", "الأوز"],
+  },
+  {
+    trigger: "ما عدا البياض",
+    excludes: ["البياض"],
+  },
+];
+
+/** Returns the sub-type labels explicitly excluded by the "ما عدا" clause. */
+function getExcludedSubtypeLabels(animals: string): string[] {
+  for (const rule of EXCLUSION_RULES) {
+    if (animals.includes(rule.trigger)) return rule.excludes;
+  }
+  return [];
+}
+
+/**
+ * Core filter — determines whether a row's `animals` value matches the
+ * selected category and optional sub-type.
  *
- * With no sub-type: any row belonging to that category.
- * With a sub-type : rows that EITHER directly name that sub-type OR are a
- *                   fully-general rule for the category (since general rules
- *                   apply to every animal in the group, including the chosen one).
+ * Logic (evaluated in order):
+ *  1. Exclusion check first: if the row has "ما عدا" and the sub-type is
+ *     in its exclusion list → never show.
+ *  2. Rows with "ما عدا" whose exclusion list does NOT include the sub-type
+ *     → the rule applies to all non-excluded animals in the category → show.
+ *  3. Fully-general rows (no exclusions, e.g. "الدواجن", "جميع أنواع الدواجن")
+ *     → apply to every animal in the category → show.
+ *  4. Specific rows without "ما عدا": show only if they directly name the
+ *     sub-type via keyword match.
  */
 function matchesFilter(
   animals: string,
   category: CategoryChip,
   subtype: Subtype | null
 ): boolean {
+  // ── category-only (no sub-type selected) ──────────────────────────────────
   if (!subtype) {
-    // category-only: show all rows in that category
-    if (category === "الدواجن") return isPoultry(animals);
-    return isLivestock(animals);
+    return category === "الدواجن" ? isPoultry(animals) : isLivestock(animals);
   }
 
-  // Sub-type selected ───────────────────────────────────────────────────────
+  // ── sub-type selected ─────────────────────────────────────────────────────
 
-  // 1. The row explicitly names this sub-type
-  if (subtype.keywords.some((k) => animals.includes(k))) return true;
+  const inCategory =
+    category === "الدواجن" ? isPoultry(animals) : isLivestock(animals);
 
-  // 2. The row is a blanket general rule for the parent category
-  //    (e.g. "الدواجن", "جميع أنواع الدواجن") — these rules apply to ALL
-  //    animals in the group, including the selected sub-type
-  if (isFullyGeneral(animals)) {
-    if (category === "الدواجن") return isPoultry(animals) || animals.includes("جميع أنواع المواشي");
-    return isLivestock(animals) || animals.includes("جميع أنواع المواشي");
+  // Step 1 & 2: handle "ما عدا" (exception) rows first
+  if (animals.includes("ما عدا")) {
+    if (!inCategory) return false;
+    const excluded = getExcludedSubtypeLabels(animals);
+    // Sub-type is explicitly excluded → never show
+    if (excluded.includes(subtype.label)) return false;
+    // Sub-type is NOT in the exclusion list → rule applies to it → show
+    return true;
   }
 
-  return false;
+  // Step 3: fully-general rows apply to every animal in the category
+  if (isFullyGeneral(animals)) return inCategory;
+
+  // Step 4: specific rows — show only on direct keyword match
+  return subtype.keywords.some((k) => animals.includes(k));
 }
 
 // ─── UI components ────────────────────────────────────────────────────────────
