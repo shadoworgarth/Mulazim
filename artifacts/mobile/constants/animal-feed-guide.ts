@@ -201,7 +201,7 @@ const ANIMAL_FEED_GUIDE: FeedGuideSection[] = [
       {
         name: "Selenium",
         unit: "PPM",
-        animals: "أبقار الحلاب",
+        animals: "أبقار الحليب",
         min: "0.05",
         max: "0.1",
         notes: "لا يُضاف السيلينيوم كعنصر منفرد بل من خلال مادة علفية غنية به كمسحوق السمك",

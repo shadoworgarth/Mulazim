@@ -45,7 +45,7 @@ const POULTRY_SUBTYPES: Subtype[] = [
 ];
 
 const LIVESTOCK_SUBTYPES: Subtype[] = [
-  { label: "أبقار الحلاب",    keywords: ["أبقار", "حلاب"] },
+  { label: "أبقار الحليب",    keywords: ["أبقار", "حليب"] },
   { label: "العجول",          keywords: ["عجول"] },
   { label: "العجول (6 أشهر)", keywords: ["عجول"] },   // inherits all calves rows
   { label: "الخراف",          keywords: ["خراف"] },
@@ -57,7 +57,7 @@ const LIVESTOCK_SUBTYPES: Subtype[] = [
 
 const POULTRY_KEYWORDS   = ["دواجن", "بياض", "رومي", "لاحم", "صيصان", "حمام"];
 const POULTRY_EXACT      = ["البط", "الأوز"];
-const LIVESTOCK_KEYWORDS = ["مواشي", "أبقار", "عجول", "خراف", "أرانب"];
+const LIVESTOCK_KEYWORDS = ["مواشي", "أبقار", "حليب", "عجول", "خراف", "أرانب"];
 
 function isPoultry(animals: string): boolean {
   if (POULTRY_EXACT.includes(animals)) return true;

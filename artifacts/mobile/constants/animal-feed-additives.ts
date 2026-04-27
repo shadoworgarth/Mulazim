@@ -92,7 +92,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   { id: "1-070", category: 1, categoryLabel: "الإضافات التقنية", functionalGroup: "عوامل تساعد على التلاصق وعوامل تمنع من التكتل", eNumber: "E 599", name: "Perlite", provisions: "" },
   { id: "1-071", category: 1, categoryLabel: "الإضافات التقنية", functionalGroup: "عوامل تساعد على التلاصق وعوامل تمنع من التكتل", eNumber: "1g557", name: "Montmorillonite-Illite", provisions: "[جميع الأنواع]" },
   { id: "1-072", category: 1, categoryLabel: "الإضافات التقنية", functionalGroup: "عوامل تساعد على التلاصق وعوامل تمنع من التكتل", eNumber: "1g568", name: "Clinoptilolite of sedimentary origin", provisions: "[جميع الأنواع]" },
-  { id: "1-073", category: 1, categoryLabel: "الإضافات التقنية", functionalGroup: "عوامل تساعد على التلاصق وعوامل تمنع من التكتل", eNumber: "1g598", name: "Dolomite-Magnesite", provisions: "[أبقار الحلاب وسائر المجترات المنتجة للحليب]" },
+  { id: "1-073", category: 1, categoryLabel: "الإضافات التقنية", functionalGroup: "عوامل تساعد على التلاصق وعوامل تمنع من التكتل", eNumber: "1g598", name: "Dolomite-Magnesite", provisions: "[أبقار الحليب وسائر المجترات المنتجة للحليب]" },
   { id: "1-074", category: 1, categoryLabel: "الإضافات التقنية", functionalGroup: "عوامل تساعد على التلاصق وعوامل تمنع من التكتل", eNumber: "1m558i", name: "Bentonite", provisions: "[جميع الأنواع]" },
 
   // 1h – Radioactive caesium binders
@@ -273,7 +273,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   // ═══════════════════════════════════════════════
 
   // 3a – Vitamins and provitamins
-  { id: "3-001", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a672a/b/c", name: "Retinyl acetate / Retinyl palmitate / Retinyl propionate (Vitamin A)", provisions: "[الدجاج اللاحم وصغار الدواجن؛ الرومي؛ الدواجن الأخرى؛ أبقار الحلاب والتربية؛ العجول؛ الحملان والجداء؛ الماشية والأغنام والماعز للتسمين؛ سائر الأنواع]" },
+  { id: "3-001", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a672a/b/c", name: "Retinyl acetate / Retinyl palmitate / Retinyl propionate (Vitamin A)", provisions: "[الدجاج اللاحم وصغار الدواجن؛ الرومي؛ الدواجن الأخرى؛ أبقار الحليب والتربية؛ العجول؛ الحملان والجداء؛ الماشية والأغنام والماعز للتسمين؛ سائر الأنواع]" },
   { id: "3-002", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a820/3a821", name: "Thiamine hydrochloride / Thiamine mononitrate (Vitamin B1)", provisions: "" },
   { id: "3-003", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "—", name: "Vitamin B2 / Riboflavin; Riboflavin-5'-phosphate ester monosodium salt", provisions: "" },
   { id: "3-004", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a831", name: "Vitamin B6 / Pyridoxine hydrochloride", provisions: "" },
@@ -293,7 +293,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   { id: "3-018", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a316", name: "Folic acid", provisions: "" },
   { id: "3-019", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a314", name: "Niacin", provisions: "" },
   { id: "3-020", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a315", name: "Niacinamide", provisions: "" },
-  { id: "3-021", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "—", name: "Omega-6 Essential Unsaturated Fatty acids (octadecadienoic acid)", provisions: "[أبقار التربية؛ أبقار الحلاب]" },
+  { id: "3-021", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "—", name: "Omega-6 Essential Unsaturated Fatty acids (octadecadienoic acid)", provisions: "[أبقار التربية؛ أبقار الحليب]" },
   { id: "3-022", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a900", name: "Inositol", provisions: "[الأسماك والقشريات]" },
   { id: "3-023", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "3a370", name: "Taurine", provisions: "[Canidae؛ Felidae؛ Mustelidae؛ الأسماك آكلة اللحوم]" },
   { id: "3-024", category: 3, categoryLabel: "الإضافات الغذائية", functionalGroup: "فيتامينات وبروفيتامينات", eNumber: "E 160a / 3a160(a)", name: "Beta-carotene", provisions: "" },
@@ -338,7 +338,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
 
   // 4a – Digestibility enhancers
   { id: "4-001", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a1", name: "3-phytase", provisions: "[الدجاج اللاحم؛ البياض؛ صغار الخنازير؛ الخنازير للتسمين]" },
-  { id: "4-002", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a2", name: "Fermentation product of Aspergillus oryzae", provisions: "[أبقار الحلاب]" },
+  { id: "4-002", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a2", name: "Fermentation product of Aspergillus oryzae", provisions: "[أبقار الحليب]" },
   { id: "4-003", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a3", name: "Endo-1,4-beta-mannanase", provisions: "[الدجاج اللاحم]" },
   { id: "4-004", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a5/4a6", name: "6-phytase (from Pichia pastoris / Aspergillus oryzae)", provisions: "[الدجاج اللاحم؛ البط للتسمين؛ الرومي للتسمين؛ البياض؛ الدواجن]" },
   { id: "4-005", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a7", name: "Preparation of endo-1,4-beta-xylanase and endo-1,4-beta-glucanase (from Aspergillus niger)", provisions: "[الدجاج اللاحم؛ البياض؛ الرومي؛ البط؛ الدواجن الصغيرة]" },
@@ -355,7 +355,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   { id: "4-016", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a18", name: "6-Phytase (from Aspergillus oryzae)", provisions: "[الدواجن للتسمين]" },
   { id: "4-017", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a19", name: "Preparation of 6-phytase (from Trichoderma reesei)", provisions: "[الدواجن غير البياضة؛ الدواجن البياضة]" },
   { id: "4-018", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a20", name: "Preparation of endo-1,3(4)-beta-glucanase (from Trichoderma reesei)", provisions: "[الدجاج اللاحم]" },
-  { id: "4-019", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a21", name: "Preparation of alpha-amylase (from Bacillus licheniformis)", provisions: "[أبقار الحلاب]" },
+  { id: "4-019", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a21", name: "Preparation of alpha-amylase (from Bacillus licheniformis)", provisions: "[أبقار الحليب]" },
   { id: "4-020", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a22", name: "Preparation of endo-1,4-beta-xylanase and endo-1,3(4)-beta-glucanase (from Talaromyces versatilis)", provisions: "[الدجاج اللاحم؛ البياض؛ الرومي؛ الدواجن الصغيرة]" },
   { id: "4-021", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a23", name: "Preparation of 6-phytase (from Komagataella pastoris)", provisions: "[الدجاج اللاحم؛ جميع أنواع الدواجن للتسمين والبيض]" },
   { id: "4-022", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a24", name: "6-phytase EC 3.1.3.26 (from Trichoderma reesei ATCC SD-6528)", provisions: "[جميع أنواع الدواجن]" },
@@ -374,12 +374,12 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
 
   // 4b – Gut flora stabilisers
   { id: "4-035", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1702", name: "Saccharomyces cerevisiae", provisions: "[ماعز الحلاب؛ أغنام الحلاب؛ الخيول؛ الجاموس الحلوب؛ العجول؛ الأرانب]" },
-  { id: "4-036", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4a1704", name: "Saccharomyces cerevisiae", provisions: "[أبقار الحلاب؛ الماشية والمجترات الصغيرة للتسمين]" },
+  { id: "4-036", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4a1704", name: "Saccharomyces cerevisiae", provisions: "[أبقار الحليب؛ الماشية والمجترات الصغيرة للتسمين]" },
   { id: "4-037", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1705", name: "Enterococcus faecium", provisions: "[الدجاج اللاحم؛ العجول؛ الجداء؛ القطط؛ الدواجن الصغيرة؛ الكلاب]" },
   { id: "4-038", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1706", name: "Enterococcus faecium & Lactobacillus rhamnosus", provisions: "[العجول]" },
   { id: "4-039", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1707", name: "Enterococcus faecium", provisions: "[العجول؛ الدجاج اللاحم؛ الرومي؛ القطط؛ الكلاب]" },
   { id: "4-040", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1708", name: "Enterococcus faecium (solid and water soluble)", provisions: "[العجول]" },
-  { id: "4-041", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1710", name: "Saccharomyces cerevisiae", provisions: "[أبقار الحلاب؛ الماشية للتسمين؛ المجترات الصغيرة؛ الخيول]" },
+  { id: "4-041", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1710", name: "Saccharomyces cerevisiae", provisions: "[أبقار الحليب؛ الماشية للتسمين؛ المجترات الصغيرة؛ الخيول]" },
   { id: "4-042", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1711", name: "Saccharomyces cerevisiae", provisions: "[الحملان؛ ماعز الحلاب؛ أغنام الحلاب]" },
   { id: "4-043", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4d1712", name: "Pediococcus acidilactici", provisions: "[البياض (مياه الشرب)؛ الدجاج اللاحم (مياه الشرب)]" },
   { id: "4-044", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "ميكروبات استقرار الأمعاء", eNumber: "4b1713", name: "Enterococcus faecium", provisions: "[الدجاج اللاحم]" },
