@@ -15,30 +15,18 @@ import ANIMAL_FEED_GUIDE, { FeedGuideRow } from "@/constants/animal-feed-guide";
 const ACCENT = "#f57f17";
 const ACCENT_LIGHT = "#fff8e1";
 
-interface SearchResult {
-  row: FeedGuideRow;
-  sectionTitle: string;
+interface SearchSection {
   sectionId: string;
-  rowIndex: number;
+  sectionTitle: string;
+  rows: { row: FeedGuideRow; rowIndex: number }[];
 }
 
-function RowCard({
-  row,
-  sectionTitle,
-  showSection,
-}: {
-  row: FeedGuideRow;
-  sectionTitle?: string;
-  showSection?: boolean;
-}) {
+function RowCard({ row }: { row: FeedGuideRow }) {
   const hasValues =
     (row.min && row.min !== "—") || (row.max && row.max !== "—");
 
   return (
     <View style={rowStyles.card}>
-      {showSection && sectionTitle && (
-        <Text style={rowStyles.sectionTag}>{sectionTitle}</Text>
-      )}
       <View style={rowStyles.nameRow}>
         <Text style={rowStyles.name}>{row.name}</Text>
         <Text style={rowStyles.unit}>{row.unit}</Text>
@@ -64,14 +52,65 @@ function RowCard({
   );
 }
 
-const ALL_SECTION_IDS = Object.fromEntries(
+function SectionBlock({
+  sectionId,
+  sectionTitle,
+  rows,
+  note,
+  collapsed,
+  onToggle,
+}: {
+  sectionId: string;
+  sectionTitle: string;
+  rows: { row: FeedGuideRow; rowIndex: number }[];
+  note?: string;
+  collapsed: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <View>
+      <Pressable
+        style={({ pressed }) => [
+          styles.sectionHeader,
+          { opacity: pressed ? 0.82 : 1 },
+        ]}
+        onPress={onToggle}
+      >
+        <Text style={styles.chevron}>{collapsed ? "▸" : "▾"}</Text>
+        <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+        <Text style={styles.sectionCount}>{rows.length}</Text>
+      </Pressable>
+
+      {!collapsed && (
+        <View>
+          {rows.map(({ row, rowIndex }) => (
+            <View key={`${sectionId}-${rowIndex}`} style={styles.rowWrap}>
+              <RowCard row={row} />
+            </View>
+          ))}
+          {note && (
+            <View style={styles.noteWrap}>
+              <View style={styles.noteBox}>
+                <Text style={styles.noteText}>{note}</Text>
+              </View>
+            </View>
+          )}
+        </View>
+      )}
+    </View>
+  );
+}
+
+const ALL_COLLAPSED = Object.fromEntries(
   ANIMAL_FEED_GUIDE.map((s) => [s.id, true])
 );
 
 export default function AnimalFeedGuideScreen() {
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(
-    ALL_SECTION_IDS
-  );
+  const [collapsed, setCollapsed] =
+    useState<Record<string, boolean>>(ALL_COLLAPSED);
+  const [searchCollapsed, setSearchCollapsed] = useState<
+    Record<string, boolean>
+  >({});
   const [search, setSearch] = useState("");
 
   const q = search.trim().toLowerCase();
@@ -79,70 +118,96 @@ export default function AnimalFeedGuideScreen() {
   const toggle = (id: string) =>
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const searchResults = useMemo<SearchResult[]>(() => {
+  const toggleSearch = (id: string) =>
+    setSearchCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  const searchSections = useMemo<SearchSection[]>(() => {
     if (!q) return [];
-    const results: SearchResult[] = [];
+    const map = new Map<string, SearchSection>();
     ANIMAL_FEED_GUIDE.forEach((section) => {
       section.rows.forEach((row, i) => {
         if (
           row.name.toLowerCase().includes(q) ||
           row.animals.toLowerCase().includes(q)
         ) {
-          results.push({
-            row,
-            sectionTitle: section.title,
-            sectionId: section.id,
-            rowIndex: i,
-          });
+          if (!map.has(section.id)) {
+            map.set(section.id, {
+              sectionId: section.id,
+              sectionTitle: section.title,
+              rows: [],
+            });
+          }
+          map.get(section.id)!.rows.push({ row, rowIndex: i });
         }
       });
     });
-    return results;
+    return Array.from(map.values());
   }, [q]);
+
+  const totalMatchedRows = searchSections.reduce(
+    (acc, s) => acc + s.rows.length,
+    0
+  );
 
   const totalRows = ANIMAL_FEED_GUIDE.reduce(
     (acc, s) => acc + s.rows.length,
     0
   );
 
+  const searchInput = (
+    <View style={styles.searchWrap}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="ابحث عن مادة أو حيوان..."
+        placeholderTextColor={colors.light.mutedForeground}
+        value={search}
+        onChangeText={(t) => {
+          setSearch(t);
+          setSearchCollapsed({});
+        }}
+        textAlign="right"
+        returnKeyType="search"
+      />
+    </View>
+  );
+
   if (q) {
     return (
       <View style={styles.container}>
-        <View style={styles.searchWrap}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="ابحث عن مادة أو حيوان..."
-            placeholderTextColor={colors.light.mutedForeground}
-            value={search}
-            onChangeText={setSearch}
-            textAlign="right"
-            returnKeyType="search"
-          />
-        </View>
+        {searchInput}
         <FlatList
-          data={searchResults}
-          keyExtractor={(item) => `${item.sectionId}-${item.rowIndex}`}
+          data={searchSections}
+          keyExtractor={(item) => item.sectionId}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
-            <Text style={styles.countText}>
-              {searchResults.length} نتيجة لـ &quot;{search.trim()}&quot;
-            </Text>
+            searchSections.length > 0 ? (
+              <Text style={styles.countText}>
+                {totalMatchedRows} نتيجة في {searchSections.length} قسم لـ
+                &quot;{search.trim()}&quot;
+              </Text>
+            ) : null
           }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <Text style={styles.emptyText}>لا توجد نتائج</Text>
             </View>
           }
-          renderItem={({ item }) => (
-            <View style={styles.rowWrap}>
-              <RowCard
-                row={item.row}
+          renderItem={({ item }) => {
+            const sectionData = ANIMAL_FEED_GUIDE.find(
+              (s) => s.id === item.sectionId
+            );
+            return (
+              <SectionBlock
+                sectionId={item.sectionId}
                 sectionTitle={item.sectionTitle}
-                showSection
+                rows={item.rows}
+                note={sectionData?.note}
+                collapsed={searchCollapsed[item.sectionId] !== false}
+                onToggle={() => toggleSearch(item.sectionId)}
               />
-            </View>
-          )}
+            );
+          }}
         />
       </View>
     );
@@ -150,18 +215,7 @@ export default function AnimalFeedGuideScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchWrap}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="ابحث عن مادة أو حيوان..."
-          placeholderTextColor={colors.light.mutedForeground}
-          value={search}
-          onChangeText={setSearch}
-          textAlign="right"
-          returnKeyType="search"
-        />
-      </View>
-
+      {searchInput}
       <FlatList
         data={ANIMAL_FEED_GUIDE}
         keyExtractor={(s) => s.id}
@@ -177,43 +231,16 @@ export default function AnimalFeedGuideScreen() {
             </Text>
           </View>
         }
-        renderItem={({ item: section }) => {
-          const isCollapsed = collapsed[section.id] !== false;
-          return (
-            <View>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.sectionHeader,
-                  { opacity: pressed ? 0.82 : 1 },
-                ]}
-                onPress={() => toggle(section.id)}
-              >
-                <Text style={styles.chevron}>
-                  {isCollapsed ? "▸" : "▾"}
-                </Text>
-                <Text style={styles.sectionTitle}>{section.title}</Text>
-              </Pressable>
-
-              {!isCollapsed && (
-                <View>
-                  {section.rows.map((row, i) => (
-                    <View key={`${section.id}-${i}`} style={styles.rowWrap}>
-                      <RowCard row={row} />
-                    </View>
-                  ))}
-                  {section.note && (
-                    <View style={styles.noteWrap}>
-                      <View style={styles.noteBox}>
-                        <Text style={styles.noteText}>{section.note}</Text>
-                      </View>
-                    </View>
-                  )}
-                  {section.rows.length === 0 && section.note && null}
-                </View>
-              )}
-            </View>
-          );
-        }}
+        renderItem={({ item: section }) => (
+          <SectionBlock
+            sectionId={section.id}
+            sectionTitle={section.title}
+            rows={section.rows.map((row, i) => ({ row, rowIndex: i }))}
+            note={section.note}
+            collapsed={collapsed[section.id] !== false}
+            onToggle={() => toggle(section.id)}
+          />
+        )}
       />
     </View>
   );
@@ -290,6 +317,18 @@ const styles = StyleSheet.create({
     color: ACCENT,
     textAlign: "right",
   },
+  sectionCount: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#ffffff",
+    backgroundColor: ACCENT,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: "hidden",
+    minWidth: 22,
+    textAlign: "center",
+  },
   rowWrap: {
     paddingHorizontal: 16,
     marginBottom: 6,
@@ -317,7 +356,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.light.mutedForeground,
     textAlign: "right",
-    marginBottom: 8,
+    marginBottom: 6,
     marginHorizontal: 16,
   },
   emptyWrap: {
@@ -341,17 +380,6 @@ const rowStyles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 1,
     gap: 6,
-  },
-  sectionTag: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: ACCENT,
-    backgroundColor: ACCENT_LIGHT,
-    alignSelf: "flex-end",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    overflow: "hidden",
   },
   nameRow: {
     flexDirection: "row",
