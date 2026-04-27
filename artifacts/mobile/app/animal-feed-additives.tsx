@@ -136,15 +136,20 @@ export default function AnimalFeedAdditivesScreen() {
               <View style={styles.cardTop}>
                 <View style={styles.cardTopLeft}>
                   {item.eNumber !== "—" && (
-                    <View
-                      style={[
-                        styles.eNumBadge,
-                        { backgroundColor: col.bg, borderColor: col.badge },
-                      ]}
-                    >
-                      <Text style={[styles.eNumText, { color: col.text }]}>
-                        {item.eNumber}
-                      </Text>
+                    <View style={styles.eNumBadgesRow}>
+                      {item.eNumber.split(";").map((num) => (
+                        <View
+                          key={num}
+                          style={[
+                            styles.eNumBadge,
+                            { backgroundColor: col.bg, borderColor: col.badge },
+                          ]}
+                        >
+                          <Text style={[styles.eNumText, { color: col.text }]}>
+                            {num.trim()}
+                          </Text>
+                        </View>
+                      ))}
                     </View>
                   )}
                   <View
@@ -260,6 +265,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 4,
     flexShrink: 0,
+  },
+  eNumBadgesRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
   },
   eNumBadge: {
     borderWidth: 1,
