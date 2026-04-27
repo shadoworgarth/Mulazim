@@ -91,6 +91,22 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+### `artifacts/mobile` (`@workspace/mobile`)
+
+Arabic-language Expo React Native app "Food Additives / مكتبة المفتش" for SFDA inspectors. Runs on web and mobile (Expo Router file-based routing, RTL layout throughout).
+
+**Inspector Library categories (app/inspector-library.tsx):**
+- اللوائح الفنية والمواصفات القياسية → `/regulations`
+- الملوثات والسموم → `/toxins`
+- مبيدات الآفات → `/pesticides` (sub-routes: sfda, fao, agriculture, dates, children, prohibited)
+- **الأعلاف** → `/animal-feed` (added)
+  - `/animal-feed-additives` — searchable table of permitted feed additives (document: الاضافات_العلفية); ~200+ entries, 4 categories (تكنولوجية/حسية/غذائية/زوتكنية), filterable by category, E-number badges
+  - `/animal-feed-guide` — collapsible section list from دليل_المواد; 11 sections (minerals, vitamins, amino acids, flavours, colour, binders, antioxidants, antifungs, anticoccidial, antibiotics, enzymes), each row shows min/max/unit/animals/notes
+
+**Key constants:**
+- `constants/animal-feed-additives.ts` — ~200 FeedAdditive entries from SFDA permitted additives document
+- `constants/animal-feed-guide.ts` — ANIMAL_FEED_GUIDE sections from livestock/poultry guide document
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.

@@ -49,6 +49,15 @@ const LIBRARY_CARDS: LibraryCard[] = [
     route: "/pesticides",
     enabled: true,
   },
+  {
+    id: "animal-feed",
+    title: "الأعلاف",
+    emojis: ["🐄", "🐄", "🐄", "🐄"],
+    singleEmoji: true,
+    bg: "#fff3e0",
+    route: "/animal-feed",
+    enabled: true,
+  },
 ];
 
 export default function InspectorLibraryScreen() {

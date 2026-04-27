@@ -67,6 +67,9 @@ function AuthGate() {
       <Stack.Screen name="pesticides-children" options={{ title: "مبيدات أغذية الأطفال" }} />
       <Stack.Screen name="pesticides-prohibited" options={{ title: "المبيدات المحظورة في أغذية الأطفال" }} />
       <Stack.Screen name="scan-result" options={{ title: "نتائج المسح" }} />
+      <Stack.Screen name="animal-feed" options={{ title: "الأعلاف" }} />
+      <Stack.Screen name="animal-feed-guide" options={{ title: "دليل المواد المضافة لعلف المواشي والدواجن" }} />
+      <Stack.Screen name="animal-feed-additives" options={{ title: "المضافات العلفية المسموح بتداولها" }} />
     </Stack>
   );
 }
