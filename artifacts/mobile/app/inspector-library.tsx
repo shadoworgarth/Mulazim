@@ -52,7 +52,7 @@ const LIBRARY_CARDS: LibraryCard[] = [
   {
     id: "animal-feed",
     title: "الأعلاف",
-    emojis: ["🐄", "🐄", "🐄", "🐄"],
+    emojis: ["🐔", "🐔", "🐔", "🐔"],
     singleEmoji: true,
     bg: "#fff3e0",
     route: "/animal-feed",
