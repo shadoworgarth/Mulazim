@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -21,26 +22,35 @@ const ACCENT_LIGHT = "#fff8e1";
 const CATEGORY_CHIPS = ["الدواجن", "المواشي"] as const;
 type CategoryChip = typeof CATEGORY_CHIPS[number];
 
+const SUBTYPE_CHIP_LIMIT = 2;
+
 interface Subtype {
   label: string;
   keywords: string[];
 }
 
 const POULTRY_SUBTYPES: Subtype[] = [
-  { label: "البياض",       keywords: ["بياض"] },
-  { label: "الدجاج اللاحم", keywords: ["لاحم"] },
-  { label: "الرومي",       keywords: ["رومي"] },
-  { label: "صيصان الدواجن", keywords: ["صيصان"] },
-  { label: "الحمام",       keywords: ["حمام"] },
-  { label: "البط",         keywords: ["البط"] },
-  { label: "الأوز",        keywords: ["الأوز"] },
+  { label: "البياض",                        keywords: ["بياض"] },
+  { label: "الدجاج اللاحم",                keywords: ["لاحم"] },
+  { label: "الرومي",                        keywords: ["رومي"] },
+  { label: "صيصان الدواجن",                keywords: ["صيصان"] },
+  { label: "الحمام",                        keywords: ["حمام"] },
+  { label: "البط",                          keywords: ["البط"] },
+  { label: "الأوز",                         keywords: ["الأوز"] },
+  // Age-specific: inherit parent keywords so they surface parent + specific rows
+  { label: "الرومي والدواجن (26 أسبوعاً)", keywords: ["رومي"] },
+  // "Other poultry 16 weeks" has no single keyword; matching relies on
+  // exclusion logic (it is not excluded from any "ما عدا" clause) + general rows
+  { label: "الدواجن الأخرى (16 أسبوعاً)", keywords: [] },
 ];
 
 const LIVESTOCK_SUBTYPES: Subtype[] = [
-  { label: "أبقار الحلاب", keywords: ["أبقار", "حلاب"] },
-  { label: "العجول",       keywords: ["عجول"] },
-  { label: "الخراف",       keywords: ["خراف"] },
-  { label: "الأرانب",      keywords: ["أرانب"] },
+  { label: "أبقار الحلاب",    keywords: ["أبقار", "حلاب"] },
+  { label: "العجول",          keywords: ["عجول"] },
+  { label: "العجول (6 أشهر)", keywords: ["عجول"] },   // inherits all calves rows
+  { label: "الخراف",          keywords: ["خراف"] },
+  { label: "الخراف (6 أشهر)", keywords: ["خراف"] },   // inherits all sheep rows
+  { label: "الأرانب",         keywords: ["أرانب"] },
 ];
 
 // ─── Matching helpers ─────────────────────────────────────────────────────────
@@ -244,6 +254,7 @@ export default function AnimalFeedGuideScreen() {
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryChip | null>(null);
   const [selectedSubtype, setSelectedSubtype] = useState<Subtype | null>(null);
+  const [subPickerVisible, setSubPickerVisible] = useState(false);
 
   const q = search.trim().toLowerCase();
   const isFiltering = q.length > 0 || selectedCategory !== null;
@@ -255,18 +266,19 @@ export default function AnimalFeedGuideScreen() {
 
   function handleCategoryPress(cat: CategoryChip) {
     if (selectedCategory === cat) {
-      // deselect everything
       setSelectedCategory(null);
       setSelectedSubtype(null);
     } else {
       setSelectedCategory(cat);
       setSelectedSubtype(null);
     }
+    setSubPickerVisible(false);
     setFilteredCollapsed({});
   }
 
   function handleSubtypePress(sub: Subtype) {
     setSelectedSubtype((prev) => (prev?.label === sub.label ? null : sub));
+    setSubPickerVisible(false);
     setFilteredCollapsed({});
   }
 
@@ -372,7 +384,7 @@ export default function AnimalFeedGuideScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.chipsRow}
           >
-            {subtypeList.map((sub) => {
+            {subtypeList.slice(0, SUBTYPE_CHIP_LIMIT).map((sub) => {
               const active = selectedSubtype?.label === sub.label;
               return (
                 <Pressable
@@ -392,6 +404,16 @@ export default function AnimalFeedGuideScreen() {
                 </Pressable>
               );
             })}
+            {subtypeList.length > SUBTYPE_CHIP_LIMIT && (
+              <Pressable
+                style={styles.subChipMore}
+                onPress={() => setSubPickerVisible(true)}
+              >
+                <Text style={styles.subChipMoreText}>
+                  +{subtypeList.length - SUBTYPE_CHIP_LIMIT} عرض الكل
+                </Text>
+              </Pressable>
+            )}
           </ScrollView>
         </View>
       )}
@@ -461,6 +483,50 @@ export default function AnimalFeedGuideScreen() {
           )}
         />
       )}
+
+      {/* Sub-type picker modal */}
+      <Modal
+        visible={subPickerVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setSubPickerVisible(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSubPickerVisible(false)}
+        >
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>
+              {selectedCategory === "الدواجن" ? "أنواع الدواجن" : "أنواع المواشي"}
+            </Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {subtypeList.map((sub) => {
+                const active = selectedSubtype?.label === sub.label;
+                return (
+                  <Pressable
+                    key={sub.label}
+                    style={[styles.modalRow, active && styles.modalRowActive]}
+                    onPress={() => handleSubtypePress(sub)}
+                  >
+                    <Text
+                      style={[
+                        styles.modalRowText,
+                        active && styles.modalRowTextActive,
+                      ]}
+                    >
+                      {sub.label}
+                    </Text>
+                    {active && (
+                      <Text style={styles.modalCheckmark}>✓</Text>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -638,6 +704,78 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: colors.light.mutedForeground,
+  },
+  subChipMore: {
+    borderWidth: 1,
+    borderColor: ACCENT,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    backgroundColor: ACCENT_LIGHT,
+  },
+  subChipMoreText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: ACCENT,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 16,
+    paddingBottom: Platform.OS === "ios" ? 40 : 24,
+    paddingTop: 12,
+    maxHeight: "75%",
+  },
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: "#e0e0e0",
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.light.text,
+    textAlign: "right",
+    marginBottom: 12,
+  },
+  modalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  modalRowActive: {
+    backgroundColor: ACCENT_LIGHT,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginHorizontal: -8,
+  },
+  modalRowText: {
+    fontSize: 14,
+    color: colors.light.text,
+    textAlign: "right",
+    flex: 1,
+  },
+  modalRowTextActive: {
+    color: ACCENT,
+    fontWeight: "700",
+  },
+  modalCheckmark: {
+    fontSize: 16,
+    color: ACCENT,
+    fontWeight: "700",
+    marginLeft: 8,
   },
 });
 
