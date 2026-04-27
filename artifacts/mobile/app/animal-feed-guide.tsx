@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 
@@ -14,8 +16,8 @@ import ANIMAL_FEED_GUIDE, { FeedGuideRow } from "@/constants/animal-feed-guide";
 
 const ACCENT = "#f57f17";
 const ACCENT_LIGHT = "#fff8e1";
+const CHIP_LIMIT = 3;
 
-// Derive unique animal values from the data, preserving document order
 const ANIMAL_FILTERS: string[] = (() => {
   const seen = new Set<string>();
   const result: string[] = [];
@@ -121,33 +123,44 @@ const ALL_COLLAPSED = Object.fromEntries(
 export default function AnimalFeedGuideScreen() {
   const [collapsed, setCollapsed] =
     useState<Record<string, boolean>>(ALL_COLLAPSED);
-  const [filterCollapsed, setFilterCollapsed] = useState<
+  const [filteredCollapsed, setFilteredCollapsed] = useState<
     Record<string, boolean>
   >({});
+  const [search, setSearch] = useState("");
   const [selectedAnimal, setSelectedAnimal] = useState<string | null>(null);
+  const [pickerVisible, setPickerVisible] = useState(false);
+
+  const q = search.trim().toLowerCase();
+
+  const isFiltering = q.length > 0 || selectedAnimal !== null;
 
   const toggle = (id: string) =>
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const toggleFilter = (id: string) =>
-    setFilterCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggleFiltered = (id: string) =>
+    setFilteredCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const selectAnimal = (animal: string) => {
-    if (selectedAnimal === animal) {
-      setSelectedAnimal(null);
-    } else {
-      setSelectedAnimal(animal);
-      setFilterCollapsed({});
-    }
+    setSelectedAnimal((prev) => (prev === animal ? null : animal));
+    setFilteredCollapsed({});
+    setPickerVisible(false);
   };
 
-  const filterSections = useMemo<FilterSection[]>(() => {
-    if (!selectedAnimal) return [];
+  const filteredSections = useMemo<FilterSection[]>(() => {
+    if (!isFiltering) return [];
     const result: FilterSection[] = [];
     ANIMAL_FEED_GUIDE.forEach((section) => {
       const matched = section.rows
         .map((row, i) => ({ row, rowIndex: i }))
-        .filter(({ row }) => row.animals === selectedAnimal);
+        .filter(({ row }) => {
+          const matchesText =
+            !q ||
+            row.name.toLowerCase().includes(q) ||
+            row.animals.toLowerCase().includes(q);
+          const matchesAnimal =
+            !selectedAnimal || row.animals === selectedAnimal;
+          return matchesText && matchesAnimal;
+        });
       if (matched.length > 0) {
         result.push({
           sectionId: section.id,
@@ -158,62 +171,93 @@ export default function AnimalFeedGuideScreen() {
       }
     });
     return result;
-  }, [selectedAnimal]);
+  }, [q, selectedAnimal, isFiltering]);
 
   const totalRows = ANIMAL_FEED_GUIDE.reduce(
     (acc, s) => acc + s.rows.length,
     0
   );
-
-  const totalFilteredRows = filterSections.reduce(
+  const totalFilteredRows = filteredSections.reduce(
     (acc, s) => acc + s.rows.length,
     0
   );
 
-  const animalFilterBar = (
-    <View style={styles.filterWrap}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterScroll}
-      >
-        {ANIMAL_FILTERS.map((animal) => {
-          const isActive = selectedAnimal === animal;
-          return (
-            <Pressable
-              key={animal}
-              style={[styles.animalChip, isActive && styles.animalChipActive]}
-              onPress={() => selectAnimal(animal)}
-            >
-              <Text
-                style={[
-                  styles.animalChipText,
-                  isActive && styles.animalChipTextActive,
-                ]}
+  const chipsToShow = ANIMAL_FILTERS.slice(0, CHIP_LIMIT);
+  const hasMoreChips = ANIMAL_FILTERS.length > CHIP_LIMIT;
+
+  const filtersBar = (
+    <View>
+      <View style={styles.searchWrap}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="ابحث عن مادة أو حيوان..."
+          placeholderTextColor={colors.light.mutedForeground}
+          value={search}
+          onChangeText={(t) => {
+            setSearch(t);
+            setFilteredCollapsed({});
+          }}
+          textAlign="right"
+          returnKeyType="search"
+        />
+      </View>
+
+      <View style={styles.chipsSection}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsRow}
+        >
+          {chipsToShow.map((animal) => {
+            const active = selectedAnimal === animal;
+            return (
+              <Pressable
+                key={animal}
+                style={[styles.chip, active && styles.chipActive]}
+                onPress={() => selectAnimal(animal)}
               >
-                {animal}
+                <Text
+                  style={[styles.chipText, active && styles.chipTextActive]}
+                  numberOfLines={1}
+                >
+                  {animal}
+                </Text>
+              </Pressable>
+            );
+          })}
+          {hasMoreChips && (
+            <Pressable
+              style={styles.chipMore}
+              onPress={() => setPickerVisible(true)}
+            >
+              <Text style={styles.chipMoreText}>
+                +{ANIMAL_FILTERS.length - CHIP_LIMIT} عرض الكل
               </Text>
             </Pressable>
-          );
-        })}
-      </ScrollView>
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 
-  if (selectedAnimal) {
-    return (
-      <View style={styles.container}>
-        {animalFilterBar}
+  return (
+    <View style={styles.container}>
+      {filtersBar}
+
+      {isFiltering ? (
         <FlatList
-          data={filterSections}
+          data={filteredSections}
           keyExtractor={(item) => item.sectionId}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
           ListHeaderComponent={
-            <Text style={styles.countText}>
-              {totalFilteredRows} مادة في {filterSections.length} قسم لـ «
-              {selectedAnimal}»
-            </Text>
+            filteredSections.length > 0 ? (
+              <Text style={styles.countText}>
+                {totalFilteredRows} نتيجة في {filteredSections.length} قسم
+                {selectedAnimal ? ` · ${selectedAnimal}` : ""}
+              </Text>
+            ) : null
           }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
@@ -226,44 +270,78 @@ export default function AnimalFeedGuideScreen() {
               sectionTitle={item.sectionTitle}
               rows={item.rows}
               note={item.note}
-              collapsed={filterCollapsed[item.sectionId] !== false}
-              onToggle={() => toggleFilter(item.sectionId)}
+              collapsed={filteredCollapsed[item.sectionId] !== false}
+              onToggle={() => toggleFiltered(item.sectionId)}
             />
           )}
         />
-      </View>
-    );
-  }
+      ) : (
+        <FlatList
+          data={ANIMAL_FEED_GUIDE}
+          keyExtractor={(s) => s.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View style={styles.headerBanner}>
+              <Text style={styles.headerBannerText}>
+                دليل المواد المضافة لعلف المواشي والدواجن
+              </Text>
+              <Text style={styles.headerBannerSub}>
+                {totalRows} مادة في {ANIMAL_FEED_GUIDE.length} قسم
+              </Text>
+            </View>
+          }
+          renderItem={({ item: section }) => (
+            <SectionBlock
+              sectionId={section.id}
+              sectionTitle={section.title}
+              rows={section.rows.map((row, i) => ({ row, rowIndex: i }))}
+              note={section.note}
+              collapsed={collapsed[section.id] !== false}
+              onToggle={() => toggle(section.id)}
+            />
+          )}
+        />
+      )}
 
-  return (
-    <View style={styles.container}>
-      {animalFilterBar}
-      <FlatList
-        data={ANIMAL_FEED_GUIDE}
-        keyExtractor={(s) => s.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <View style={styles.headerBanner}>
-            <Text style={styles.headerBannerText}>
-              دليل المواد المضافة لعلف المواشي والدواجن
-            </Text>
-            <Text style={styles.headerBannerSub}>
-              {totalRows} مادة في {ANIMAL_FEED_GUIDE.length} قسم
-            </Text>
+      <Modal
+        visible={pickerVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setPickerVisible(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setPickerVisible(false)}
+        >
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>اختر نوع الحيوان</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {ANIMAL_FILTERS.map((animal) => {
+                const active = selectedAnimal === animal;
+                return (
+                  <Pressable
+                    key={animal}
+                    style={[styles.modalRow, active && styles.modalRowActive]}
+                    onPress={() => selectAnimal(animal)}
+                  >
+                    <Text
+                      style={[
+                        styles.modalRowText,
+                        active && styles.modalRowTextActive,
+                      ]}
+                    >
+                      {animal}
+                    </Text>
+                    {active && <Text style={styles.modalCheckmark}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           </View>
-        }
-        renderItem={({ item: section }) => (
-          <SectionBlock
-            sectionId={section.id}
-            sectionTitle={section.title}
-            rows={section.rows.map((row, i) => ({ row, rowIndex: i }))}
-            note={section.note}
-            collapsed={collapsed[section.id] !== false}
-            onToggle={() => toggle(section.id)}
-          />
-        )}
-      />
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -273,37 +351,65 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.light.background,
   },
-  filterWrap: {
-    paddingTop: 10,
-    paddingBottom: 4,
+  searchWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 6,
   },
-  filterScroll: {
+  searchInput: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    paddingHorizontal: 14,
+    paddingVertical: Platform.OS === "ios" ? 10 : 8,
+    fontSize: 14,
+    color: colors.light.text,
+    textAlign: "right",
+  },
+  chipsSection: {
+    paddingBottom: 8,
+  },
+  chipsRow: {
     paddingHorizontal: 16,
     gap: 8,
     flexDirection: "row",
   },
-  animalChip: {
+  chip: {
     borderWidth: 1.5,
     borderColor: ACCENT,
     borderRadius: 20,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 5,
     backgroundColor: "#ffffff",
+    maxWidth: 200,
   },
-  animalChipActive: {
+  chipActive: {
     backgroundColor: ACCENT,
   },
-  animalChipText: {
+  chipText: {
     fontSize: 12,
     fontWeight: "600",
     color: ACCENT,
-    textAlign: "center",
   },
-  animalChipTextActive: {
+  chipTextActive: {
     color: "#ffffff",
   },
+  chipMore: {
+    borderWidth: 1.5,
+    borderColor: ACCENT,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    backgroundColor: ACCENT_LIGHT,
+  },
+  chipMoreText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: ACCENT,
+  },
   listContent: {
-    paddingTop: 6,
+    paddingTop: 4,
     paddingBottom: Platform.OS === "web" ? 40 : 32,
   },
   headerBanner: {
@@ -401,6 +507,65 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: colors.light.mutedForeground,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 16,
+    paddingBottom: Platform.OS === "ios" ? 40 : 24,
+    paddingTop: 12,
+    maxHeight: "75%",
+  },
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: "#e0e0e0",
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.light.text,
+    textAlign: "right",
+    marginBottom: 12,
+  },
+  modalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  modalRowActive: {
+    backgroundColor: ACCENT_LIGHT,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginHorizontal: -8,
+  },
+  modalRowText: {
+    fontSize: 14,
+    color: colors.light.text,
+    textAlign: "right",
+    flex: 1,
+  },
+  modalRowTextActive: {
+    color: ACCENT,
+    fontWeight: "700",
+  },
+  modalCheckmark: {
+    fontSize: 16,
+    color: ACCENT,
+    fontWeight: "700",
+    marginLeft: 8,
   },
 });
 
