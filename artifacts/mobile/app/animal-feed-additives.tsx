@@ -20,10 +20,10 @@ const CATEGORY_COLORS: Record<number, { bg: string; text: string; badge: string 
 };
 
 const CATEGORY_LABELS: Record<number, string> = {
-  1: "التكنولوجية",
+  1: "التقنية",
   2: "الحسية",
   3: "الغذائية",
-  4: "الزوتكنية",
+  4: "الحيوية",
 };
 
 type FilterCategory = "all" | 1 | 2 | 3 | 4;
@@ -51,10 +51,10 @@ export default function AnimalFeedAdditivesScreen() {
 
   const tabs: { label: string; value: FilterCategory }[] = [
     { label: "الكل", value: "all" },
-    { label: "التكنولوجية", value: 1 },
+    { label: "التقنية", value: 1 },
     { label: "الحسية", value: 2 },
     { label: "الغذائية", value: 3 },
-    { label: "الزوتكنية", value: 4 },
+    { label: "الحيوية", value: 4 },
   ];
 
   return (
