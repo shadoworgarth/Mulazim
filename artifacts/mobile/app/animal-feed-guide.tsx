@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -16,21 +15,28 @@ import ANIMAL_FEED_GUIDE, { FeedGuideRow } from "@/constants/animal-feed-guide";
 
 const ACCENT = "#f57f17";
 const ACCENT_LIGHT = "#fff8e1";
-const CHIP_LIMIT = 3;
 
-const ANIMAL_FILTERS: string[] = (() => {
-  const seen = new Set<string>();
-  const result: string[] = [];
-  ANIMAL_FEED_GUIDE.forEach((s) =>
-    s.rows.forEach((r) => {
-      if (!seen.has(r.animals)) {
-        seen.add(r.animals);
-        result.push(r.animals);
-      }
-    })
-  );
-  return result;
-})();
+const CATEGORY_CHIPS = ["الدواجن", "المواشي"] as const;
+type CategoryChip = typeof CATEGORY_CHIPS[number];
+
+const POULTRY_KEYWORDS = ["دواجن", "بياض", "رومي", "لاحم", "صيصان", "حمام"];
+const POULTRY_EXACT = ["البط", "الأوز"];
+const LIVESTOCK_KEYWORDS = ["مواشي", "أبقار", "عجول", "خراف", "أرانب"];
+
+function isPoultry(animals: string): boolean {
+  if (POULTRY_EXACT.includes(animals)) return true;
+  return POULTRY_KEYWORDS.some((k) => animals.includes(k));
+}
+
+function isLivestock(animals: string): boolean {
+  return LIVESTOCK_KEYWORDS.some((k) => animals.includes(k));
+}
+
+function matchesCategory(animals: string, category: CategoryChip): boolean {
+  if (category === "الدواجن") return isPoultry(animals);
+  if (category === "المواشي") return isLivestock(animals);
+  return false;
+}
 
 interface FilterSection {
   sectionId: string;
@@ -127,8 +133,7 @@ export default function AnimalFeedGuideScreen() {
     Record<string, boolean>
   >({});
   const [search, setSearch] = useState("");
-  const [selectedAnimal, setSelectedAnimal] = useState<string | null>(null);
-  const [pickerVisible, setPickerVisible] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState<CategoryChip | null>(null);
 
   const q = search.trim().toLowerCase();
 
@@ -140,10 +145,9 @@ export default function AnimalFeedGuideScreen() {
   const toggleFiltered = (id: string) =>
     setFilteredCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const selectAnimal = (animal: string) => {
+  const selectAnimal = (animal: CategoryChip) => {
     setSelectedAnimal((prev) => (prev === animal ? null : animal));
     setFilteredCollapsed({});
-    setPickerVisible(false);
   };
 
   const filteredSections = useMemo<FilterSection[]>(() => {
@@ -158,7 +162,7 @@ export default function AnimalFeedGuideScreen() {
             row.name.toLowerCase().includes(q) ||
             row.animals.toLowerCase().includes(q);
           const matchesAnimal =
-            !selectedAnimal || row.animals === selectedAnimal;
+            !selectedAnimal || matchesCategory(row.animals, selectedAnimal);
           return matchesText && matchesAnimal;
         });
       if (matched.length > 0) {
@@ -181,9 +185,6 @@ export default function AnimalFeedGuideScreen() {
     (acc, s) => acc + s.rows.length,
     0
   );
-
-  const chipsToShow = ANIMAL_FILTERS.slice(0, CHIP_LIMIT);
-  const hasMoreChips = ANIMAL_FILTERS.length > CHIP_LIMIT;
 
   const filtersBar = (
     <View>
@@ -208,33 +209,23 @@ export default function AnimalFeedGuideScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chipsRow}
         >
-          {chipsToShow.map((animal) => {
-            const active = selectedAnimal === animal;
+          {CATEGORY_CHIPS.map((cat) => {
+            const active = selectedAnimal === cat;
             return (
               <Pressable
-                key={animal}
+                key={cat}
                 style={[styles.chip, active && styles.chipActive]}
-                onPress={() => selectAnimal(animal)}
+                onPress={() => selectAnimal(cat)}
               >
                 <Text
                   style={[styles.chipText, active && styles.chipTextActive]}
                   numberOfLines={1}
                 >
-                  {animal}
+                  {cat}
                 </Text>
               </Pressable>
             );
           })}
-          {hasMoreChips && (
-            <Pressable
-              style={styles.chipMore}
-              onPress={() => setPickerVisible(true)}
-            >
-              <Text style={styles.chipMoreText}>
-                +{ANIMAL_FILTERS.length - CHIP_LIMIT} عرض الكل
-              </Text>
-            </Pressable>
-          )}
         </ScrollView>
       </View>
     </View>
@@ -304,44 +295,6 @@ export default function AnimalFeedGuideScreen() {
         />
       )}
 
-      <Modal
-        visible={pickerVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setPickerVisible(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setPickerVisible(false)}
-        >
-          <View style={styles.modalSheet}>
-            <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>اختر نوع الحيوان</Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {ANIMAL_FILTERS.map((animal) => {
-                const active = selectedAnimal === animal;
-                return (
-                  <Pressable
-                    key={animal}
-                    style={[styles.modalRow, active && styles.modalRowActive]}
-                    onPress={() => selectAnimal(animal)}
-                  >
-                    <Text
-                      style={[
-                        styles.modalRowText,
-                        active && styles.modalRowTextActive,
-                      ]}
-                    >
-                      {animal}
-                    </Text>
-                    {active && <Text style={styles.modalCheckmark}>✓</Text>}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </Pressable>
-      </Modal>
     </View>
   );
 }
@@ -507,65 +460,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: colors.light.mutedForeground,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-end",
-  },
-  modalSheet: {
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 16,
-    paddingBottom: Platform.OS === "ios" ? 40 : 24,
-    paddingTop: 12,
-    maxHeight: "75%",
-  },
-  modalHandle: {
-    width: 40,
-    height: 4,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 2,
-    alignSelf: "center",
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.light.text,
-    textAlign: "right",
-    marginBottom: 12,
-  },
-  modalRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  modalRowActive: {
-    backgroundColor: ACCENT_LIGHT,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    marginHorizontal: -8,
-  },
-  modalRowText: {
-    fontSize: 14,
-    color: colors.light.text,
-    textAlign: "right",
-    flex: 1,
-  },
-  modalRowTextActive: {
-    color: ACCENT,
-    fontWeight: "700",
-  },
-  modalCheckmark: {
-    fontSize: 16,
-    color: ACCENT,
-    fontWeight: "700",
-    marginLeft: 8,
   },
 });
 
