@@ -69,79 +69,6 @@ const TYPE_COLORS: Record<
   },
 };
 
-// ─── Food category classification ────────────────────────────────────────────
-
-type FoodCategory = "نباتية" | "حيوانية" | "بحرية";
-
-const SEAFOOD_KW = [
-  "سمك",
-  "أسماك",
-  "قشريات",
-  "رخويات",
-  "تونا",
-  "مارلن",
-  "أبراميس",
-  "قرش",
-  "بحر",
-  "ربيان",
-];
-const ANIMAL_KW = [
-  "ألبان",
-  "حليب",
-  "لحم",
-  "طيور",
-  "دواجن",
-  "بيض",
-  "كبد",
-  "لانشون",
-  "كورنيد",
-];
-const PLANT_KW = [
-  "قمح",
-  "شعير",
-  "ذرة",
-  "أرز",
-  "لوز",
-  "فستق",
-  "فول",
-  "تفاح",
-  "خضر",
-  "فاكهة",
-  "طحين",
-  "دقيق",
-  "حبوب",
-  "بذرة",
-  "نبات",
-  "عرق",
-  "مستخلص",
-  "كستناء",
-  "طماطم",
-  "صويا",
-  "مكرونة",
-  "خبز",
-  "رقائق",
-  "بسكويت",
-  "مانجو",
-  "ملح",
-];
-
-function productFoodCategory(product: string): FoodCategory | null {
-  if (SEAFOOD_KW.some((k) => product.includes(k))) return "بحرية";
-  if (ANIMAL_KW.some((k) => product.includes(k))) return "حيوانية";
-  if (PLANT_KW.some((k) => product.includes(k))) return "نباتية";
-  return null;
-}
-
-function toxinMatchesFood(toxin: Toxin, cat: FoodCategory): boolean {
-  return toxin.rows.some((r) => productFoodCategory(r.product) === cat);
-}
-
-const FOOD_CHIPS: { label: string; value: FoodCategory; icon: string }[] = [
-  { label: "نباتية", value: "نباتية", icon: "🌾" },
-  { label: "حيوانية", value: "حيوانية", icon: "🥩" },
-  { label: "بحرية", value: "بحرية", icon: "🐟" },
-];
-
 // ─── List item types ──────────────────────────────────────────────────────────
 
 type ListItem =
@@ -154,11 +81,9 @@ export default function ToxinsScreen() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [selectedType, setSelectedType] = useState<ToxinType | null>(null);
-  const [selectedFood, setSelectedFood] = useState<FoodCategory | null>(null);
   const [typeModalVisible, setTypeModalVisible] = useState(false);
 
-  const isFiltering =
-    query.trim().length > 0 || selectedType !== null || selectedFood !== null;
+  const isFiltering = query.trim().length > 0 || selectedType !== null;
 
   const filtered = useMemo(() => {
     const q = query.trim();
@@ -166,11 +91,9 @@ export default function ToxinsScreen() {
       const matchesText = !q || t.toxin.includes(q);
       const matchesType =
         !selectedType || TOXIN_TYPE_MAP[t.toxin] === selectedType;
-      const matchesFood =
-        !selectedFood || toxinMatchesFood(t, selectedFood);
-      return matchesText && matchesType && matchesFood;
+      return matchesText && matchesType;
     });
-  }, [query, selectedType, selectedFood]);
+  }, [query, selectedType]);
 
   const listData = useMemo<ListItem[]>(() => {
     const items: ListItem[] = [];
@@ -194,10 +117,6 @@ export default function ToxinsScreen() {
   function handleTypePress(type: ToxinType) {
     setSelectedType((prev) => (prev === type ? null : type));
     setTypeModalVisible(false);
-  }
-
-  function handleFoodPress(food: FoodCategory) {
-    setSelectedFood((prev) => (prev === food ? null : food));
   }
 
   const filtersBar = (
@@ -261,43 +180,12 @@ export default function ToxinsScreen() {
         </ScrollView>
       </View>
 
-      {/* Food category chips */}
-      <View style={styles.chipsSection}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsRow}
-        >
-          {FOOD_CHIPS.map(({ label, value, icon }) => {
-            const active = selectedFood === value;
-            return (
-              <Pressable
-                key={value}
-                style={[styles.foodChip, active && styles.foodChipActive]}
-                onPress={() => handleFoodPress(value)}
-              >
-                <Text
-                  style={[
-                    styles.foodChipText,
-                    active && styles.foodChipTextActive,
-                  ]}
-                  numberOfLines={1}
-                >
-                  {icon} {label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
-
       {/* Active filter summary row */}
       {isFiltering && (
         <View style={styles.filterSummary}>
           <Pressable
             onPress={() => {
               setSelectedType(null);
-              setSelectedFood(null);
               setQuery("");
             }}
           >
@@ -306,7 +194,6 @@ export default function ToxinsScreen() {
           <Text style={styles.filterSummaryText}>
             {filtered.length} ملوث
             {selectedType ? ` · ${selectedType}` : ""}
-            {selectedFood ? ` · ${selectedFood}` : ""}
           </Text>
         </View>
       )}
@@ -523,26 +410,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: ACCENT,
-  },
-  foodChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: "#f9fafb",
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-  },
-  foodChipActive: {
-    backgroundColor: ACCENT,
-    borderColor: ACCENT,
-  },
-  foodChipText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#374151",
-  },
-  foodChipTextActive: {
-    color: "#ffffff",
   },
   filterSummary: {
     flexDirection: "row-reverse",
