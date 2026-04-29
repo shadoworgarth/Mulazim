@@ -3,6 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Platform,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -10,7 +12,121 @@ import {
 } from "react-native";
 
 import colors from "@/constants/colors";
-import toxins from "@/constants/toxins";
+import toxins, { ToxinRow } from "@/constants/toxins";
+
+const ACCENT = "#c2185b";
+
+// ─── Food category classification ────────────────────────────────────────────
+
+type FoodCategory = "نباتية" | "حيوانية" | "بحرية" | "أخرى";
+
+const SEAFOOD_KW = [
+  "سمك",
+  "أسماك",
+  "قشريات",
+  "رخويات",
+  "تونا",
+  "مارلن",
+  "أبراميس",
+  "قرش",
+  "بحر",
+  "ربيان",
+];
+const ANIMAL_KW = [
+  "ألبان",
+  "حليب",
+  "لحم",
+  "طيور",
+  "دواجن",
+  "بيض",
+  "كبد",
+  "لانشون",
+  "كورنيد",
+];
+const PLANT_KW = [
+  "قمح",
+  "شعير",
+  "ذرة",
+  "أرز",
+  "لوز",
+  "فستق",
+  "فول",
+  "تفاح",
+  "خضر",
+  "فاكهة",
+  "طحين",
+  "دقيق",
+  "حبوب",
+  "بذرة",
+  "نبات",
+  "عرق",
+  "مستخلص",
+  "كستناء",
+  "طماطم",
+  "صويا",
+  "مكرونة",
+  "خبز",
+  "رقائق",
+  "بسكويت",
+  "مانجو",
+  "ملح",
+];
+
+function rowFoodCategory(product: string): FoodCategory {
+  if (SEAFOOD_KW.some((k) => product.includes(k))) return "بحرية";
+  if (ANIMAL_KW.some((k) => product.includes(k))) return "حيوانية";
+  if (PLANT_KW.some((k) => product.includes(k))) return "نباتية";
+  return "أخرى";
+}
+
+const FOOD_CHIPS: {
+  label: string;
+  value: FoodCategory;
+  icon: string;
+  bg: string;
+  activeBg: string;
+  text: string;
+  activeText: string;
+}[] = [
+  {
+    label: "نباتية",
+    value: "نباتية",
+    icon: "🌾",
+    bg: "#f0fdf4",
+    activeBg: "#16a34a",
+    text: "#15803d",
+    activeText: "#fff",
+  },
+  {
+    label: "حيوانية",
+    value: "حيوانية",
+    icon: "🥩",
+    bg: "#fff7ed",
+    activeBg: "#ea580c",
+    text: "#c2410c",
+    activeText: "#fff",
+  },
+  {
+    label: "بحرية",
+    value: "بحرية",
+    icon: "🐟",
+    bg: "#eff6ff",
+    activeBg: "#2563eb",
+    text: "#1d4ed8",
+    activeText: "#fff",
+  },
+  {
+    label: "أخرى",
+    value: "أخرى",
+    icon: "📦",
+    bg: "#f9fafb",
+    activeBg: "#6b7280",
+    text: "#4b5563",
+    activeText: "#fff",
+  },
+];
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ToxinDetailScreen() {
   const { toxinIndex } = useLocalSearchParams<{ toxinIndex: string }>();
@@ -18,6 +134,7 @@ export default function ToxinDetailScreen() {
   const idx = parseInt(toxinIndex ?? "0", 10);
   const toxin = toxins[idx];
   const [query, setQuery] = useState("");
+  const [selectedFood, setSelectedFood] = useState<FoodCategory | null>(null);
 
   useEffect(() => {
     if (toxin) {
@@ -25,17 +142,30 @@ export default function ToxinDetailScreen() {
     }
   }, [toxin, navigation]);
 
-  const filtered = useMemo(() => {
+  // Determine which food categories actually exist in this toxin
+  const availableCategories = useMemo<FoodCategory[]>(() => {
+    if (!toxin) return [];
+    const found = new Set<FoodCategory>();
+    for (const r of toxin.rows) {
+      found.add(rowFoodCategory(r.product));
+    }
+    return FOOD_CHIPS.map((c) => c.value).filter((v) => found.has(v));
+  }, [toxin]);
+
+  const filtered = useMemo<ToxinRow[]>(() => {
     if (!toxin) return [];
     const q = query.trim();
-    if (!q) return toxin.rows;
-    return toxin.rows.filter(
-      (r) =>
+    return toxin.rows.filter((r) => {
+      const matchesText =
+        !q ||
         r.product.includes(q) ||
         r.applicable_part.includes(q) ||
-        r.notes.includes(q),
-    );
-  }, [toxin, query]);
+        r.notes.includes(q);
+      const matchesFood =
+        !selectedFood || rowFoodCategory(r.product) === selectedFood;
+      return matchesText && matchesFood;
+    });
+  }, [toxin, query, selectedFood]);
 
   if (!toxin) {
     return (
@@ -45,32 +175,101 @@ export default function ToxinDetailScreen() {
     );
   }
 
+  const isFiltering = query.trim().length > 0 || selectedFood !== null;
+
+  const headerComponent = (
+    <View>
+      <View style={styles.titleCard}>
+        <Text style={styles.titleText}>{toxin.toxin}</Text>
+        <Text style={styles.subtitleText}>
+          {toxin.rows.length} حد أقصى مسجل
+        </Text>
+      </View>
+
+      {/* Text search */}
+      <View style={styles.searchWrap}>
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="ابحث عن صنف غذائي…"
+          placeholderTextColor="#9ca3af"
+          style={styles.searchInput}
+          textAlign="right"
+        />
+      </View>
+
+      {/* Food category chips — show only categories that exist in this toxin */}
+      {availableCategories.length > 1 && (
+        <View style={styles.chipsSection}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipsRow}
+          >
+            {FOOD_CHIPS.filter((c) =>
+              availableCategories.includes(c.value)
+            ).map((chip) => {
+              const active = selectedFood === chip.value;
+              return (
+                <Pressable
+                  key={chip.value}
+                  style={[
+                    styles.foodChip,
+                    {
+                      backgroundColor: active ? chip.activeBg : chip.bg,
+                      borderColor: active ? chip.activeBg : "#e5e7eb",
+                    },
+                  ]}
+                  onPress={() =>
+                    setSelectedFood((prev) =>
+                      prev === chip.value ? null : chip.value
+                    )
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.foodChipText,
+                      { color: active ? chip.activeText : chip.text },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {chip.icon} {chip.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Filter summary */}
+      {isFiltering && (
+        <View style={styles.filterSummary}>
+          <Pressable
+            onPress={() => {
+              setQuery("");
+              setSelectedFood(null);
+            }}
+          >
+            <Text style={styles.clearAll}>مسح ✕</Text>
+          </Pressable>
+          <Text style={styles.filterSummaryText}>
+            {filtered.length} نتيجة
+            {selectedFood ? ` · ${selectedFood}` : ""}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+
   return (
     <FlatList
       data={filtered}
       keyExtractor={(_, i) => i.toString()}
       contentContainerStyle={styles.listContent}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={
-        <View>
-          <View style={styles.titleCard}>
-            <Text style={styles.titleText}>{toxin.toxin}</Text>
-            <Text style={styles.subtitleText}>
-              {toxin.rows.length} حد أقصى مسجل
-            </Text>
-          </View>
-          <View style={styles.searchWrap}>
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="ابحث عن صنف غذائي…"
-              placeholderTextColor="#9ca3af"
-              style={styles.searchInput}
-              textAlign="right"
-            />
-          </View>
-        </View>
-      }
+      keyboardShouldPersistTaps="handled"
+      ListHeaderComponent={headerComponent}
       ListEmptyComponent={
         <View style={styles.center}>
           <Text style={{ fontSize: 36 }}>🔍</Text>
@@ -91,20 +290,26 @@ export default function ToxinDetailScreen() {
               <Text style={styles.limitUnit}>{item.unit}</Text>
             </View>
           </View>
-          {item.applicable_part ? (
-            <View style={styles.fieldBlock}>
-              <Text style={styles.fieldLabel}>جزء المنتج المنطبق</Text>
-              <Text style={styles.fieldValue}>{item.applicable_part}</Text>
-            </View>
-          ) : null}
+
+          {/* Applicable part — always show, use "—" when empty */}
+          <View style={styles.fieldBlock}>
+            <Text style={styles.fieldLabel}>جزء المنتج المنطبق</Text>
+            <Text style={styles.fieldValue}>
+              {item.applicable_part || "—"}
+            </Text>
+          </View>
+
           {(item as any).radionuclides ? (
             <View style={styles.fieldBlock}>
               <Text style={styles.fieldLabel}>النويدات المشعة الممثلة</Text>
-              <Text style={styles.fieldValue}>{(item as any).radionuclides}</Text>
+              <Text style={styles.fieldValue}>
+                {(item as any).radionuclides}
+              </Text>
             </View>
           ) : null}
+
           {item.notes ? (
-            <View style={styles.fieldBlock}>
+            <View style={[styles.fieldBlock, styles.notesBlock]}>
               <Text style={styles.fieldLabel}>ملاحظات</Text>
               <Text style={styles.fieldValue}>{item.notes}</Text>
             </View>
@@ -136,7 +341,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   titleCard: {
-    backgroundColor: "#c2185b",
+    backgroundColor: ACCENT,
     borderRadius: 14,
     padding: 16,
     marginBottom: 10,
@@ -165,6 +370,41 @@ const styles = StyleSheet.create({
     color: colors.light.text,
     borderWidth: 1,
     borderColor: "#e5e7eb",
+  },
+  chipsSection: {
+    marginBottom: 8,
+  },
+  chipsRow: {
+    gap: 8,
+    paddingRight: 4,
+    paddingBottom: 2,
+  },
+  foodChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  foodChipText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  filterSummary: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  filterSummaryText: {
+    fontSize: 12,
+    color: "#6b7280",
+    textAlign: "right",
+  },
+  clearAll: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: ACCENT,
   },
   card: {
     backgroundColor: "#ffffff",
@@ -228,6 +468,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
     borderRadius: 10,
     padding: 10,
+  },
+  notesBlock: {
+    backgroundColor: "#fffde7",
   },
   fieldLabel: {
     fontSize: 11,
