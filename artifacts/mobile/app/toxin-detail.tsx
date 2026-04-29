@@ -108,7 +108,10 @@ const PLANT_KW = [
   "جوز",
 ];
 
+const ALWAYS_PLANT = ["شوكولا", "شوكولاتة", "كاكاو"];
+
 function rowFoodCategory(product: string): FoodCategory {
+  if (ALWAYS_PLANT.some((k) => product.includes(k))) return "نباتية";
   if (SEAFOOD_KW.some((k) => product.includes(k))) return "بحرية";
   if (ANIMAL_KW.some((k) => product.includes(k))) return "حيوانية";
   if (PLANT_KW.some((k) => product.includes(k))) return "نباتية";
