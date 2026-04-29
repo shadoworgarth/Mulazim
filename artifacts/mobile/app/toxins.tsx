@@ -2,7 +2,6 @@ import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -19,15 +18,15 @@ const ACCENT = "#c2185b";
 
 // ─── Toxin type classification ────────────────────────────────────────────────
 
-type ToxinType = "ميكوتوكسينات" | "معادن ثقيلة" | "نويدات مشعة";
+type ToxinType = "سموم فطرية" | "معادن ثقيلة" | "نويدات مشعة";
 
 const TOXIN_TYPE_MAP: Record<string, ToxinType> = {
-  "إجمالي الأفلاتوكسين": "ميكوتوكسينات",
-  "أفلاتوكسين M1": "ميكوتوكسينات",
-  "ديوكسي فالينول (DON)": "ميكوتوكسينات",
-  "فومونيزينات (B1 + B2)": "ميكوتوكسينات",
-  "أوكراتوكسين A": "ميكوتوكسينات",
-  "الباتولين": "ميكوتوكسينات",
+  "إجمالي الأفلاتوكسين": "سموم فطرية",
+  "أفلاتوكسين M1": "سموم فطرية",
+  "ديوكسي فالينول (DON)": "سموم فطرية",
+  "فومونيزينات (B1 + B2)": "سموم فطرية",
+  "أوكراتوكسين A": "سموم فطرية",
+  "الباتولين": "سموم فطرية",
   "الزرنيخ": "معادن ثقيلة",
   "الكادميوم": "معادن ثقيلة",
   "الرصاص": "معادن ثقيلة",
@@ -38,18 +37,16 @@ const TOXIN_TYPE_MAP: Record<string, ToxinType> = {
 };
 
 const TYPE_ORDER: ToxinType[] = [
-  "ميكوتوكسينات",
+  "سموم فطرية",
   "معادن ثقيلة",
   "نويدات مشعة",
 ];
-
-const TYPE_CHIP_LIMIT = 2;
 
 const TYPE_COLORS: Record<
   ToxinType,
   { bg: string; text: string; activeBg: string; activeText: string }
 > = {
-  ميكوتوكسينات: {
+  "سموم فطرية": {
     bg: "#f3e5f5",
     text: "#7b1fa2",
     activeBg: "#7b1fa2",
@@ -81,7 +78,6 @@ export default function ToxinsScreen() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [selectedType, setSelectedType] = useState<ToxinType | null>(null);
-  const [typeModalVisible, setTypeModalVisible] = useState(false);
 
   const isFiltering = query.trim().length > 0 || selectedType !== null;
 
@@ -116,7 +112,6 @@ export default function ToxinsScreen() {
 
   function handleTypePress(type: ToxinType) {
     setSelectedType((prev) => (prev === type ? null : type));
-    setTypeModalVisible(false);
   }
 
   const filtersBar = (
@@ -133,14 +128,14 @@ export default function ToxinsScreen() {
         />
       </View>
 
-      {/* Toxin type chips — limited to 2 + show-all */}
+      {/* Toxin type chips */}
       <View style={styles.chipsSection}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chipsRow}
         >
-          {TYPE_ORDER.slice(0, TYPE_CHIP_LIMIT).map((type) => {
+          {TYPE_ORDER.map((type) => {
             const active = selectedType === type;
             const c = TYPE_COLORS[type];
             return (
@@ -167,16 +162,6 @@ export default function ToxinsScreen() {
               </Pressable>
             );
           })}
-          {TYPE_ORDER.length > TYPE_CHIP_LIMIT && (
-            <Pressable
-              style={styles.chipMore}
-              onPress={() => setTypeModalVisible(true)}
-            >
-              <Text style={styles.chipMoreText}>
-                +{TYPE_ORDER.length - TYPE_CHIP_LIMIT} عرض الكل
-              </Text>
-            </Pressable>
-          )}
         </ScrollView>
       </View>
 
@@ -303,56 +288,6 @@ export default function ToxinsScreen() {
         }}
       />
 
-      {/* Toxin type picker modal */}
-      <Modal
-        visible={typeModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setTypeModalVisible(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setTypeModalVisible(false)}
-        >
-          <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>نوع الملوث</Text>
-            {TYPE_ORDER.map((type) => {
-              const active = selectedType === type;
-              const c = TYPE_COLORS[type];
-              return (
-                <Pressable
-                  key={type}
-                  style={[
-                    styles.modalOption,
-                    active && { backgroundColor: c.bg },
-                  ]}
-                  onPress={() => handleTypePress(type)}
-                >
-                  <Text
-                    style={[
-                      styles.modalOptionText,
-                      { color: active ? c.text : colors.light.text },
-                    ]}
-                  >
-                    {type}
-                  </Text>
-                  {active && (
-                    <Text style={{ color: c.text, fontWeight: "700" }}>
-                      ✓
-                    </Text>
-                  )}
-                </Pressable>
-              );
-            })}
-            <Pressable
-              style={styles.modalCancel}
-              onPress={() => setTypeModalVisible(false)}
-            >
-              <Text style={styles.modalCancelText}>إغلاق</Text>
-            </Pressable>
-          </View>
-        </Pressable>
-      </Modal>
     </View>
   );
 }
@@ -397,19 +332,6 @@ const styles = StyleSheet.create({
   chipText: {
     fontSize: 13,
     fontWeight: "600",
-  },
-  chipMore: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: "#f3f4f6",
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-  },
-  chipMoreText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: ACCENT,
   },
   filterSummary: {
     flexDirection: "row-reverse",
@@ -522,50 +444,5 @@ const styles = StyleSheet.create({
     color: "#5d4037",
     textAlign: "right",
     lineHeight: 20,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    justifyContent: "flex-end",
-  },
-  modalSheet: {
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    paddingBottom: Platform.OS === "ios" ? 36 : 24,
-    gap: 6,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.light.text,
-    textAlign: "right",
-    marginBottom: 8,
-  },
-  modalOption: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-  },
-  modalOptionText: {
-    fontSize: 15,
-    fontWeight: "500",
-    textAlign: "right",
-  },
-  modalCancel: {
-    marginTop: 8,
-    backgroundColor: "#f3f4f6",
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  modalCancelText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#6b7280",
   },
 });
