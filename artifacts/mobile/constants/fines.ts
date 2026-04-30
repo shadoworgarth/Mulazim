@@ -6,7 +6,10 @@ export interface FinesCategory {
   bg: string;
   enabled: boolean;
   pageCount?: number;
+  pageAspect?: number; // width / height — defaults to A4 portrait (1485/2103)
 }
+
+export const DEFAULT_PAGE_ASPECT = 1485 / 2103;
 
 export const FINES_CATEGORIES: FinesCategory[] = [
   {

@@ -11,17 +11,15 @@ import {
 } from "react-native";
 
 import colors from "@/constants/colors";
-import { FINES_CATEGORIES } from "@/constants/fines";
+import { DEFAULT_PAGE_ASPECT, FINES_CATEGORIES } from "@/constants/fines";
 import FINES_PAGES from "@/constants/fines-pages";
-
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const PAGE_ASPECT = 1485 / 2103;
 
 export default function FinesDetailScreen() {
   const { categoryId } = useLocalSearchParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
   const scrollRef = useRef<ScrollView>(null);
 
+  const screenWidth = Dimensions.get("window").width;
   const category = FINES_CATEGORIES.find((c) => c.id === categoryId);
   const pages = FINES_PAGES[categoryId ?? ""] ?? [];
 
@@ -33,8 +31,9 @@ export default function FinesDetailScreen() {
     );
   }
 
-  const pageWidth = SCREEN_WIDTH;
-  const pageHeight = pageWidth / PAGE_ASPECT;
+  const pageAspect = category.pageAspect ?? DEFAULT_PAGE_ASPECT;
+  const pageWidth = screenWidth;
+  const pageHeight = pageWidth / pageAspect;
 
   const handleScroll = (e: any) => {
     const offsetY = e.nativeEvent.contentOffset.y;
