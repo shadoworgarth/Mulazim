@@ -55,9 +55,9 @@ export default function FinesGuideScreen() {
               {!cat.enabled && (
                 <Text style={styles.comingSoon}>قريباً</Text>
               )}
-              {cat.enabled && cat.data && (
+              {cat.enabled && cat.pageCount && (
                 <Text style={styles.countLabel}>
-                  {cat.data.violations.length} مخالفة
+                  {cat.pageCount} صفحات
                 </Text>
               )}
             </View>

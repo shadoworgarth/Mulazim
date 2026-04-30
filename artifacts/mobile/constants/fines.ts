@@ -1,11 +1,3 @@
-export interface FineEntry {
-  number: string;
-  violation: string;
-  fines: Record<string, string | null>;
-  closure: string | null;
-  notes: string | null;
-}
-
 export interface FinesCategory {
   id: string;
   title: string;
@@ -13,14 +5,8 @@ export interface FinesCategory {
   emoji: string;
   bg: string;
   enabled: boolean;
-  data?: {
-    category: string;
-    entityTypes: string[];
-    violations: FineEntry[];
-  };
+  pageCount?: number;
 }
-
-import veterinaryData from "@/assets/fines-veterinary.json";
 
 export const FINES_CATEGORIES: FinesCategory[] = [
   {
@@ -30,7 +16,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     emoji: "🐾",
     bg: "#e8f5e9",
     enabled: true,
-    data: veterinaryData as FinesCategory["data"],
+    pageCount: 5,
   },
   {
     id: "medical-devices",
