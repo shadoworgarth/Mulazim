@@ -70,6 +70,8 @@ function AuthGate() {
       <Stack.Screen name="animal-feed" options={{ title: "الأعلاف" }} />
       <Stack.Screen name="animal-feed-guide" options={{ title: "دليل المواد المضافة لعلف المواشي والدواجن" }} />
       <Stack.Screen name="animal-feed-additives" options={{ title: "المضافات العلفية المسموح بتداولها" }} />
+      <Stack.Screen name="fines-guide" options={{ title: "جداول المخالفات والعقوبات" }} />
+      <Stack.Screen name="fines-detail" options={{ title: "تفاصيل المخالفات" }} />
     </Stack>
   );
 }

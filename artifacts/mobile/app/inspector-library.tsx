@@ -58,6 +58,15 @@ const LIBRARY_CARDS: LibraryCard[] = [
     route: "/animal-feed",
     enabled: true,
   },
+  {
+    id: "fines",
+    title: "جداول المخالفات والعقوبات",
+    emojis: ["⚖️", "⚖️", "⚖️", "⚖️"],
+    singleEmoji: true,
+    bg: "#fce4ec",
+    route: "/fines-guide",
+    enabled: true,
+  },
 ];
 
 export default function InspectorLibraryScreen() {
