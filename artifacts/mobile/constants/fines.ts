@@ -6,7 +6,7 @@ export interface FinesCategory {
   bg: string;
   enabled: boolean;
   pageCount?: number;
-  pageAspect?: number; // width / height — defaults to A4 portrait (1485/2103)
+  pageAspect?: number;
 }
 
 export const DEFAULT_PAGE_ASPECT = 1485 / 2103;
@@ -27,7 +27,8 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     shortTitle: "الأجهزة والمستلزمات الطبية",
     emoji: "🩺",
     bg: "#e3f2fd",
-    enabled: false,
+    enabled: true,
+    pageCount: 43,
   },
   {
     id: "cosmetics",
@@ -35,7 +36,8 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     shortTitle: "منتجات التجميل",
     emoji: "💄",
     bg: "#fce4ec",
-    enabled: false,
+    enabled: true,
+    pageCount: 14,
   },
   {
     id: "pharma",
@@ -43,7 +45,9 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     shortTitle: "المستحضرات الصيدلانية والعشبية",
     emoji: "💊",
     bg: "#f3e5f5",
-    enabled: false,
+    enabled: true,
+    pageCount: 23,
+    pageAspect: 1483 / 2113,
   },
   {
     id: "animal-feed",
@@ -51,7 +55,8 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     shortTitle: "نظام الأعلاف",
     emoji: "🌾",
     bg: "#fff8e1",
-    enabled: false,
+    enabled: true,
+    pageCount: 27,
   },
   {
     id: "food",
@@ -59,6 +64,8 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     shortTitle: "نظام الغذاء",
     emoji: "🍽️",
     bg: "#fff3e0",
-    enabled: false,
+    enabled: true,
+    pageCount: 9,
+    pageAspect: 1488 / 2103,
   },
 ];
