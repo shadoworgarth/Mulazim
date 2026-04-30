@@ -29,6 +29,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     bg: "#e3f2fd",
     enabled: true,
     pageCount: 43,
+    pageAspect: 2105 / 1488,
   },
   {
     id: "cosmetics",
@@ -38,6 +39,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     bg: "#fce4ec",
     enabled: true,
     pageCount: 14,
+    pageAspect: 2105 / 1490,
   },
   {
     id: "pharma",
@@ -57,6 +59,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     bg: "#fff8e1",
     enabled: true,
     pageCount: 27,
+    pageAspect: 2105 / 1490,
   },
   {
     id: "food",
