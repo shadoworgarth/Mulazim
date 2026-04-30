@@ -9,7 +9,7 @@ export interface FinesCategory {
   pageAspect?: number;
 }
 
-export const DEFAULT_PAGE_ASPECT = 1485 / 2103;
+export const DEFAULT_PAGE_ASPECT = 2105 / 1490;
 
 export const FINES_CATEGORIES: FinesCategory[] = [
   {
@@ -20,6 +20,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     bg: "#e8f5e9",
     enabled: true,
     pageCount: 5,
+    pageAspect: 2103 / 1485,
   },
   {
     id: "medical-devices",
@@ -49,7 +50,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     bg: "#f3e5f5",
     enabled: true,
     pageCount: 23,
-    pageAspect: 1483 / 2113,
+    pageAspect: 2113 / 1483,
   },
   {
     id: "animal-feed",
@@ -69,6 +70,6 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     bg: "#fff3e0",
     enabled: true,
     pageCount: 9,
-    pageAspect: 1488 / 2103,
+    pageAspect: 2103 / 1488,
   },
 ];
