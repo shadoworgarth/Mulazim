@@ -1,27 +1,152 @@
 import { useLocalSearchParams } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Dimensions,
+  FlatList,
   Image,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 
 import colors from "@/constants/colors";
 import { DEFAULT_PAGE_ASPECT, FINES_CATEGORIES } from "@/constants/fines";
 import FINES_PAGES from "@/constants/fines-pages";
 
+const SPRING = { damping: 20, stiffness: 200 };
+
+interface ZoomablePageProps {
+  src: ReturnType<typeof require>;
+  pageWidth: number;
+  pageHeight: number;
+  onZoomChange: (zoomed: boolean) => void;
+}
+
+function ZoomablePage({
+  src,
+  pageWidth,
+  pageHeight,
+  onZoomChange,
+}: ZoomablePageProps) {
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+  const tx = useSharedValue(0);
+  const ty = useSharedValue(0);
+  const savedTx = useSharedValue(0);
+  const savedTy = useSharedValue(0);
+
+  const clampTranslation = (val: number, s: number, dim: number) => {
+    "worklet";
+    const maxShift = (dim * (s - 1)) / 2;
+    return Math.min(Math.max(val, -maxShift), maxShift);
+  };
+
+  const resetZoom = () => {
+    "worklet";
+    scale.value = withSpring(1, SPRING);
+    savedScale.value = 1;
+    tx.value = withSpring(0, SPRING);
+    ty.value = withSpring(0, SPRING);
+    savedTx.value = 0;
+    savedTy.value = 0;
+    runOnJS(onZoomChange)(false);
+  };
+
+  const pinch = Gesture.Pinch()
+    .onUpdate((e) => {
+      const newScale = Math.min(Math.max(savedScale.value * e.scale, 1), 6);
+      scale.value = newScale;
+      if (newScale > 1) runOnJS(onZoomChange)(true);
+    })
+    .onEnd(() => {
+      if (scale.value < 1.05) {
+        resetZoom();
+      } else {
+        savedScale.value = scale.value;
+      }
+    });
+
+  const pan = Gesture.Pan()
+    .averageTouches(true)
+    .onUpdate((e) => {
+      if (scale.value <= 1) return;
+      tx.value = clampTranslation(
+        savedTx.value + e.translationX,
+        scale.value,
+        pageWidth
+      );
+      ty.value = clampTranslation(
+        savedTy.value + e.translationY,
+        scale.value,
+        pageHeight
+      );
+    })
+    .onEnd(() => {
+      savedTx.value = tx.value;
+      savedTy.value = ty.value;
+    });
+
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd((_e, success) => {
+      if (!success) return;
+      if (scale.value > 1) {
+        resetZoom();
+      } else {
+        const newScale = 2.5;
+        scale.value = withSpring(newScale, SPRING);
+        savedScale.value = newScale;
+        runOnJS(onZoomChange)(true);
+      }
+    });
+
+  const composed = Gesture.Simultaneous(
+    Gesture.Exclusive(doubleTap, pan),
+    pinch
+  );
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: tx.value },
+      { translateY: ty.value },
+      { scale: scale.value },
+    ],
+  }));
+
+  return (
+    <GestureDetector gesture={composed}>
+      <Animated.View style={[{ width: pageWidth, height: pageHeight }, animStyle]}>
+        <Image
+          source={src}
+          style={{ width: pageWidth, height: pageHeight }}
+          resizeMode="contain"
+        />
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
 export default function FinesDetailScreen() {
   const { categoryId } = useLocalSearchParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
-  const scrollRef = useRef<ScrollView>(null);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const listRef = useRef<FlatList>(null);
 
   const screenWidth = Dimensions.get("window").width;
   const category = FINES_CATEGORIES.find((c) => c.id === categoryId);
   const pages = FINES_PAGES[categoryId ?? ""] ?? [];
+
+  const handleZoomChange = useCallback((zoomed: boolean) => {
+    setScrollEnabled(!zoomed);
+  }, []);
 
   if (!category || pages.length === 0) {
     return (
@@ -35,35 +160,41 @@ export default function FinesDetailScreen() {
   const pageWidth = screenWidth;
   const pageHeight = pageWidth / pageAspect;
 
-  const handleScroll = (e: any) => {
-    const offsetY = e.nativeEvent.contentOffset.y;
-    const page = Math.round(offsetY / pageHeight) + 1;
-    if (page !== currentPage && page >= 1 && page <= pages.length) {
-      setCurrentPage(page);
-    }
-  };
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: any) => {
+      if (viewableItems.length > 0) {
+        setCurrentPage(viewableItems[0].index + 1);
+      }
+    },
+    []
+  );
+
+  const viewabilityConfig = { itemVisiblePercentThreshold: 50 };
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        ref={scrollRef}
-        style={styles.scroll}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
+      <FlatList
+        ref={listRef}
+        data={pages}
+        keyExtractor={(_, i) => String(i)}
+        scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
-        maximumZoomScale={Platform.OS === "ios" ? 5 : 1}
-        minimumZoomScale={1}
-        bouncesZoom={Platform.OS === "ios"}
-      >
-        {pages.map((src, i) => (
-          <Image
-            key={i}
-            source={src}
-            style={{ width: pageWidth, height: pageHeight }}
-            resizeMode="contain"
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        getItemLayout={(_, index) => ({
+          length: pageHeight,
+          offset: pageHeight * index,
+          index,
+        })}
+        renderItem={({ item }) => (
+          <ZoomablePage
+            src={item}
+            pageWidth={pageWidth}
+            pageHeight={pageHeight}
+            onZoomChange={handleZoomChange}
           />
-        ))}
-      </ScrollView>
+        )}
+      />
 
       <View style={styles.pageIndicator}>
         <Text style={styles.pageText}>
@@ -78,9 +209,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#1a1a1a",
-  },
-  scroll: {
-    flex: 1,
   },
   center: {
     flex: 1,
