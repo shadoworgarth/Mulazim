@@ -113,8 +113,10 @@ const NarcoticCard = React.memo(function NarcoticCard({
         <View style={styles.notesBlock}>
           {notes.map((n, i) => (
             <View key={i} style={styles.noteRow}>
-              <Text style={styles.noteValue}>{n.value}</Text>
-              <Text style={styles.noteLabel}>{n.label}: </Text>
+              <Text style={styles.noteLine} numberOfLines={4}>
+                <Text style={styles.noteLabel}>{n.label}: </Text>
+                {n.value}
+              </Text>
             </View>
           ))}
         </View>
@@ -319,23 +321,18 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   noteRow: {
-    flexDirection: "row-reverse",
-    flexWrap: "wrap",
-    alignItems: "flex-start",
-    gap: 4,
+    alignItems: "flex-end",
+  },
+  noteLine: {
+    fontSize: 12,
+    color: colors.light.text,
+    textAlign: "right",
+    lineHeight: 19,
   },
   noteLabel: {
     fontSize: 12,
     fontWeight: "700",
     color: "#6b7280",
-    textAlign: "right",
-  },
-  noteValue: {
-    fontSize: 12,
-    color: colors.light.text,
-    textAlign: "right",
-    flexShrink: 1,
-    lineHeight: 18,
   },
   emptyWrap: { alignItems: "center", paddingTop: 40, gap: 10 },
   emptyText: { fontSize: 14, color: colors.light.mutedForeground },
