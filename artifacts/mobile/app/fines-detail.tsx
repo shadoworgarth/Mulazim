@@ -11,6 +11,7 @@ import {
 import { FlatList, Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -41,6 +42,16 @@ function ZoomablePage({
   const ty = useSharedValue(0);
   const savedTx = useSharedValue(0);
   const savedTy = useSharedValue(0);
+
+  // Track zoom state as React state so we can conditionally include pan gesture.
+  // When not zoomed, pan is excluded from the composed gesture so the FlatList
+  // can receive scroll events unobstructed.
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  useAnimatedReaction(
+    () => scale.value > 1.05,
+    (zoomed) => runOnJS(setIsZoomed)(zoomed)
+  );
 
   const clampTranslation = (val: number, s: number, dim: number) => {
     "worklet";
@@ -108,9 +119,10 @@ function ZoomablePage({
       }
     });
 
-  // Simultaneous for all three — no Exclusive wrapper, which was causing
-  // Android to wait for double-tap recognition before allowing pan/pinch.
-  const composed = Gesture.Simultaneous(pinch, pan, doubleTap);
+  // Only include pan when zoomed — this lets FlatList scroll freely when at 1x
+  const composed = isZoomed
+    ? Gesture.Simultaneous(pinch, pan, doubleTap)
+    : Gesture.Simultaneous(pinch, doubleTap);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [
