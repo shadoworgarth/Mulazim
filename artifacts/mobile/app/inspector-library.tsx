@@ -67,6 +67,15 @@ const LIBRARY_CARDS: LibraryCard[] = [
     route: "/fines-guide",
     enabled: true,
   },
+  {
+    id: "narcotics",
+    title: "المخدرات والمؤثرات العقلية",
+    emojis: ["💊", "💊", "💊", "💊"],
+    singleEmoji: true,
+    bg: "#f3e5f5",
+    route: "/narcotics",
+    enabled: true,
+  },
 ];
 
 export default function InspectorLibraryScreen() {

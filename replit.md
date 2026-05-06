@@ -103,9 +103,15 @@ Arabic-language Expo React Native app "Food Additives / مكتبة المفتش"
   - `/animal-feed-additives` — searchable table of permitted feed additives (document: الاضافات_العلفية); ~200+ entries, 4 categories (تكنولوجية/حسية/غذائية/زوتكنية), filterable by category, E-number badges
   - `/animal-feed-guide` — collapsible section list from دليل_المواد; 11 sections (minerals, vitamins, amino acids, flavours, colour, binders, antioxidants, antifungs, anticoccidial, antibiotics, enzymes), each row shows min/max/unit/animals/notes
 
+- **المخدرات والمؤثرات العقلية** → `/narcotics`
+  - Searchable list of 482 narcotics/controlled substances across 12 schedule categories
+  - Each entry shows main name (scientific → common → Arabic → chemical fallback), category badge, and expandable notes with all available name fields
+  - Category filter chips color-coded by schedule (الجدول الأول red, الثاني orange, controlled blue, plants/seeds green)
+
 **Key constants:**
 - `constants/animal-feed-additives.ts` — ~200 FeedAdditive entries from SFDA permitted additives document
 - `constants/animal-feed-guide.ts` — ANIMAL_FEED_GUIDE sections from livestock/poultry guide document
+- `constants/narcotics.ts` — 482 NarcoticEntry items from SFDA narcotics Excel (3 sheets)
 
 ### `scripts` (`@workspace/scripts`)
 
