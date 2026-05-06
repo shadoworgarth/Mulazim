@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -30,23 +30,18 @@ interface ZoomablePageProps {
   onZoomChange: (zoomed: boolean) => void;
 }
 
-function ZoomablePage({
-  src,
-  pageWidth,
-  pageHeight,
-  onZoomChange,
-}: ZoomablePageProps) {
+function ZoomablePage({ src, pageWidth, pageHeight, onZoomChange }: ZoomablePageProps) {
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);
   const savedTx = useSharedValue(0);
   const savedTy = useSharedValue(0);
-
-  // Track zoom state as React state so we can conditionally include pan gesture.
-  // When not zoomed, pan is excluded from the composed gesture so the FlatList
-  // can receive scroll events unobstructed.
   const [isZoomed, setIsZoomed] = useState(false);
+
+  // Keep onZoomChange stable for the wheel listener closure
+  const onZoomChangeRef = useRef(onZoomChange);
+  useEffect(() => { onZoomChangeRef.current = onZoomChange; }, [onZoomChange]);
 
   useAnimatedReaction(
     () => scale.value > 1.05,
@@ -67,9 +62,44 @@ function ZoomablePage({
     ty.value = withSpring(0, SPRING);
     savedTx.value = 0;
     savedTy.value = 0;
-    runOnJS(onZoomChange)(false);
+    runOnJS(onZoomChangeRef.current)(false);
   };
 
+  // ─── Web: wheel-based zoom via Ctrl+Scroll ───────────────────────────────
+  const containerRef = useRef<View>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    // In React Native Web, View refs expose the underlying DOM element
+    const domNode = containerRef.current as unknown as HTMLElement;
+    if (!domNode?.addEventListener) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const factor = e.deltaY > 0 ? 0.9 : 1.1;
+      const newScale = Math.min(Math.max(scale.value * factor, 1), 6);
+      if (newScale <= 1.05) {
+        scale.value = 1;
+        savedScale.value = 1;
+        tx.value = 0;
+        ty.value = 0;
+        savedTx.value = 0;
+        savedTy.value = 0;
+        onZoomChangeRef.current(false);
+      } else {
+        scale.value = newScale;
+        savedScale.value = newScale;
+        onZoomChangeRef.current(true);
+      }
+    };
+
+    domNode.addEventListener("wheel", handleWheel, { passive: false });
+    return () => domNode.removeEventListener("wheel", handleWheel);
+  }, []); // Attach once; shared values always read latest via .value
+
+  // ─── RNGH gestures (native only) ─────────────────────────────────────────
   const pinch = Gesture.Pinch()
     .onUpdate((e) => {
       const newScale = Math.min(Math.max(savedScale.value * e.scale, 1), 6);
@@ -89,16 +119,8 @@ function ZoomablePage({
     .averageTouches(true)
     .onUpdate((e) => {
       if (scale.value <= 1) return;
-      tx.value = clampTranslation(
-        savedTx.value + e.translationX,
-        scale.value,
-        pageWidth
-      );
-      ty.value = clampTranslation(
-        savedTy.value + e.translationY,
-        scale.value,
-        pageHeight
-      );
+      tx.value = clampTranslation(savedTx.value + e.translationX, scale.value, pageWidth);
+      ty.value = clampTranslation(savedTy.value + e.translationY, scale.value, pageHeight);
     })
     .onEnd(() => {
       savedTx.value = tx.value;
@@ -119,11 +141,6 @@ function ZoomablePage({
       }
     });
 
-  // Only include pan when zoomed — this lets FlatList scroll freely when at 1x
-  const composed = isZoomed
-    ? Gesture.Simultaneous(pinch, pan, doubleTap)
-    : Gesture.Simultaneous(pinch, doubleTap);
-
   const animStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: tx.value },
@@ -132,8 +149,50 @@ function ZoomablePage({
     ],
   }));
 
+  // ─── Web rendering ────────────────────────────────────────────────────────
+  // On web, GestureDetector calls setPointerCapture on every pointer-down,
+  // which prevents the FlatList parent from ever receiving scroll events.
+  // Fix: Only mount GestureDetector on web when already zoomed (for pan).
+  // Ctrl+Scroll zoom is handled by the wheel listener above.
+  // Drag-to-scroll works naturally when GestureDetector is absent.
+  if (Platform.OS === "web") {
+    return (
+      <View
+        ref={containerRef}
+        style={{ width: pageWidth, height: pageHeight, overflow: "hidden" } as any}
+      >
+        {isZoomed ? (
+          // Zoomed: add GestureDetector for pan & double-tap-to-reset
+          <GestureDetector gesture={Gesture.Simultaneous(pan, doubleTap)}>
+            <Animated.View style={[{ width: pageWidth, height: pageHeight }, animStyle]}>
+              <Image
+                source={src}
+                style={{ width: pageWidth, height: pageHeight }}
+                resizeMode="contain"
+              />
+            </Animated.View>
+          </GestureDetector>
+        ) : (
+          // Not zoomed: no GestureDetector → FlatList receives all pointer events
+          <Animated.View style={[{ width: pageWidth, height: pageHeight }, animStyle]}>
+            <Image
+              source={src}
+              style={{ width: pageWidth, height: pageHeight }}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        )}
+      </View>
+    );
+  }
+
+  // ─── Native rendering (iOS / Android) ────────────────────────────────────
+  const nativeComposed = isZoomed
+    ? Gesture.Simultaneous(pinch, pan, doubleTap)
+    : Gesture.Simultaneous(pinch, doubleTap);
+
   return (
-    <GestureDetector gesture={composed}>
+    <GestureDetector gesture={nativeComposed}>
       <Animated.View style={[{ width: pageWidth, height: pageHeight }, animStyle]}>
         <Image
           source={src}
