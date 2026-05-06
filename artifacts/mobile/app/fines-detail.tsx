@@ -97,9 +97,6 @@ function ZoomablePage({
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
-    .maxDurationMs(250)
-    .maxDeltaX(15)
-    .maxDeltaY(15)
     .onEnd((_e, success) => {
       if (!success) return;
       if (scale.value > 1) {
