@@ -21,7 +21,7 @@ import colors from "@/constants/colors";
 import { DEFAULT_PAGE_ASPECT, FINES_CATEGORIES } from "@/constants/fines";
 import FINES_PAGES from "@/constants/fines-pages";
 
-const SPRING = { damping: 20, stiffness: 200 };
+const SPRING = { damping: 18, stiffness: 250, mass: 0.6 };
 
 interface ZoomablePageProps {
   src: ReturnType<typeof require>;
@@ -75,6 +75,7 @@ function ZoomablePage({
     });
 
   const pan = Gesture.Pan()
+    .minDistance(1)
     .averageTouches(true)
     .onUpdate((e) => {
       if (scale.value <= 1) return;
@@ -96,6 +97,9 @@ function ZoomablePage({
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
+    .maxDurationMs(250)
+    .maxDeltaX(15)
+    .maxDeltaY(15)
     .onEnd((_e, success) => {
       if (!success) return;
       if (scale.value > 1) {
@@ -108,10 +112,9 @@ function ZoomablePage({
       }
     });
 
-  const composed = Gesture.Simultaneous(
-    Gesture.Exclusive(doubleTap, pan),
-    pinch
-  );
+  // Simultaneous for all three — no Exclusive wrapper, which was causing
+  // Android to wait for double-tap recognition before allowing pan/pinch.
+  const composed = Gesture.Simultaneous(pinch, pan, doubleTap);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [
