@@ -56,8 +56,6 @@ function noteLines(e: NarcoticEntry): { label: string; value: string }[] {
     notes.push({ label: "الاسم العربي", value: e.arabic });
   if (e.mainNameType !== "chemical" && e.chemical)
     notes.push({ label: "الاسم الكيميائي", value: e.chemical });
-  if (e.dispensing)
-    notes.push({ label: "أماكن الصرف", value: e.dispensing });
   return notes;
 }
 
