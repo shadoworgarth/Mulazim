@@ -46,16 +46,16 @@ const ALL_CATS = Array.from(new Set(NARCOTICS.map((e) => e.category).filter(Bool
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function noteLines(e: NarcoticEntry): { label: string; value: string }[] {
-  const notes: { label: string; value: string }[] = [];
+function noteLines(e: NarcoticEntry): { label: string; value: string; isLatin: boolean }[] {
+  const notes: { label: string; value: string; isLatin: boolean }[] = [];
   if (e.mainNameType !== "scientific" && e.scientific)
-    notes.push({ label: "الاسم العلمي", value: e.scientific });
+    notes.push({ label: "الاسم العلمي", value: e.scientific, isLatin: true });
   if (e.mainNameType !== "common" && e.common)
-    notes.push({ label: "الاسم الشائع", value: e.common });
+    notes.push({ label: "الاسم الشائع", value: e.common, isLatin: true });
   if (e.mainNameType !== "arabic" && e.arabic)
-    notes.push({ label: "الاسم العربي", value: e.arabic });
+    notes.push({ label: "الاسم العربي", value: e.arabic, isLatin: false });
   if (e.mainNameType !== "chemical" && e.chemical)
-    notes.push({ label: "الاسم الكيميائي", value: e.chemical });
+    notes.push({ label: "الاسم الكيميائي", value: e.chemical, isLatin: true });
   return notes;
 }
 
@@ -94,7 +94,9 @@ const NarcoticCard = React.memo(function NarcoticCard({
         </View>
 
         <View style={styles.cardBody}>
-          <Text style={styles.mainName}>{entry.mainName}</Text>
+          <Text style={[styles.mainName, entry.mainNameType !== "arabic" && styles.mainNameLatin]}>
+            {entry.mainName}
+          </Text>
           <View style={[styles.catPill, { backgroundColor: cc.bg }]}>
             <Text style={[styles.catPillText, { color: cc.text }]} numberOfLines={1}>
               {entry.category}
@@ -111,8 +113,11 @@ const NarcoticCard = React.memo(function NarcoticCard({
         <View style={styles.notesBlock}>
           {notes.map((n, i) => (
             <View key={i} style={styles.noteRow}>
-              <Text style={styles.noteLine} numberOfLines={4}>
-                <Text style={styles.noteLabel}>{n.label}: </Text>
+              <Text style={styles.noteLabel}>{n.label}: </Text>
+              <Text
+                style={[styles.noteValue, n.isLatin ? styles.noteValueLatin : styles.noteValueArabic]}
+                numberOfLines={4}
+              >
                 {n.value}
               </Text>
             </View>
@@ -303,6 +308,10 @@ const styles = StyleSheet.create({
     textAlign: "right",
     lineHeight: 22,
   },
+  mainNameLatin: {
+    writingDirection: "ltr",
+    textAlign: "left",
+  },
   catPill: {
     borderRadius: 8,
     paddingHorizontal: 8,
@@ -319,18 +328,29 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   noteRow: {
+    gap: 2,
     alignItems: "flex-end",
-  },
-  noteLine: {
-    fontSize: 12,
-    color: colors.light.text,
-    textAlign: "right",
-    lineHeight: 19,
   },
   noteLabel: {
     fontSize: 12,
     fontWeight: "700",
     color: "#6b7280",
+    textAlign: "right",
+    alignSelf: "flex-end",
+  },
+  noteValue: {
+    fontSize: 12,
+    color: colors.light.text,
+    lineHeight: 19,
+    alignSelf: "stretch",
+  },
+  noteValueLatin: {
+    writingDirection: "ltr",
+    textAlign: "left",
+  },
+  noteValueArabic: {
+    writingDirection: "rtl",
+    textAlign: "right",
   },
   emptyWrap: { alignItems: "center", paddingTop: 40, gap: 10 },
   emptyText: { fontSize: 14, color: colors.light.mutedForeground },
