@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
@@ -68,11 +69,13 @@ const LabCard = React.memo(function LabCard({
   query,
   fieldFilter,
   showAll,
+  onNavigate,
 }: {
   lab: PrivateLab;
   query: string;
   fieldFilter: LabField | null;
   showAll: boolean;
+  onNavigate: (id: number) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const matches = useMemo(() => getMatches(lab, query, fieldFilter), [lab, query, fieldFilter]);
@@ -85,7 +88,7 @@ const LabCard = React.memo(function LabCard({
   return (
     <Pressable
       style={({ pressed }) => [styles.card, { opacity: pressed ? 0.88 : 1 }]}
-      onPress={() => setExpanded((v) => !v)}
+      onPress={() => isSearching ? setExpanded((v) => !v) : onNavigate(lab.id)}
     >
       {/* Header row */}
       <View style={styles.cardHeader}>
@@ -166,6 +169,7 @@ const LabCard = React.memo(function LabCard({
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function PrivateLabsScreen() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [fieldFilter, setFieldFilter] = useState<LabField | null>(null);
 
@@ -253,6 +257,7 @@ export default function PrivateLabsScreen() {
             query={query}
             fieldFilter={fieldFilter}
             showAll={!isFiltering}
+            onNavigate={(id) => router.push({ pathname: "/private-lab-detail", params: { id: String(id) } } as any)}
           />
         )}
       />

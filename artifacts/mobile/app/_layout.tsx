@@ -74,6 +74,7 @@ function AuthGate() {
       <Stack.Screen name="fines-detail" options={{ title: "تفاصيل المخالفات" }} />
       <Stack.Screen name="narcotics" options={{ title: "المخدرات والمؤثرات العقلية" }} />
       <Stack.Screen name="private-labs" options={{ title: "المختبرات الخاصة" }} />
+      <Stack.Screen name="private-lab-detail" options={{ title: "تفاصيل المختبر" }} />
     </Stack>
   );
 }
