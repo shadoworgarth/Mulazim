@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   Linking,
   Platform,
@@ -21,24 +21,33 @@ const FIELD_LABELS: Record<LabField, string> = {
   Tobacco: "التبغ",
 };
 
-const FIELD_COLORS: Record<LabField, { bg: string; text: string; badge: string; light: string }> = {
-  Food:      { bg: "#e8f5e9", text: "#1b5e20", badge: "#2e7d32", light: "#f1f8e9" },
-  Cosmetics: { bg: "#fce4ec", text: "#880e4f", badge: "#ad1457", light: "#fce4ec" },
-  Feed:      { bg: "#fff3e0", text: "#bf360c", badge: "#e64a19", light: "#fff8e1" },
-  Tobacco:   { bg: "#efebe9", text: "#3e2723", badge: "#4e342e", light: "#fafafa" },
+const FIELD_COLORS: Record<LabField, { bg: string; text: string; badge: string }> = {
+  Food:      { bg: "#e8f5e9", text: "#1b5e20", badge: "#2e7d32" },
+  Cosmetics: { bg: "#fce4ec", text: "#880e4f", badge: "#ad1457" },
+  Feed:      { bg: "#fff3e0", text: "#bf360c", badge: "#e64a19" },
+  Tobacco:   { bg: "#efebe9", text: "#3e2723", badge: "#4e342e" },
 };
 
 const FIELD_ORDER: LabField[] = ["Food", "Cosmetics", "Feed", "Tobacco"];
 
+// Each row in the flat list
+interface TestRow {
+  parameter: string;
+  price?: string;
+  product?: string; // only shown when price differs for this parameter across products
+}
+
 interface Section {
   field: LabField;
-  product: string;
-  data: { parameter: string; price?: string }[];
+  data: TestRow[];
+}
+
+function normPrice(p: string | undefined): string {
+  return (p ?? "").replace("*", "").trim();
 }
 
 export default function PrivateLabDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
 
   const lab = useMemo(
     () => PRIVATE_LABS.find((l) => String(l.id) === id),
@@ -47,33 +56,47 @@ export default function PrivateLabDetailScreen() {
 
   const sections = useMemo<Section[]>(() => {
     if (!lab) return [];
-    const grouped: Map<string, Section> = new Map();
+    const result: Section[] = [];
 
-    // Sort tests by field order, then product
-    const sorted = [...lab.tests].sort((a, b) => {
-      const fi = FIELD_ORDER.indexOf(a.field) - FIELD_ORDER.indexOf(b.field);
-      if (fi !== 0) return fi;
-      return a.product.localeCompare(b.product);
-    });
+    for (const field of FIELD_ORDER) {
+      const fieldTests = lab.tests.filter((t) => t.field === field);
+      if (fieldTests.length === 0) continue;
 
-    sorted.forEach((t) => {
-      const key = `${t.field}||${t.product}`;
-      if (!grouped.has(key)) {
-        grouped.set(key, { field: t.field, product: t.product, data: [] });
+      // Group by parameter
+      const byParam = new Map<string, { product: string; price?: string }[]>();
+      for (const t of fieldTests) {
+        if (!byParam.has(t.parameter)) byParam.set(t.parameter, []);
+        byParam.get(t.parameter)!.push({ product: t.product, price: t.price });
       }
-      grouped.get(key)!.data.push({ parameter: t.parameter, price: t.price });
-    });
 
-    return Array.from(grouped.values());
+      const rows: TestRow[] = [];
+      for (const [parameter, entries] of byParam.entries()) {
+        const prices = entries.map((e) => normPrice(e.price));
+        const allSame = prices.every((p) => p === prices[0]);
+
+        if (allSame) {
+          // All products share the same price — show once with no product label
+          rows.push({ parameter, price: entries[0].price });
+        } else {
+          // Prices differ — show each unique product+price combination
+          const seen = new Set<string>();
+          for (const e of entries) {
+            const key = `${e.product}||${normPrice(e.price)}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            rows.push({ parameter, price: e.price, product: e.product });
+          }
+        }
+      }
+
+      // Sort alphabetically by parameter
+      rows.sort((a, b) => a.parameter.localeCompare(b.parameter));
+
+      result.push({ field, data: rows });
+    }
+
+    return result;
   }, [lab]);
-
-  const toggleProduct = (key: string) => {
-    setExpandedProducts((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
-  };
 
   if (!lab) {
     return (
@@ -83,132 +106,94 @@ export default function PrivateLabDetailScreen() {
     );
   }
 
-  // Group sections by field for field headers
-  const byField = FIELD_ORDER.map((field) => ({
-    field,
-    sections: sections.filter((s) => s.field === field),
-  })).filter((g) => g.sections.length > 0);
+  const totalRows = sections.reduce((a, s) => a + s.data.length, 0);
+  const contact = LAB_CONTACTS[lab.id];
 
   return (
     <SectionList
-      sections={byField.flatMap((g) =>
-        g.sections.map((s) => ({ ...s, key: `${s.field}||${s.product}` }))
-      )}
-      keyExtractor={(item, index) => `${item.parameter}-${index}`}
+      sections={sections}
+      keyExtractor={(item, index) =>
+        `${item.parameter}-${item.product ?? ""}-${index}`
+      }
       contentContainerStyle={styles.listContent}
       showsVerticalScrollIndicator={false}
       stickySectionHeadersEnabled={false}
-      ListHeaderComponent={(() => {
-        const contact = LAB_CONTACTS[lab.id];
-        return (
-          <View style={styles.labHeader}>
-            <Text style={styles.labName}>{lab.name}</Text>
-            <Text style={styles.labMeta}>
-              {lab.tests.length} اختبار ·{" "}
-              {byField.map((g) => FIELD_LABELS[g.field]).join(" · ")}
-            </Text>
+      ListHeaderComponent={
+        <View style={styles.labHeader}>
+          <Text style={styles.labName}>{lab.name}</Text>
+          <Text style={styles.labMeta}>
+            {totalRows} اختبار ·{" "}
+            {sections.map((s) => FIELD_LABELS[s.field]).join(" · ")}
+          </Text>
 
-            {contact && (
-              <View style={styles.contactCard}>
-                {/* Address */}
-                {contact.address && (
-                  <View style={styles.contactRow}>
-                    <Text style={styles.contactIcon}>📍</Text>
-                    <Text style={styles.contactValue}>{contact.address}</Text>
-                  </View>
-                )}
-
-                {/* Phones */}
-                {contact.phones?.map((p, i) => (
-                  <Pressable
-                    key={i}
-                    style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
-                    onPress={() => Linking.openURL(`tel:${p.replace(/\s/g, "")}`)}
-                  >
-                    <Text style={styles.contactIcon}>📞</Text>
-                    <Text style={[styles.contactValue, styles.contactLink]}>{p}</Text>
-                  </Pressable>
-                ))}
-
-                {/* Emails */}
-                {contact.emails?.map((e, i) => (
-                  <Pressable
-                    key={i}
-                    style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
-                    onPress={() => Linking.openURL(`mailto:${e}`)}
-                  >
-                    <Text style={styles.contactIcon}>✉️</Text>
-                    <Text style={[styles.contactValue, styles.contactLink, styles.contactLtr]}>{e}</Text>
-                  </Pressable>
-                ))}
-
-                {/* Website */}
-                {contact.website && (
-                  <Pressable
-                    style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
-                    onPress={() => {
-                      const url = contact.website!.startsWith("http")
-                        ? contact.website!
-                        : `https://${contact.website}`;
-                      Linking.openURL(url);
-                    }}
-                  >
-                    <Text style={styles.contactIcon}>🌐</Text>
-                    <Text style={[styles.contactValue, styles.contactLink, styles.contactLtr]}>
-                      {contact.website}
-                    </Text>
-                  </Pressable>
-                )}
-              </View>
-            )}
-          </View>
-        );
-      })()}
+          {contact && (
+            <View style={styles.contactCard}>
+              {contact.address && (
+                <View style={styles.contactRow}>
+                  <Text style={styles.contactIcon}>📍</Text>
+                  <Text style={styles.contactValue}>{contact.address}</Text>
+                </View>
+              )}
+              {contact.phones?.map((p, i) => (
+                <Pressable
+                  key={i}
+                  style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
+                  onPress={() => Linking.openURL(`tel:${p.replace(/\s/g, "")}`)}
+                >
+                  <Text style={styles.contactIcon}>📞</Text>
+                  <Text style={[styles.contactValue, styles.contactLink]}>{p}</Text>
+                </Pressable>
+              ))}
+              {contact.emails?.map((e, i) => (
+                <Pressable
+                  key={i}
+                  style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
+                  onPress={() => Linking.openURL(`mailto:${e}`)}
+                >
+                  <Text style={styles.contactIcon}>✉️</Text>
+                  <Text style={[styles.contactValue, styles.contactLink, styles.contactLtr]}>{e}</Text>
+                </Pressable>
+              ))}
+              {contact.website && (
+                <Pressable
+                  style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
+                  onPress={() => {
+                    const url = contact.website!.startsWith("http")
+                      ? contact.website!
+                      : `https://${contact.website}`;
+                    Linking.openURL(url);
+                  }}
+                >
+                  <Text style={styles.contactIcon}>🌐</Text>
+                  <Text style={[styles.contactValue, styles.contactLink, styles.contactLtr]}>
+                    {contact.website}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+          )}
+        </View>
+      }
       renderSectionHeader={({ section }) => {
-        const sec = section as Section & { key: string };
+        const sec = section as Section;
         const fc = FIELD_COLORS[sec.field];
-        const isExpanded = expandedProducts.has(sec.key);
-        const isFirstInField =
-          sections.findIndex((s) => s.field === sec.field) ===
-          sections.findIndex((s) => s.field === sec.field && s.product === sec.product);
-
         return (
-          <View>
-            {/* Field header — only for the first product in each field */}
-            {isFirstInField && (
-              <View style={[styles.fieldHeader, { backgroundColor: fc.badge }]}>
-                <Text style={styles.fieldHeaderText}>{FIELD_LABELS[sec.field]}</Text>
-                <Text style={styles.fieldHeaderCount}>
-                  {sections.filter((s) => s.field === sec.field).reduce((a, s) => a + s.data.length, 0)} اختبار
-                </Text>
-              </View>
-            )}
-
-            {/* Product row — tappable to expand/collapse */}
-            <Pressable
-              style={[styles.productRow, { backgroundColor: fc.light }]}
-              onPress={() => toggleProduct(sec.key)}
-            >
-              <Text style={styles.expandChevron}>{isExpanded ? "▲" : "▼"}</Text>
-              <View style={styles.productBody}>
-                <Text style={styles.productName}>{sec.product}</Text>
-                <Text style={[styles.productCount, { color: fc.text }]}>
-                  {sec.data.length} اختبار
-                </Text>
-              </View>
-            </Pressable>
+          <View style={[styles.fieldHeader, { backgroundColor: fc.badge }]}>
+            <Text style={styles.fieldHeaderText}>{FIELD_LABELS[sec.field]}</Text>
+            <Text style={styles.fieldHeaderCount}>{sec.data.length} اختبار</Text>
           </View>
         );
       }}
       renderItem={({ item, section }) => {
-        const sec = section as Section & { key: string };
-        const isExpanded = expandedProducts.has(sec.key);
-        if (!isExpanded) return null;
+        const sec = section as Section;
         const fc = FIELD_COLORS[sec.field];
         return (
           <View style={styles.testRow}>
             <View style={styles.testLeft}>
               <Text style={styles.testParam}>{item.parameter}</Text>
+              {item.product && (
+                <Text style={styles.testProduct} numberOfLines={1}>{item.product}</Text>
+              )}
             </View>
             {item.price ? (
               <View style={styles.priceWrap}>
@@ -219,7 +204,7 @@ export default function PrivateLabDetailScreen() {
                   <Text style={[styles.priceCurrency, { color: fc.badge }]}>ر.س</Text>
                 </View>
                 {item.price.includes("*") && (
-                  <Text style={styles.priceNote}>* السعر للمكرر الواحد</Text>
+                  <Text style={styles.priceNote}>* للمكرر</Text>
                 )}
               </View>
             ) : null}
@@ -295,28 +280,7 @@ const styles = StyleSheet.create({
   fieldHeaderText: { fontSize: 14, fontWeight: "700", color: "#fff" },
   fieldHeaderCount: { fontSize: 12, color: "rgba(255,255,255,0.85)" },
 
-  // Product row
-  productRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 11,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-    gap: 10,
-  },
-  expandChevron: { fontSize: 10, color: "#9ca3af", flexShrink: 0 },
-  productBody: { flex: 1, alignItems: "flex-end", gap: 2 },
-  productName: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.light.text,
-    textAlign: "right",
-    writingDirection: "ltr",
-  },
-  productCount: { fontSize: 11, fontWeight: "500" },
-
-  // Test row
+  // Test row (flat, no product collapsing)
   testRow: {
     flexDirection: "row-reverse",
     alignItems: "center",
@@ -327,12 +291,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     gap: 10,
   },
-  testLeft: { flex: 1, alignItems: "flex-end" },
+  testLeft: { flex: 1, alignItems: "flex-end", gap: 2 },
   testParam: {
     fontSize: 13,
     color: colors.light.text,
     textAlign: "left",
     writingDirection: "ltr",
+  },
+  testProduct: {
+    fontSize: 10,
+    color: colors.light.mutedForeground,
+    textAlign: "left",
+    writingDirection: "ltr",
+    fontStyle: "italic",
   },
   priceWrap: { alignItems: "flex-end", gap: 3, flexShrink: 0 },
   priceBadge: {
