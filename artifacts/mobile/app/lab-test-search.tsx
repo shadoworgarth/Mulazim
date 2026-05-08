@@ -35,9 +35,11 @@ const FIELD_COLORS: Record<LabField, { bg: string; text: string; badge: string }
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type SelectedTest = {
-  id: string;        // `${field}||${parameter}` — no product, tests are unique by name+field
-  parameter: string;
+  id: string;
+  parameter: string;   // display name (may include "(product)" suffix for price variants)
+  baseParam: string;   // raw parameter name for data matching
   field: LabField;
+  product?: string;    // set only for product-specific price variants
 };
 
 type TestSuggestion = SelectedTest & { labCount: number };
@@ -56,24 +58,89 @@ type LabResult = {
   total: number;
 };
 
-// ─── Build suggestion index (run once at module load) ─────────────────────────
-// Deduplicated by (field, parameter) — same test name = one entry regardless of product.
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function buildSuggestions(): TestSuggestion[] {
-  const map = new Map<string, TestSuggestion>();
+function normPriceStr(p: string | undefined): string {
+  return (p ?? "").replace("*", "").trim();
+}
+
+// Pre-compute: for each (field||parameter), map normPrice → first representative product
+function buildPriceVariants(): Map<string, Map<string, string>> {
+  const map = new Map<string, Map<string, string>>();
   for (const lab of PRIVATE_LABS) {
-    const seen = new Set<string>();
     for (const t of lab.tests) {
-      const id = `${t.field}||${t.parameter}`;
-      if (seen.has(id)) continue;
-      seen.add(id);
-      if (!map.has(id)) {
-        map.set(id, { id, parameter: t.parameter, field: t.field, labCount: 0 });
-      }
-      map.get(id)!.labCount++;
+      const key = `${t.field}||${t.parameter}`;
+      if (!map.has(key)) map.set(key, new Map());
+      const byPrice = map.get(key)!;
+      const np = normPriceStr(t.price);
+      if (!byPrice.has(np)) byPrice.set(np, t.product);
     }
   }
-  return Array.from(map.values()).sort((a, b) => a.parameter.localeCompare(b.parameter));
+  return map;
+}
+
+const PRICE_VARIANTS = buildPriceVariants();
+
+// ─── Build suggestion index (run once at module load) ─────────────────────────
+// Same price for all products → one entry. Different prices → one entry per variant
+// with the product name appended to the display parameter.
+
+function buildSuggestions(): TestSuggestion[] {
+  type Raw = Omit<TestSuggestion, "labCount">;
+  const suggMap = new Map<string, Raw>();
+
+  for (const [paramKey, byPrice] of PRICE_VARIANTS) {
+    const sepIdx = paramKey.indexOf("||");
+    const field = paramKey.slice(0, sepIdx) as LabField;
+    const baseParam = paramKey.slice(sepIdx + 2);
+
+    if (byPrice.size === 1) {
+      suggMap.set(paramKey, { id: paramKey, parameter: baseParam, baseParam, field });
+    } else {
+      // Sort ascending by price — lowest is the "base" entry
+      const sorted = [...byPrice.entries()].sort(
+        (a, b) => parseFloat(a[0] || "0") - parseFloat(b[0] || "0")
+      );
+      sorted.forEach(([_np, product], i) => {
+        if (i === 0) {
+          const id = `${paramKey}__base`;
+          suggMap.set(id, { id, parameter: baseParam, baseParam, field });
+        } else {
+          const id = `${paramKey}||${product}`;
+          suggMap.set(id, { id, parameter: `${baseParam} (${product})`, baseParam, field, product });
+        }
+      });
+    }
+  }
+
+  // Count labs per suggestion
+  const result = new Map<string, TestSuggestion>(
+    [...suggMap.entries()].map(([id, s]) => [id, { ...s, labCount: 0 }])
+  );
+  for (const lab of PRIVATE_LABS) {
+    const seenIds = new Set<string>();
+    for (const t of lab.tests) {
+      const paramKey = `${t.field}||${t.parameter}`;
+      const byPrice = PRICE_VARIANTS.get(paramKey);
+      if (!byPrice) continue;
+      const np = normPriceStr(t.price);
+      let id: string;
+      if (byPrice.size === 1) {
+        id = paramKey;
+      } else {
+        const sorted = [...byPrice.entries()].sort(
+          (a, b) => parseFloat(a[0] || "0") - parseFloat(b[0] || "0")
+        );
+        id = sorted[0][0] === np ? `${paramKey}__base` : `${paramKey}||${t.product}`;
+      }
+      if (!seenIds.has(id)) {
+        seenIds.add(id);
+        if (result.has(id)) result.get(id)!.labCount++;
+      }
+    }
+  }
+
+  return Array.from(result.values()).sort((a, b) => a.parameter.localeCompare(b.parameter));
 }
 
 const ALL_SUGGESTIONS = buildSuggestions();
@@ -96,10 +163,22 @@ function buildProducts(): ProductEntry[] {
         map.set(productId, { id: productId, product: t.product, field: t.field, tests: [] });
       }
       const entry = map.get(productId)!;
-      const testId = `${t.field}||${t.parameter}`;
-      if (!entry.tests.some((x) => x.id === testId)) {
-        const sugg = ALL_SUGGESTIONS.find((s) => s.id === testId);
-        entry.tests.push({ id: testId, parameter: t.parameter, field: t.field, labCount: sugg?.labCount ?? 0 });
+      // Resolve the suggestion id for this specific test+price combination
+      const paramKey = `${t.field}||${t.parameter}`;
+      const byPrice = PRICE_VARIANTS.get(paramKey);
+      const np = normPriceStr(t.price);
+      let suggId: string;
+      if (!byPrice || byPrice.size === 1) {
+        suggId = paramKey;
+      } else {
+        const sorted = [...byPrice.entries()].sort(
+          (a, b) => parseFloat(a[0] || "0") - parseFloat(b[0] || "0")
+        );
+        suggId = sorted[0][0] === np ? `${paramKey}__base` : `${paramKey}||${t.product}`;
+      }
+      const sugg = ALL_SUGGESTIONS.find((s) => s.id === suggId);
+      if (sugg && !entry.tests.some((x) => x.id === sugg.id)) {
+        entry.tests.push(sugg);
       }
     }
   }
@@ -128,7 +207,8 @@ function computeLabResults(selected: SelectedTest[]): LabResult[] {
       const found = lab.tests.find(
         (t) =>
           t.field === sel.field &&
-          t.parameter.toLowerCase() === sel.parameter.toLowerCase()
+          t.parameter.toLowerCase() === sel.baseParam.toLowerCase() &&
+          (sel.product == null || t.product.toLowerCase() === sel.product.toLowerCase())
       );
       if (found) {
         matched.push({ selected: sel, price: found.price });
@@ -208,7 +288,7 @@ export default function LabTestSearchScreen() {
   const addTest = useCallback((s: TestSuggestion) => {
     setSelected((prev) => {
       if (prev.some((x) => x.id === s.id)) return prev;
-      return [...prev, { id: s.id, parameter: s.parameter, field: s.field }];
+      return [...prev, { id: s.id, parameter: s.parameter, baseParam: s.baseParam, field: s.field, product: s.product }];
     });
     setQuery("");
     setCompareMode(false); // stay in basket/browse — don't jump to results
