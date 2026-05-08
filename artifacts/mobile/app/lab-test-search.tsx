@@ -80,6 +80,29 @@ function buildSuggestions(): TestSuggestion[] {
 
 const ALL_SUGGESTIONS = buildSuggestions();
 
+// ─── Build product index (unique product+field combos with their tests) ────────
+
+type ProductEntry = {
+  id: string; // `${field}||${product}`
+  product: string;
+  field: LabField;
+  tests: TestSuggestion[];
+};
+
+function buildProducts(): ProductEntry[] {
+  const map = new Map<string, ProductEntry>();
+  for (const s of ALL_SUGGESTIONS) {
+    const id = `${s.field}||${s.product}`;
+    if (!map.has(id)) {
+      map.set(id, { id, product: s.product, field: s.field, tests: [] });
+    }
+    map.get(id)!.tests.push(s);
+  }
+  return Array.from(map.values()).sort((a, b) => a.product.localeCompare(b.product));
+}
+
+const ALL_PRODUCTS = buildProducts();
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function parsePrice(raw: string | undefined): number {
@@ -139,6 +162,7 @@ export default function LabTestSearchScreen() {
   const [compareMode, setCompareMode] = useState(false);
   const [browsing, setBrowsing] = useState(false);
   const [browseField, setBrowseField] = useState<LabField | null>(null);
+  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
 
   // ── Derived state ──────────────────────────────────────────────────────────
   const showSuggestions = query.trim().length >= 2;
@@ -162,13 +186,12 @@ export default function LabTestSearchScreen() {
     ).slice(0, 40);
   }, [query, selected, showSuggestions]);
 
-  const browseSuggestions = useMemo<TestSuggestion[]>(() => {
+  const browseProducts = useMemo<ProductEntry[]>(() => {
     if (mainView !== "browse") return [];
-    const selectedIds = new Set(selected.map((s) => s.id));
-    return ALL_SUGGESTIONS.filter(
-      (s) => !selectedIds.has(s.id) && (browseField === null || s.field === browseField)
+    return ALL_PRODUCTS.filter(
+      (p) => browseField === null || p.field === browseField
     );
-  }, [mainView, browseField, selected]);
+  }, [mainView, browseField]);
 
   const labResults = useMemo(
     () => (mainView === "results" ? computeLabResults(selected) : []),
@@ -201,6 +224,15 @@ export default function LabTestSearchScreen() {
     setQuery("");
     setCompareMode(false);
     setBrowsing(true);
+    setExpandedProducts(new Set());
+  }, []);
+
+  const toggleProduct = useCallback((id: string) => {
+    setExpandedProducts((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   }, []);
 
   // ── Suggestion card (shared between search and browse) ────────────────────
@@ -252,7 +284,7 @@ export default function LabTestSearchScreen() {
       </View>
       <Text style={styles.headerSubtitle}>
         {mainView === "browse"
-          ? "تصفح جميع الاختبارات وأضف ما تحتاجه إلى السلة"
+          ? "اختر منتجاً لعرض الاختبارات المتاحة له وإضافتها إلى السلة"
           : "أضف اختبار أو أكثر لمعرفة المختبرات المتاحة وحساب التكلفة"}
       </Text>
 
@@ -335,7 +367,7 @@ export default function LabTestSearchScreen() {
     </View>
   );
 
-  // ── Browse field filter tabs ───────────────────────────────────────────────
+  // ── Browse field filter tabs header ──────────────────────────────────────
   const BrowseHeader = (
     <View>
       <ScrollView
@@ -372,7 +404,7 @@ export default function LabTestSearchScreen() {
         })}
       </ScrollView>
       <Text style={styles.sectionLabel}>
-        {browseSuggestions.length} اختبار متاح — اضغط لإضافة إلى السلة
+        {browseProducts.length} منتج — اضغط على المنتج لعرض اختباراته
       </Text>
     </View>
   );
@@ -406,16 +438,77 @@ export default function LabTestSearchScreen() {
         />
       )}
 
-      {/* ── Browse all ────────────────────────────────────────────────────── */}
+      {/* ── Browse products ───────────────────────────────────────────────── */}
       {mainView === "browse" && (
         <FlatList
-          data={browseSuggestions}
-          keyExtractor={(s) => s.id}
+          data={browseProducts}
+          keyExtractor={(p) => p.id}
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={BrowseHeader}
-          renderItem={renderSuggestion}
+          renderItem={({ item: p }) => {
+            const fc = FIELD_COLORS[p.field];
+            const isExpanded = expandedProducts.has(p.id);
+            const addedCount = p.tests.filter((t) => selected.some((s) => s.id === t.id)).length;
+            return (
+              <View style={styles.productCard}>
+                {/* Product row — tap to expand */}
+                <Pressable
+                  style={({ pressed }) => [styles.productRow, { opacity: pressed ? 0.82 : 1 }]}
+                  onPress={() => toggleProduct(p.id)}
+                >
+                  <Text style={styles.expandChevron}>{isExpanded ? "▲" : "▼"}</Text>
+                  <View style={styles.productRowBody}>
+                    <Text style={styles.productName} numberOfLines={2}>{p.product}</Text>
+                    <View style={styles.productRowMeta}>
+                      <View style={[styles.productFieldBadge, { backgroundColor: fc.bg }]}>
+                        <Text style={[styles.productFieldText, { color: fc.text }]}>
+                          {FIELD_LABELS[p.field]}
+                        </Text>
+                      </View>
+                      <Text style={styles.productTestCount}>{p.tests.length} اختبار</Text>
+                      {addedCount > 0 && (
+                        <View style={styles.addedBadge}>
+                          <Text style={styles.addedBadgeText}>✓ {addedCount} مضاف</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </Pressable>
+
+                {/* Tests within product (shown when expanded) */}
+                {isExpanded && (
+                  <View style={styles.productTests}>
+                    {p.tests.map((t) => {
+                      const isAdded = selected.some((s) => s.id === t.id);
+                      return (
+                        <Pressable
+                          key={t.id}
+                          style={({ pressed }) => [
+                            styles.productTestRow,
+                            isAdded && styles.productTestRowAdded,
+                            { opacity: pressed ? 0.75 : 1 },
+                          ]}
+                          onPress={() => (isAdded ? removeTest(t.id) : addTest(t))}
+                        >
+                          <View style={[styles.addRemoveBtn, isAdded && styles.addRemoveBtnAdded]}>
+                            <Text style={[styles.addRemoveIcon, isAdded && styles.addRemoveIconAdded]}>
+                              {isAdded ? "✓" : "+"}
+                            </Text>
+                          </View>
+                          <Text style={styles.productTestParam} numberOfLines={2}>{t.parameter}</Text>
+                          <View style={styles.productTestLabCount}>
+                            <Text style={styles.productTestLabCountText}>{t.labCount}</Text>
+                          </View>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
+            );
+          }}
         />
       )}
 
@@ -592,7 +685,7 @@ export default function LabTestSearchScreen() {
                 onPress={handleBrowse}
                 style={({ pressed }) => [styles.browseAllBtn, { opacity: pressed ? 0.85 : 1 }]}
               >
-                <Text style={styles.browseAllBtnText}>📋 تصفح جميع الاختبارات</Text>
+                <Text style={styles.browseAllBtnText}>📦 تصفح المنتجات</Text>
               </Pressable>
             </>
           ) : (
@@ -612,7 +705,7 @@ export default function LabTestSearchScreen() {
                 onPress={handleBrowse}
                 style={({ pressed }) => [styles.browseOutlineBtn, { opacity: pressed ? 0.75 : 1 }]}
               >
-                <Text style={styles.browseOutlineBtnText}>📋 تصفح المزيد من الاختبارات</Text>
+                <Text style={styles.browseOutlineBtnText}>📦 تصفح المنتجات وإضافة اختبارات</Text>
               </Pressable>
             </>
           )}
@@ -1042,4 +1135,101 @@ const styles = StyleSheet.create({
     color: ACCENT,
     textAlign: "center",
   },
+
+  // Product browse cards
+  productCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  productRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    gap: 10,
+  },
+  expandChevron: { fontSize: 10, color: "#9ca3af", flexShrink: 0 },
+  productRowBody: { flex: 1, gap: 5, alignItems: "flex-end" },
+  productName: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.light.text,
+    textAlign: "left",
+    writingDirection: "ltr",
+  },
+  productRowMeta: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 6,
+    flexWrap: "wrap",
+  },
+  productFieldBadge: {
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  productFieldText: { fontSize: 10, fontWeight: "600" },
+  productTestCount: {
+    fontSize: 11,
+    color: colors.light.mutedForeground,
+  },
+  addedBadge: {
+    backgroundColor: "#e8f5e9",
+    borderRadius: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  addedBadgeText: { fontSize: 10, fontWeight: "700", color: "#2e7d32" },
+
+  productTests: {
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
+  productTestRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f7f7f7",
+    gap: 10,
+    backgroundColor: "#fafafa",
+  },
+  productTestRowAdded: { backgroundColor: "#f1f8e9" },
+  addRemoveBtn: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "#e0f2f1",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  addRemoveBtnAdded: { backgroundColor: "#c8e6c9" },
+  addRemoveIcon: { fontSize: 14, color: ACCENT, fontWeight: "700", lineHeight: 17 },
+  addRemoveIconAdded: { color: "#2e7d32" },
+  productTestParam: {
+    flex: 1,
+    fontSize: 13,
+    color: colors.light.text,
+    writingDirection: "ltr",
+    textAlign: "left",
+    lineHeight: 18,
+  },
+  productTestLabCount: {
+    backgroundColor: "#e0f2f1",
+    borderRadius: 9,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 24,
+    alignItems: "center",
+    flexShrink: 0,
+  },
+  productTestLabCountText: { fontSize: 10, fontWeight: "700", color: ACCENT },
 });
