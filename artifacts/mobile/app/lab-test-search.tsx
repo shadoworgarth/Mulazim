@@ -16,10 +16,11 @@ import colors from "@/constants/colors";
 import { LabField, PRIVATE_LABS, PrivateLab } from "@/constants/private-labs";
 
 const ACCENT = "#00695c";
+const FIELDS: LabField[] = ["Food", "Cosmetics", "Feed", "Tobacco"];
 
 const FIELD_LABELS: Record<LabField, string> = {
   Food: "الغذاء",
-  Cosmetics: "مستحضرات التجميل",
+  Cosmetics: "التجميل",
   Feed: "الأعلاف",
   Tobacco: "التبغ",
 };
@@ -118,7 +119,6 @@ function computeLabResults(selected: SelectedTest[]): LabResult[] {
     results.push({ lab, matched, missing, subtotal, vat, total });
   }
 
-  // Full matches first (cheapest first); then partial by coverage desc → cost asc
   results.sort((a, b) => {
     if (a.missing.length !== b.missing.length) return a.missing.length - b.missing.length;
     return a.total - b.total;
@@ -129,99 +129,191 @@ function computeLabResults(selected: SelectedTest[]): LabResult[] {
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
+type MainView = "empty" | "browse" | "suggestions" | "results";
+
 export default function LabTestSearchScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<SelectedTest[]>([]);
+  const [compareMode, setCompareMode] = useState(false);
+  const [browsing, setBrowsing] = useState(false);
+  const [browseField, setBrowseField] = useState<LabField | null>(null);
+
+  // ── Derived state ──────────────────────────────────────────────────────────
+  const showSuggestions = query.trim().length >= 2;
+
+  const mainView: MainView = showSuggestions
+    ? "suggestions"
+    : compareMode && selected.length > 0
+    ? "results"
+    : browsing
+    ? "browse"
+    : "empty";
 
   const suggestions = useMemo<TestSuggestion[]>(() => {
+    if (!showSuggestions) return [];
     const q = query.trim().toLowerCase();
-    if (q.length < 2) return [];
     const selectedIds = new Set(selected.map((s) => s.id));
     return ALL_SUGGESTIONS.filter(
       (s) =>
         !selectedIds.has(s.id) &&
         (s.parameter.toLowerCase().includes(q) || s.product.toLowerCase().includes(q))
-    ).slice(0, 25);
-  }, [query, selected]);
+    ).slice(0, 40);
+  }, [query, selected, showSuggestions]);
 
-  const labResults = useMemo(() => computeLabResults(selected), [selected]);
+  const browseSuggestions = useMemo<TestSuggestion[]>(() => {
+    if (mainView !== "browse") return [];
+    const selectedIds = new Set(selected.map((s) => s.id));
+    return ALL_SUGGESTIONS.filter(
+      (s) => !selectedIds.has(s.id) && (browseField === null || s.field === browseField)
+    );
+  }, [mainView, browseField, selected]);
 
+  const labResults = useMemo(
+    () => (mainView === "results" ? computeLabResults(selected) : []),
+    [mainView, selected]
+  );
+
+  const fullMatchCount = labResults.filter((r) => r.missing.length === 0).length;
+
+  // ── Actions ────────────────────────────────────────────────────────────────
   const addTest = useCallback((s: TestSuggestion) => {
     setSelected((prev) => {
       if (prev.some((x) => x.id === s.id)) return prev;
       return [...prev, { id: s.id, parameter: s.parameter, product: s.product, field: s.field }];
     });
     setQuery("");
+    setCompareMode(false); // stay in basket/browse — don't jump to results
   }, []);
 
   const removeTest = useCallback((id: string) => {
     setSelected((prev) => prev.filter((s) => s.id !== id));
   }, []);
 
-  const showingSuggestions = query.trim().length >= 2;
-  const fullMatchCount = labResults.filter((r) => r.missing.length === 0).length;
+  const handleCompare = useCallback(() => {
+    setBrowsing(false);
+    setQuery("");
+    setCompareMode(true);
+  }, []);
 
-  return (
-    <View style={styles.container}>
-      {/* ── Header ────────────────────────────────────────────────────────── */}
-      <View style={[styles.header, { paddingTop: Platform.OS === "web" ? 67 : insets.top + 12 }]}>
+  const handleBrowse = useCallback(() => {
+    setQuery("");
+    setCompareMode(false);
+    setBrowsing(true);
+  }, []);
+
+  // ── Suggestion card (shared between search and browse) ────────────────────
+  const renderSuggestion = useCallback(
+    ({ item: s }: { item: TestSuggestion }) => {
+      const fc = FIELD_COLORS[s.field];
+      const isSelected = selected.some((x) => x.id === s.id);
+      return (
+        <Pressable
+          style={({ pressed }) => [styles.suggestionCard, { opacity: pressed ? 0.78 : 1 }]}
+          onPress={() => (isSelected ? removeTest(s.id) : addTest(s))}
+        >
+          <View style={styles.suggestionRow}>
+            <Text style={[styles.addIcon, isSelected && styles.addIconSelected]}>
+              {isSelected ? "✓" : "+"}
+            </Text>
+            <View style={styles.suggestionTextBlock}>
+              <Text style={styles.suggestionParam} numberOfLines={1}>{s.parameter}</Text>
+              <Text style={styles.suggestionProduct} numberOfLines={1}>{s.product}</Text>
+            </View>
+            <View style={[styles.suggestionFieldBadge, { backgroundColor: fc.bg }]}>
+              <Text style={[styles.suggestionFieldText, { color: fc.text }]}>
+                {FIELD_LABELS[s.field]}
+              </Text>
+            </View>
+            <View style={styles.labCountBadge}>
+              <Text style={styles.labCountText}>{s.labCount}</Text>
+            </View>
+          </View>
+        </Pressable>
+      );
+    },
+    [addTest, removeTest, selected]
+  );
+
+  // ── Header ─────────────────────────────────────────────────────────────────
+  const Header = (
+    <View style={[styles.header, { paddingTop: Platform.OS === "web" ? 67 : insets.top + 12 }]}>
+      <View style={styles.headerTitleRow}>
         <Text style={styles.headerTitle}>مقارنة الاختبارات وحساب التكلفة</Text>
-        <Text style={styles.headerSubtitle}>
-          أضف اختبار أو أكثر لمعرفة المختبرات المتاحة وحساب التكلفة الإجمالية
-        </Text>
+        {browsing && !showSuggestions && (
+          <Pressable
+            onPress={() => setBrowsing(false)}
+            style={({ pressed }) => [styles.backBrowseBtn, { opacity: pressed ? 0.7 : 1 }]}
+          >
+            <Text style={styles.backBrowseBtnText}>← رجوع</Text>
+          </Pressable>
+        )}
+      </View>
+      <Text style={styles.headerSubtitle}>
+        {mainView === "browse"
+          ? "تصفح جميع الاختبارات وأضف ما تحتاجه إلى السلة"
+          : "أضف اختبار أو أكثر لمعرفة المختبرات المتاحة وحساب التكلفة"}
+      </Text>
 
-        <View style={styles.searchBox}>
-          <Text style={{ fontSize: 16, color: "#80cbc4" }}>🔍</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search test name (e.g. Salmonella, Moisture…)"
-            placeholderTextColor="#9bb0b0"
-            value={query}
-            onChangeText={setQuery}
-            autoFocus
-            autoCapitalize="none"
-            returnKeyType="search"
-            writingDirection="ltr"
-            textAlign="left"
-          />
-          {query.length > 0 && (
-            <Pressable onPress={() => setQuery("")} hitSlop={8}>
-              <Text style={{ fontSize: 18, color: "#b2d8d8" }}>✕</Text>
-            </Pressable>
-          )}
-        </View>
+      {/* Search box */}
+      <View style={styles.searchBox}>
+        <Text style={{ fontSize: 16, color: "#80cbc4" }}>🔍</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search test name (e.g. Salmonella, Moisture…)"
+          placeholderTextColor="#9bb0b0"
+          value={query}
+          onChangeText={(t) => {
+            setQuery(t);
+            if (t.trim().length >= 2) {
+              setCompareMode(false);
+              setBrowsing(false);
+            }
+          }}
+          autoCapitalize="none"
+          returnKeyType="search"
+          writingDirection="ltr"
+          textAlign="left"
+        />
+        {query.length > 0 && (
+          <Pressable onPress={() => setQuery("")} hitSlop={8}>
+            <Text style={{ fontSize: 18, color: "#b2d8d8" }}>✕</Text>
+          </Pressable>
+        )}
+      </View>
 
-        {/* Selected chips */}
-        {selected.length > 0 && (
-          <View style={styles.chipsWrap}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ flex: 1 }}
-              contentContainerStyle={styles.chipsRow}
-            >
-              {selected.map((s) => {
-                const fc = FIELD_COLORS[s.field];
-                return (
-                  <View key={s.id} style={styles.chip}>
-                    <Pressable onPress={() => removeTest(s.id)} hitSlop={8}>
-                      <Text style={{ fontSize: 15, color: "#b2d8d8", lineHeight: 17 }}>×</Text>
-                    </Pressable>
-                    <View style={styles.chipTextBlock}>
-                      <Text style={styles.chipParam} numberOfLines={1}>{s.parameter}</Text>
-                      <Text style={styles.chipProduct} numberOfLines={1}>{s.product}</Text>
-                    </View>
-                    <View style={[styles.chipFieldBadge, { backgroundColor: fc.bg }]}>
-                      <Text style={[styles.chipFieldText, { color: fc.text }]}>
-                        {FIELD_LABELS[s.field]}
-                      </Text>
-                    </View>
+      {/* Selected chips + Compare button */}
+      {selected.length > 0 && (
+        <View style={styles.chipsWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ flex: 1 }}
+            contentContainerStyle={styles.chipsRow}
+          >
+            {selected.map((s) => {
+              const fc = FIELD_COLORS[s.field];
+              return (
+                <View key={s.id} style={styles.chip}>
+                  <Pressable onPress={() => removeTest(s.id)} hitSlop={8}>
+                    <Text style={{ fontSize: 15, color: "#b2d8d8", lineHeight: 17 }}>×</Text>
+                  </Pressable>
+                  <View style={styles.chipTextBlock}>
+                    <Text style={styles.chipParam} numberOfLines={1}>{s.parameter}</Text>
+                    <Text style={styles.chipProduct} numberOfLines={1}>{s.product}</Text>
                   </View>
-                );
-              })}
-            </ScrollView>
+                  <View style={[styles.chipFieldBadge, { backgroundColor: fc.bg }]}>
+                    <Text style={[styles.chipFieldText, { color: fc.text }]}>
+                      {FIELD_LABELS[s.field]}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })}
+          </ScrollView>
+
+          <View style={styles.basketActions}>
             <Pressable
               onPress={() => setSelected([])}
               style={({ pressed }) => [styles.clearAllBtn, { opacity: pressed ? 0.7 : 1 }]}
@@ -229,12 +321,69 @@ export default function LabTestSearchScreen() {
             >
               <Text style={{ fontSize: 16, color: "#b2d8d8" }}>🗑</Text>
             </Pressable>
+            {!showSuggestions && (
+              <Pressable
+                onPress={handleCompare}
+                style={({ pressed }) => [styles.compareBtn, { opacity: pressed ? 0.85 : 1 }]}
+              >
+                <Text style={styles.compareBtnText}>قارن ({selected.length})</Text>
+              </Pressable>
+            )}
           </View>
-        )}
-      </View>
+        </View>
+      )}
+    </View>
+  );
 
-      {/* ── Suggestions ───────────────────────────────────────────────────── */}
-      {showingSuggestions ? (
+  // ── Browse field filter tabs ───────────────────────────────────────────────
+  const BrowseHeader = (
+    <View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.fieldTabs}
+        style={styles.fieldTabsScroll}
+      >
+        <Pressable
+          onPress={() => setBrowseField(null)}
+          style={[styles.fieldTab, browseField === null && styles.fieldTabActive]}
+        >
+          <Text style={[styles.fieldTabText, browseField === null && styles.fieldTabTextActive]}>
+            الكل
+          </Text>
+        </Pressable>
+        {FIELDS.map((f) => {
+          const fc = FIELD_COLORS[f];
+          const isActive = browseField === f;
+          return (
+            <Pressable
+              key={f}
+              onPress={() => setBrowseField(isActive ? null : f)}
+              style={[
+                styles.fieldTab,
+                isActive && { backgroundColor: fc.badge, borderColor: fc.badge },
+              ]}
+            >
+              <Text style={[styles.fieldTabText, isActive && { color: "#fff" }]}>
+                {FIELD_LABELS[f]}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+      <Text style={styles.sectionLabel}>
+        {browseSuggestions.length} اختبار متاح — اضغط لإضافة إلى السلة
+      </Text>
+    </View>
+  );
+
+  // ──────────────────────────────────────────────────────────────────────────
+  return (
+    <View style={styles.container}>
+      {Header}
+
+      {/* ── Suggestions (search) ──────────────────────────────────────────── */}
+      {mainView === "suggestions" && (
         <FlatList
           data={suggestions}
           keyExtractor={(s) => s.id}
@@ -243,7 +392,7 @@ export default function LabTestSearchScreen() {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             suggestions.length > 0 ? (
-              <Text style={styles.sectionLabel}>اختر اختباراً لإضافته</Text>
+              <Text style={styles.sectionLabel}>اضغط على الاختبار لإضافته إلى السلة</Text>
             ) : null
           }
           ListEmptyComponent={
@@ -253,34 +402,25 @@ export default function LabTestSearchScreen() {
               <Text style={styles.emptySubtitle}>جرب البحث بجزء من اسم الاختبار بالإنجليزية</Text>
             </View>
           }
-          renderItem={({ item: s }) => {
-            const fc = FIELD_COLORS[s.field];
-            return (
-              <Pressable
-                style={({ pressed }) => [styles.suggestionCard, { opacity: pressed ? 0.78 : 1 }]}
-                onPress={() => addTest(s)}
-              >
-                <View style={styles.suggestionRow}>
-                  <Text style={{ fontSize: 18, color: ACCENT, lineHeight: 20, flexShrink: 0 }}>+</Text>
-                  <View style={styles.suggestionTextBlock}>
-                    <Text style={styles.suggestionParam} numberOfLines={1}>{s.parameter}</Text>
-                    <Text style={styles.suggestionProduct} numberOfLines={1}>{s.product}</Text>
-                  </View>
-                  <View style={[styles.suggestionFieldBadge, { backgroundColor: fc.bg }]}>
-                    <Text style={[styles.suggestionFieldText, { color: fc.text }]}>
-                      {FIELD_LABELS[s.field]}
-                    </Text>
-                  </View>
-                  <View style={styles.labCountBadge}>
-                    <Text style={styles.labCountText}>{s.labCount}</Text>
-                  </View>
-                </View>
-              </Pressable>
-            );
-          }}
+          renderItem={renderSuggestion}
         />
-      ) : (
-        /* ── Lab results ──────────────────────────────────────────────────── */
+      )}
+
+      {/* ── Browse all ────────────────────────────────────────────────────── */}
+      {mainView === "browse" && (
+        <FlatList
+          data={browseSuggestions}
+          keyExtractor={(s) => s.id}
+          contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={BrowseHeader}
+          renderItem={renderSuggestion}
+        />
+      )}
+
+      {/* ── Lab results ───────────────────────────────────────────────────── */}
+      {mainView === "results" && (
         <FlatList
           data={labResults}
           keyExtractor={(r) => String(r.lab.id)}
@@ -288,12 +428,18 @@ export default function LabTestSearchScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
-            selected.length > 0 && labResults.length > 0 ? (
+            labResults.length > 0 ? (
               <View style={styles.resultCountRow}>
+                <Pressable
+                  onPress={() => setCompareMode(false)}
+                  style={({ pressed }) => [styles.backToBasketBtn, { opacity: pressed ? 0.7 : 1 }]}
+                >
+                  <Text style={styles.backToBasketText}>← إضافة المزيد</Text>
+                </Pressable>
                 <Text style={styles.resultCountText}>
                   {fullMatchCount > 0
-                    ? `${fullMatchCount} مختبر يملك جميع الاختبارات · ${labResults.length} مختبر إجمالاً`
-                    : `لا يوجد مختبر بجميع الاختبارات · ${labResults.length} مختبر جزئياً`}
+                    ? `${fullMatchCount} مختبر بجميع الاختبارات · ${labResults.length} إجمالاً`
+                    : `لا يوجد مختبر بجميع الاختبارات · ${labResults.length} جزئياً`}
                 </Text>
               </View>
             ) : null
@@ -304,7 +450,6 @@ export default function LabTestSearchScreen() {
             return (
               <View style={[styles.resultCard, isFullMatch ? styles.resultCardFull : styles.resultCardPartial]}>
 
-                {/* Card header — tappable to go to lab detail */}
                 <Pressable
                   style={({ pressed }) => [styles.resultHeader, { opacity: pressed ? 0.84 : 1 }]}
                   onPress={() =>
@@ -330,9 +475,7 @@ export default function LabTestSearchScreen() {
                   <Text style={styles.labName}>{r.lab.name}</Text>
                 </Pressable>
 
-                {/* Test rows */}
                 <View style={styles.testsSection}>
-                  {/* Matched */}
                   {r.matched.map((m, i) => {
                     const fc = FIELD_COLORS[m.selected.field];
                     const priceNum = parsePrice(m.price);
@@ -370,7 +513,6 @@ export default function LabTestSearchScreen() {
                     );
                   })}
 
-                  {/* Missing */}
                   {r.missing.map((s, i) => {
                     const fc = FIELD_COLORS[s.field];
                     return (
@@ -399,12 +541,10 @@ export default function LabTestSearchScreen() {
                   })}
                 </View>
 
-                {/* Asterisk note */}
                 {hasAsterisk && (
                   <Text style={styles.asteriskNote}>* السعر للمكرر الواحد</Text>
                 )}
 
-                {/* Cost breakdown */}
                 <View style={styles.costBox}>
                   <View style={styles.costRow}>
                     <Text style={styles.costValue}>{r.subtotal.toFixed(2)} ر.س</Text>
@@ -423,25 +563,60 @@ export default function LabTestSearchScreen() {
             );
           }}
           ListEmptyComponent={
-            selected.length > 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={{ fontSize: 36, color: "#c62828" }}>✕</Text>
-                <Text style={styles.emptyTitle}>لا توجد مختبرات متاحة</Text>
-                <Text style={styles.emptySubtitle}>
-                  لا توجد مختبرات تُقدم أياً من الاختبارات المحددة
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.emptyState}>
-                <Text style={{ fontSize: 40, color: colors.light.mutedForeground }}>🔬</Text>
-                <Text style={styles.emptyTitle}>ابدأ بإضافة اختبار</Text>
-                <Text style={styles.emptySubtitle}>
-                  ابحث عن اسم الاختبار وأضفه للسلة، ثم ستظهر المختبرات المتاحة مع التكلفة الإجمالية شاملة الضريبة
-                </Text>
-              </View>
-            )
+            <View style={styles.emptyState}>
+              <Text style={{ fontSize: 36, color: "#c62828" }}>✕</Text>
+              <Text style={styles.emptyTitle}>لا توجد مختبرات متاحة</Text>
+              <Text style={styles.emptySubtitle}>
+                لا توجد مختبرات تُقدم أياً من الاختبارات المحددة
+              </Text>
+            </View>
           }
         />
+      )}
+
+      {/* ── Empty / initial state ──────────────────────────────────────────── */}
+      {mainView === "empty" && (
+        <ScrollView
+          contentContainerStyle={styles.emptyScrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {selected.length === 0 ? (
+            <>
+              <Text style={{ fontSize: 48, color: colors.light.mutedForeground }}>🧮</Text>
+              <Text style={styles.emptyTitle}>ابدأ بإضافة اختبار</Text>
+              <Text style={styles.emptySubtitle}>
+                ابحث عن اسم الاختبار وأضفه للسلة، ثم اضغط "قارن" لعرض المختبرات المتاحة مع التكلفة شاملة الضريبة
+              </Text>
+              <Pressable
+                onPress={handleBrowse}
+                style={({ pressed }) => [styles.browseAllBtn, { opacity: pressed ? 0.85 : 1 }]}
+              >
+                <Text style={styles.browseAllBtnText}>📋 تصفح جميع الاختبارات</Text>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <Text style={{ fontSize: 40, color: colors.light.mutedForeground }}>🧺</Text>
+              <Text style={styles.emptyTitle}>السلة جاهزة</Text>
+              <Text style={styles.emptySubtitle}>
+                أضفت {selected.length} اختبار — يمكنك إضافة المزيد أو الضغط على "قارن" لعرض النتائج
+              </Text>
+              <Pressable
+                onPress={handleCompare}
+                style={({ pressed }) => [styles.browseAllBtn, styles.compareBtnLarge, { opacity: pressed ? 0.85 : 1 }]}
+              >
+                <Text style={styles.browseAllBtnText}>🔬 قارن الاختبارات ({selected.length})</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleBrowse}
+                style={({ pressed }) => [styles.browseOutlineBtn, { opacity: pressed ? 0.75 : 1 }]}
+              >
+                <Text style={styles.browseOutlineBtnText}>📋 تصفح المزيد من الاختبارات</Text>
+              </Pressable>
+            </>
+          )}
+        </ScrollView>
       )}
     </View>
   );
@@ -458,13 +633,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
   },
+  headerTitleRow: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#ffffff",
     textAlign: "right",
-    marginBottom: 4,
+    flex: 1,
   },
+  backBrowseBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  backBrowseBtnText: { fontSize: 12, color: "#80cbc4" },
   headerSubtitle: {
     fontSize: 12,
     color: "#80cbc4",
@@ -509,26 +695,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     gap: 6,
-    maxWidth: 260,
+    maxWidth: 220,
   },
-  chipTextBlock: { flexDirection: "column", maxWidth: 130 },
+  chipTextBlock: { flexDirection: "column", maxWidth: 110 },
   chipParam: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#ffffff",
     fontWeight: "500",
     writingDirection: "ltr",
   },
   chipProduct: {
-    fontSize: 10,
+    fontSize: 9,
     color: "#80cbc4",
     writingDirection: "ltr",
   },
   chipFieldBadge: {
     borderRadius: 8,
-    paddingHorizontal: 6,
+    paddingHorizontal: 5,
     paddingVertical: 2,
   },
-  chipFieldText: { fontSize: 10, fontWeight: "600" },
+  chipFieldText: { fontSize: 9, fontWeight: "600" },
+
+  basketActions: {
+    flexDirection: "column",
+    gap: 6,
+    alignItems: "center",
+    flexShrink: 0,
+  },
   clearAllBtn: {
     backgroundColor: "#d97706",
     borderRadius: 20,
@@ -536,12 +729,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  compareBtn: {
+    backgroundColor: "#f9a825",
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  compareBtnText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#1a237e",
+    textAlign: "center",
+  },
 
   // List
   listContent: {
     padding: 16,
     paddingBottom: Platform.OS === "web" ? 40 : 28,
-    gap: 12,
+    gap: 10,
   },
   sectionLabel: {
     fontSize: 12,
@@ -550,6 +755,29 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginBottom: 4,
   },
+
+  // Field tabs (browse)
+  fieldTabsScroll: { marginBottom: 0 },
+  fieldTabs: {
+    flexDirection: "row",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  fieldTab: {
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    backgroundColor: "#fff",
+  },
+  fieldTabActive: {
+    backgroundColor: ACCENT,
+    borderColor: ACCENT,
+  },
+  fieldTabText: { fontSize: 12, color: colors.light.mutedForeground, fontWeight: "500" },
+  fieldTabTextActive: { color: "#fff" },
 
   // Suggestion cards
   suggestionCard: {
@@ -567,6 +795,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
+  addIcon: {
+    fontSize: 18,
+    color: ACCENT,
+    lineHeight: 20,
+    flexShrink: 0,
+    fontWeight: "700",
+    width: 18,
+    textAlign: "center",
+  },
+  addIconSelected: { color: "#2e7d32" },
   suggestionTextBlock: { flex: 1, gap: 2 },
   suggestionParam: {
     fontSize: 14,
@@ -598,198 +836,172 @@ const styles = StyleSheet.create({
 
   // Result count row
   resultCountRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
   resultCountText: {
     fontSize: 12,
     color: colors.light.mutedForeground,
     textAlign: "right",
-    fontWeight: "500",
+    flex: 1,
   },
+  backToBasketBtn: { paddingHorizontal: 6, paddingVertical: 4 },
+  backToBasketText: { fontSize: 12, color: ACCENT, fontWeight: "600" },
 
   // Result cards
   resultCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#fff",
     borderRadius: 14,
     overflow: "hidden",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
-    shadowRadius: 5,
-    elevation: 2,
-  },
-  resultCardFull: {
+    shadowRadius: 6,
+    elevation: 3,
     borderWidth: 1.5,
-    borderColor: "#a5d6a7",
   },
-  resultCardPartial: {
-    borderWidth: 1,
-    borderColor: "#ffcc80",
-  },
+  resultCardFull: { borderColor: "#a5d6a7" },
+  resultCardPartial: { borderColor: "#ffcc80" },
 
   resultHeader: {
     paddingHorizontal: 14,
-    paddingTop: 13,
-    paddingBottom: 10,
-    gap: 6,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#f3f4f6",
+    borderBottomColor: "#f0f0f0",
+    gap: 4,
   },
   resultHeaderMeta: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row-reverse",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   matchBadge: {
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
   },
-  matchBadgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  viewDetailHint: {
-    fontSize: 12,
-    color: ACCENT,
-    fontWeight: "600",
-  },
+  matchBadgeText: { fontSize: 11, color: "#fff", fontWeight: "700" },
+  viewDetailHint: { fontSize: 11, color: "#9ca3af" },
   labName: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "700",
     color: colors.light.text,
     textAlign: "right",
   },
 
-  // Test rows inside result card
-  testsSection: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    gap: 7,
-  },
+  testsSection: { paddingHorizontal: 0 },
+
   testRow: {
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f5f5f5",
     gap: 8,
-    backgroundColor: "#f0faf8",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
   },
-  testRowMissing: {
-    backgroundColor: "#fff5f5",
-  },
+  testRowMissing: { backgroundColor: "#fafafa" },
   testRowInfo: {
-    flex: 1,
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
-    gap: 6,
+    flex: 1,
+    gap: 8,
+    minWidth: 0,
   },
   checkIcon: { fontSize: 13, color: "#2e7d32", flexShrink: 0 },
   crossIcon: { fontSize: 13, color: "#c62828", flexShrink: 0 },
-  testTextBlock: { flex: 1, gap: 1 },
+  testTextBlock: { flex: 1, gap: 1, minWidth: 0, alignItems: "flex-end" },
   testParam: {
-    fontSize: 12,
+    fontSize: 13,
     color: colors.light.text,
     writingDirection: "ltr",
-    lineHeight: 17,
+    textAlign: "left",
   },
+  testParamMissing: { color: "#9ca3af" },
   testProduct: {
     fontSize: 10,
     color: colors.light.mutedForeground,
     writingDirection: "ltr",
-    lineHeight: 14,
+    textAlign: "left",
   },
-  testParamMissing: { color: "#c62828" },
-  testProductMissing: { color: "#e57373" },
+  testProductMissing: { color: "#c4b5a0" },
   testFieldBadge: {
     borderRadius: 5,
-    paddingHorizontal: 6,
+    paddingHorizontal: 5,
     paddingVertical: 2,
     flexShrink: 0,
   },
-  testFieldText: { fontSize: 10, fontWeight: "600" },
-
-  // Price badges
+  testFieldText: { fontSize: 9, fontWeight: "600" },
   priceBadge: {
-    backgroundColor: "#e0f2f1",
+    backgroundColor: "#e8f5e9",
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
     flexShrink: 0,
-    alignItems: "center",
+    minWidth: 60,
+    alignItems: "flex-end",
   },
-  priceText: { fontSize: 12, fontWeight: "700", color: "#00695c" },
-  noPriceBadge: { backgroundColor: "#f3f4f6" },
+  priceText: { fontSize: 12, fontWeight: "700", color: "#2e7d32", writingDirection: "ltr" },
+  noPriceBadge: { backgroundColor: "#f5f5f5" },
   noPriceText: { fontSize: 11, color: "#9ca3af" },
-  missingBadge: { backgroundColor: "#fde8e8" },
-  missingText: { fontSize: 11, fontWeight: "600", color: "#c62828" },
+  missingBadge: { backgroundColor: "#fbe9e7" },
+  missingText: { fontSize: 11, color: "#c62828" },
 
   asteriskNote: {
     fontSize: 10,
-    color: "#6b7280",
+    color: "#9ca3af",
     textAlign: "right",
     paddingHorizontal: 14,
-    paddingBottom: 6,
-    fontStyle: "italic",
-  },
-
-  // Cost box
-  costBox: {
-    borderTopWidth: 1,
-    borderTopColor: "#f3f4f6",
-    marginHorizontal: 14,
-    paddingTop: 10,
-    paddingBottom: 12,
-    gap: 5,
-  },
-  costRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  costRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#f3f4f6",
-    paddingBottom: 6,
-  },
-  costRowTotal: {
     paddingTop: 6,
   },
-  costLabel: {
-    fontSize: 12,
-    color: "#6b7280",
-    textAlign: "right",
-  },
-  costValue: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.light.text,
-  },
-  costLabelTotal: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#004d40",
-    textAlign: "right",
-  },
-  costValueTotal: {
-    fontSize: 15,
-    fontWeight: "800",
-    color: "#004d40",
-  },
 
-  // Empty state
+  costBox: {
+    margin: 12,
+    backgroundColor: "#f8fffe",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#b2dfdb",
+    overflow: "hidden",
+  },
+  costRow: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  costRowBorder: {
+    borderTopWidth: 1,
+    borderTopColor: "#e0f2f1",
+  },
+  costRowTotal: {
+    borderTopWidth: 1.5,
+    borderTopColor: "#80cbc4",
+    backgroundColor: "#e0f2f1",
+  },
+  costLabel: { fontSize: 12, color: colors.light.mutedForeground },
+  costValue: { fontSize: 13, fontWeight: "600", color: colors.light.text },
+  costLabelTotal: { fontSize: 13, fontWeight: "700", color: "#004d40" },
+  costValueTotal: { fontSize: 15, fontWeight: "800", color: "#004d40" },
+
+  // Empty / initial state
+  emptyScrollContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+    gap: 14,
+  },
   emptyState: {
     alignItems: "center",
-    paddingTop: 50,
-    paddingHorizontal: 24,
-    gap: 10,
+    paddingHorizontal: 32,
+    paddingTop: 60,
+    gap: 12,
   },
   emptyTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
     color: colors.light.text,
     textAlign: "center",
@@ -799,5 +1011,35 @@ const styles = StyleSheet.create({
     color: colors.light.mutedForeground,
     textAlign: "center",
     lineHeight: 20,
+  },
+  browseAllBtn: {
+    backgroundColor: ACCENT,
+    borderRadius: 14,
+    paddingHorizontal: 22,
+    paddingVertical: 13,
+    marginTop: 8,
+    alignItems: "center",
+  },
+  compareBtnLarge: { backgroundColor: "#1565c0" },
+  browseAllBtnText: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#fff",
+    textAlign: "center",
+  },
+  browseOutlineBtn: {
+    borderWidth: 1.5,
+    borderColor: ACCENT,
+    borderRadius: 14,
+    paddingHorizontal: 22,
+    paddingVertical: 11,
+    alignItems: "center",
+    marginTop: 2,
+  },
+  browseOutlineBtnText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: ACCENT,
+    textAlign: "center",
   },
 });
