@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import colors from "@/constants/colors";
 import { LabField, PRIVATE_LABS, PrivateLab } from "@/constants/private-labs";
@@ -170,6 +171,7 @@ const LabCard = React.memo(function LabCard({
 
 export default function PrivateLabsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [fieldFilter, setFieldFilter] = useState<LabField | null>(null);
 
@@ -182,6 +184,19 @@ export default function PrivateLabsScreen() {
 
   const header = (
     <View>
+      {/* Compare button */}
+      <Pressable
+        style={({ pressed }) => [styles.compareBtn, { opacity: pressed ? 0.84 : 1 }]}
+        onPress={() => router.push("/lab-test-search" as any)}
+      >
+        <Text style={styles.compareBtnIcon}>🧮</Text>
+        <View style={styles.compareBtnBody}>
+          <Text style={styles.compareBtnTitle}>مقارنة الاختبارات وحساب التكلفة</Text>
+          <Text style={styles.compareBtnSub}>أضف عدة اختبارات وقارن المختبرات المتاحة مع التكلفة شاملة الضريبة</Text>
+        </View>
+        <Text style={styles.compareBtnArrow}>›</Text>
+      </Pressable>
+
       {/* Search */}
       <View style={styles.searchWrap}>
         <TextInput
@@ -312,6 +327,33 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   bannerText: { fontSize: 13, fontWeight: "500", color: ACCENT },
+
+  // Compare button
+  compareBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#004d40",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 12,
+    gap: 10,
+  },
+  compareBtnIcon: { fontSize: 22 },
+  compareBtnBody: { flex: 1, gap: 2, alignItems: "flex-end" },
+  compareBtnTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#ffffff",
+    textAlign: "right",
+  },
+  compareBtnSub: {
+    fontSize: 11,
+    color: "#80cbc4",
+    textAlign: "right",
+    lineHeight: 16,
+  },
+  compareBtnArrow: { fontSize: 20, color: "#80cbc4" },
 
   // Card
   card: {
