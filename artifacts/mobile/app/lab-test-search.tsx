@@ -35,9 +35,8 @@ const FIELD_COLORS: Record<LabField, { bg: string; text: string; badge: string }
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type SelectedTest = {
-  id: string;
+  id: string;        // `${field}||${parameter}` — no product, tests are unique by name+field
   parameter: string;
-  product: string;
   field: LabField;
 };
 
@@ -58,24 +57,23 @@ type LabResult = {
 };
 
 // ─── Build suggestion index (run once at module load) ─────────────────────────
+// Deduplicated by (field, parameter) — same test name = one entry regardless of product.
 
 function buildSuggestions(): TestSuggestion[] {
   const map = new Map<string, TestSuggestion>();
   for (const lab of PRIVATE_LABS) {
     const seen = new Set<string>();
     for (const t of lab.tests) {
-      const id = `${t.field}||${t.product}||${t.parameter}`;
+      const id = `${t.field}||${t.parameter}`;
       if (seen.has(id)) continue;
       seen.add(id);
       if (!map.has(id)) {
-        map.set(id, { id, parameter: t.parameter, product: t.product, field: t.field, labCount: 0 });
+        map.set(id, { id, parameter: t.parameter, field: t.field, labCount: 0 });
       }
       map.get(id)!.labCount++;
     }
   }
-  return Array.from(map.values()).sort((a, b) =>
-    a.parameter.localeCompare(b.parameter) || a.product.localeCompare(b.product)
-  );
+  return Array.from(map.values()).sort((a, b) => a.parameter.localeCompare(b.parameter));
 }
 
 const ALL_SUGGESTIONS = buildSuggestions();
@@ -91,12 +89,19 @@ type ProductEntry = {
 
 function buildProducts(): ProductEntry[] {
   const map = new Map<string, ProductEntry>();
-  for (const s of ALL_SUGGESTIONS) {
-    const id = `${s.field}||${s.product}`;
-    if (!map.has(id)) {
-      map.set(id, { id, product: s.product, field: s.field, tests: [] });
+  for (const lab of PRIVATE_LABS) {
+    for (const t of lab.tests) {
+      const productId = `${t.field}||${t.product}`;
+      if (!map.has(productId)) {
+        map.set(productId, { id: productId, product: t.product, field: t.field, tests: [] });
+      }
+      const entry = map.get(productId)!;
+      const testId = `${t.field}||${t.parameter}`;
+      if (!entry.tests.some((x) => x.id === testId)) {
+        const sugg = ALL_SUGGESTIONS.find((s) => s.id === testId);
+        entry.tests.push({ id: testId, parameter: t.parameter, field: t.field, labCount: sugg?.labCount ?? 0 });
+      }
     }
-    map.get(id)!.tests.push(s);
   }
   return Array.from(map.values()).sort((a, b) => a.product.localeCompare(b.product));
 }
@@ -123,7 +128,6 @@ function computeLabResults(selected: SelectedTest[]): LabResult[] {
       const found = lab.tests.find(
         (t) =>
           t.field === sel.field &&
-          t.product.toLowerCase() === sel.product.toLowerCase() &&
           t.parameter.toLowerCase() === sel.parameter.toLowerCase()
       );
       if (found) {
@@ -204,7 +208,7 @@ export default function LabTestSearchScreen() {
   const addTest = useCallback((s: TestSuggestion) => {
     setSelected((prev) => {
       if (prev.some((x) => x.id === s.id)) return prev;
-      return [...prev, { id: s.id, parameter: s.parameter, product: s.product, field: s.field }];
+      return [...prev, { id: s.id, parameter: s.parameter, field: s.field }];
     });
     setQuery("");
     setCompareMode(false); // stay in basket/browse — don't jump to results
@@ -251,7 +255,6 @@ export default function LabTestSearchScreen() {
             </Text>
             <View style={styles.suggestionTextBlock}>
               <Text style={styles.suggestionParam} numberOfLines={1}>{s.parameter}</Text>
-              <Text style={styles.suggestionProduct} numberOfLines={1}>{s.product}</Text>
             </View>
             <View style={[styles.suggestionFieldBadge, { backgroundColor: fc.bg }]}>
               <Text style={[styles.suggestionFieldText, { color: fc.text }]}>
@@ -333,7 +336,6 @@ export default function LabTestSearchScreen() {
                   </Pressable>
                   <View style={styles.chipTextBlock}>
                     <Text style={styles.chipParam} numberOfLines={1}>{s.parameter}</Text>
-                    <Text style={styles.chipProduct} numberOfLines={1}>{s.product}</Text>
                   </View>
                   <View style={[styles.chipFieldBadge, { backgroundColor: fc.bg }]}>
                     <Text style={[styles.chipFieldText, { color: fc.text }]}>
@@ -581,9 +583,6 @@ export default function LabTestSearchScreen() {
                             <Text style={styles.testParam} numberOfLines={1}>
                               {m.selected.parameter}
                             </Text>
-                            <Text style={styles.testProduct} numberOfLines={1}>
-                              {m.selected.product}
-                            </Text>
                           </View>
                           <View style={[styles.testFieldBadge, { backgroundColor: fc.bg }]}>
                             <Text style={[styles.testFieldText, { color: fc.text }]}>
@@ -615,9 +614,6 @@ export default function LabTestSearchScreen() {
                           <View style={styles.testTextBlock}>
                             <Text style={[styles.testParam, styles.testParamMissing]} numberOfLines={1}>
                               {s.parameter}
-                            </Text>
-                            <Text style={[styles.testProduct, styles.testProductMissing]} numberOfLines={1}>
-                              {s.product}
                             </Text>
                           </View>
                           <View style={[styles.testFieldBadge, { backgroundColor: fc.bg }]}>
