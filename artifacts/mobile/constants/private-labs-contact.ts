@@ -58,7 +58,12 @@ export const LAB_CONTACTS: Record<number, LabContact> = {
     website: "www.hasanahlabs.com",
     address: "الرياض - حي الربيع",
   },
-  // id 10 (شركة المختبر الخليجي) — not in directory
+  10: {
+    phones: ["0563827305"],
+    emails: ["aalkibsi@motabaqah.com.sa", "malaa@milabs.com.sa"],
+    website: "www.motabaqah.com.sa",
+    address: "جدة",
+  },
   11: {
     phones: ["012 233 9400 Ext. 6344", "0503513913", "0535068903", "0562178011"],
     emails: [
