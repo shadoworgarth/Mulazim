@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
+  Linking,
   Platform,
   Pressable,
   SectionList,
@@ -11,6 +12,7 @@ import {
 
 import colors from "@/constants/colors";
 import { LabField, PRIVATE_LABS } from "@/constants/private-labs";
+import { LAB_CONTACTS } from "@/constants/private-labs-contact";
 
 const FIELD_LABELS: Record<LabField, string> = {
   Food: "الغذاء",
@@ -96,21 +98,72 @@ export default function PrivateLabDetailScreen() {
       contentContainerStyle={styles.listContent}
       showsVerticalScrollIndicator={false}
       stickySectionHeadersEnabled={false}
-      ListHeaderComponent={
-        <View style={styles.labHeader}>
-          <Text style={styles.labName}>{lab.name}</Text>
-          <Text style={styles.labMeta}>
-            {lab.tests.length} اختبار ·{" "}
-            {byField.map((g) => FIELD_LABELS[g.field]).join(" · ")}
-          </Text>
-          {(lab.phone || lab.email) && (
-            <View style={styles.contactRow}>
-              {lab.phone && <Text style={styles.contactText}>📞 {lab.phone}</Text>}
-              {lab.email && <Text style={styles.contactText}>✉️ {lab.email}</Text>}
-            </View>
-          )}
-        </View>
-      }
+      ListHeaderComponent={(() => {
+        const contact = LAB_CONTACTS[lab.id];
+        return (
+          <View style={styles.labHeader}>
+            <Text style={styles.labName}>{lab.name}</Text>
+            <Text style={styles.labMeta}>
+              {lab.tests.length} اختبار ·{" "}
+              {byField.map((g) => FIELD_LABELS[g.field]).join(" · ")}
+            </Text>
+
+            {contact && (
+              <View style={styles.contactCard}>
+                {/* Address */}
+                {contact.address && (
+                  <View style={styles.contactRow}>
+                    <Text style={styles.contactIcon}>📍</Text>
+                    <Text style={styles.contactValue}>{contact.address}</Text>
+                  </View>
+                )}
+
+                {/* Phones */}
+                {contact.phones?.map((p, i) => (
+                  <Pressable
+                    key={i}
+                    style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
+                    onPress={() => Linking.openURL(`tel:${p.replace(/\s/g, "")}`)}
+                  >
+                    <Text style={styles.contactIcon}>📞</Text>
+                    <Text style={[styles.contactValue, styles.contactLink]}>{p}</Text>
+                  </Pressable>
+                ))}
+
+                {/* Emails */}
+                {contact.emails?.map((e, i) => (
+                  <Pressable
+                    key={i}
+                    style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
+                    onPress={() => Linking.openURL(`mailto:${e}`)}
+                  >
+                    <Text style={styles.contactIcon}>✉️</Text>
+                    <Text style={[styles.contactValue, styles.contactLink, styles.contactLtr]}>{e}</Text>
+                  </Pressable>
+                ))}
+
+                {/* Website */}
+                {contact.website && (
+                  <Pressable
+                    style={({ pressed }) => [styles.contactRow, { opacity: pressed ? 0.7 : 1 }]}
+                    onPress={() => {
+                      const url = contact.website!.startsWith("http")
+                        ? contact.website!
+                        : `https://${contact.website}`;
+                      Linking.openURL(url);
+                    }}
+                  >
+                    <Text style={styles.contactIcon}>🌐</Text>
+                    <Text style={[styles.contactValue, styles.contactLink, styles.contactLtr]}>
+                      {contact.website}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+          </View>
+        );
+      })()}
       renderSectionHeader={({ section }) => {
         const sec = section as Section & { key: string };
         const fc = FIELD_COLORS[sec.field];
@@ -204,8 +257,31 @@ const styles = StyleSheet.create({
     color: colors.light.mutedForeground,
     textAlign: "right",
   },
-  contactRow: { gap: 6, alignItems: "flex-end", marginTop: 4 },
-  contactText: { fontSize: 13, color: "#00695c", writingDirection: "ltr" },
+  contactCard: {
+    marginTop: 10,
+    backgroundColor: "#f8fffe",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#b2dfdb",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 7,
+    alignSelf: "stretch",
+  },
+  contactRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 8,
+  },
+  contactIcon: { fontSize: 14, flexShrink: 0 },
+  contactValue: {
+    flex: 1,
+    fontSize: 13,
+    color: colors.light.text,
+    textAlign: "right",
+  },
+  contactLink: { color: "#00695c", fontWeight: "500" },
+  contactLtr: { writingDirection: "ltr", textAlign: "left" },
 
   // Field header
   fieldHeader: {
