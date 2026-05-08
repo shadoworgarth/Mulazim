@@ -76,6 +76,15 @@ const LIBRARY_CARDS: LibraryCard[] = [
     route: "/narcotics",
     enabled: true,
   },
+  {
+    id: "private-labs",
+    title: "المختبرات الخاصة",
+    emojis: ["🔬", "🔬", "🔬", "🔬"],
+    singleEmoji: true,
+    bg: "#e0f2f1",
+    route: "/private-labs",
+    enabled: true,
+  },
 ];
 
 export default function InspectorLibraryScreen() {
