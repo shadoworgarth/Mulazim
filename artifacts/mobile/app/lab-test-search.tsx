@@ -186,7 +186,7 @@ export default function LabTestSearchScreen() {
     return ALL_SUGGESTIONS.filter(
       (s) =>
         !selectedIds.has(s.id) &&
-        (s.parameter.toLowerCase().includes(q) || s.product.toLowerCase().includes(q))
+        s.parameter.toLowerCase().includes(q)
     ).slice(0, 40);
   }, [query, selected, showSuggestions]);
 
