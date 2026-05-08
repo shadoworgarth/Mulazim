@@ -158,9 +158,16 @@ export default function PrivateLabDetailScreen() {
               <Text style={styles.testParam}>{item.parameter}</Text>
             </View>
             {item.price ? (
-              <View style={[styles.priceBadge, { borderColor: fc.badge }]}>
-                <Text style={[styles.priceText, { color: fc.badge }]}>{item.price}</Text>
-                <Text style={[styles.priceCurrency, { color: fc.badge }]}>ر.س</Text>
+              <View style={styles.priceWrap}>
+                <View style={[styles.priceBadge, { borderColor: fc.badge }]}>
+                  <Text style={[styles.priceText, { color: fc.badge }]}>
+                    {item.price.replace("*", "")}
+                  </Text>
+                  <Text style={[styles.priceCurrency, { color: fc.badge }]}>ر.س</Text>
+                </View>
+                {item.price.includes("*") && (
+                  <Text style={styles.priceNote}>* السعر للمكرر الواحد</Text>
+                )}
               </View>
             ) : null}
           </View>
@@ -251,6 +258,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
     writingDirection: "ltr",
   },
+  priceWrap: { alignItems: "flex-end", gap: 3, flexShrink: 0 },
   priceBadge: {
     flexDirection: "row",
     alignItems: "baseline",
@@ -259,8 +267,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    flexShrink: 0,
   },
   priceText: { fontSize: 13, fontWeight: "700", writingDirection: "ltr" },
   priceCurrency: { fontSize: 10, fontWeight: "500" },
+  priceNote: { fontSize: 9, color: "#9ca3af", textAlign: "right" },
 });
