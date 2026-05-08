@@ -36,6 +36,7 @@ const FIELD_COLORS: Record<LabField, { bg: string; text: string; badge: string }
 type SelectedTest = {
   id: string;
   parameter: string;
+  product: string;
   field: LabField;
 };
 
@@ -62,17 +63,17 @@ function buildSuggestions(): TestSuggestion[] {
   for (const lab of PRIVATE_LABS) {
     const seen = new Set<string>();
     for (const t of lab.tests) {
-      const id = `${t.field}||${t.parameter}`;
+      const id = `${t.field}||${t.product}||${t.parameter}`;
       if (seen.has(id)) continue;
       seen.add(id);
       if (!map.has(id)) {
-        map.set(id, { id, parameter: t.parameter, field: t.field, labCount: 0 });
+        map.set(id, { id, parameter: t.parameter, product: t.product, field: t.field, labCount: 0 });
       }
       map.get(id)!.labCount++;
     }
   }
   return Array.from(map.values()).sort((a, b) =>
-    a.parameter.localeCompare(b.parameter)
+    a.parameter.localeCompare(b.parameter) || a.product.localeCompare(b.product)
   );
 }
 
@@ -98,6 +99,7 @@ function computeLabResults(selected: SelectedTest[]): LabResult[] {
       const found = lab.tests.find(
         (t) =>
           t.field === sel.field &&
+          t.product.toLowerCase() === sel.product.toLowerCase() &&
           t.parameter.toLowerCase() === sel.parameter.toLowerCase()
       );
       if (found) {
@@ -138,7 +140,9 @@ export default function LabTestSearchScreen() {
     if (q.length < 2) return [];
     const selectedIds = new Set(selected.map((s) => s.id));
     return ALL_SUGGESTIONS.filter(
-      (s) => !selectedIds.has(s.id) && s.parameter.toLowerCase().includes(q)
+      (s) =>
+        !selectedIds.has(s.id) &&
+        (s.parameter.toLowerCase().includes(q) || s.product.toLowerCase().includes(q))
     ).slice(0, 25);
   }, [query, selected]);
 
@@ -147,7 +151,7 @@ export default function LabTestSearchScreen() {
   const addTest = useCallback((s: TestSuggestion) => {
     setSelected((prev) => {
       if (prev.some((x) => x.id === s.id)) return prev;
-      return [...prev, { id: s.id, parameter: s.parameter, field: s.field }];
+      return [...prev, { id: s.id, parameter: s.parameter, product: s.product, field: s.field }];
     });
     setQuery("");
   }, []);
@@ -205,7 +209,10 @@ export default function LabTestSearchScreen() {
                     <Pressable onPress={() => removeTest(s.id)} hitSlop={8}>
                       <Text style={{ fontSize: 15, color: "#b2d8d8", lineHeight: 17 }}>×</Text>
                     </Pressable>
-                    <Text style={styles.chipParam} numberOfLines={1}>{s.parameter}</Text>
+                    <View style={styles.chipTextBlock}>
+                      <Text style={styles.chipParam} numberOfLines={1}>{s.parameter}</Text>
+                      <Text style={styles.chipProduct} numberOfLines={1}>{s.product}</Text>
+                    </View>
                     <View style={[styles.chipFieldBadge, { backgroundColor: fc.bg }]}>
                       <Text style={[styles.chipFieldText, { color: fc.text }]}>
                         {FIELD_LABELS[s.field]}
@@ -255,7 +262,10 @@ export default function LabTestSearchScreen() {
               >
                 <View style={styles.suggestionRow}>
                   <Text style={{ fontSize: 18, color: ACCENT, lineHeight: 20, flexShrink: 0 }}>+</Text>
-                  <Text style={styles.suggestionParam} numberOfLines={2}>{s.parameter}</Text>
+                  <View style={styles.suggestionTextBlock}>
+                    <Text style={styles.suggestionParam} numberOfLines={1}>{s.parameter}</Text>
+                    <Text style={styles.suggestionProduct} numberOfLines={1}>{s.product}</Text>
+                  </View>
                   <View style={[styles.suggestionFieldBadge, { backgroundColor: fc.bg }]}>
                     <Text style={[styles.suggestionFieldText, { color: fc.text }]}>
                       {FIELD_LABELS[s.field]}
@@ -331,9 +341,14 @@ export default function LabTestSearchScreen() {
                       <View key={`match-${i}`} style={styles.testRow}>
                         <View style={styles.testRowInfo}>
                           <Text style={styles.checkIcon}>✓</Text>
-                          <Text style={styles.testParam} numberOfLines={2}>
-                            {m.selected.parameter}
-                          </Text>
+                          <View style={styles.testTextBlock}>
+                            <Text style={styles.testParam} numberOfLines={1}>
+                              {m.selected.parameter}
+                            </Text>
+                            <Text style={styles.testProduct} numberOfLines={1}>
+                              {m.selected.product}
+                            </Text>
+                          </View>
                           <View style={[styles.testFieldBadge, { backgroundColor: fc.bg }]}>
                             <Text style={[styles.testFieldText, { color: fc.text }]}>
                               {FIELD_LABELS[m.selected.field]}
@@ -362,9 +377,14 @@ export default function LabTestSearchScreen() {
                       <View key={`miss-${i}`} style={[styles.testRow, styles.testRowMissing]}>
                         <View style={styles.testRowInfo}>
                           <Text style={styles.crossIcon}>✕</Text>
-                          <Text style={[styles.testParam, styles.testParamMissing]} numberOfLines={2}>
-                            {s.parameter}
-                          </Text>
+                          <View style={styles.testTextBlock}>
+                            <Text style={[styles.testParam, styles.testParamMissing]} numberOfLines={1}>
+                              {s.parameter}
+                            </Text>
+                            <Text style={[styles.testProduct, styles.testProductMissing]} numberOfLines={1}>
+                              {s.product}
+                            </Text>
+                          </View>
                           <View style={[styles.testFieldBadge, { backgroundColor: fc.bg }]}>
                             <Text style={[styles.testFieldText, { color: fc.text }]}>
                               {FIELD_LABELS[s.field]}
@@ -489,13 +509,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     gap: 6,
-    maxWidth: 240,
+    maxWidth: 260,
   },
+  chipTextBlock: { flexDirection: "column", maxWidth: 130 },
   chipParam: {
     fontSize: 12,
     color: "#ffffff",
     fontWeight: "500",
-    maxWidth: 120,
+    writingDirection: "ltr",
+  },
+  chipProduct: {
+    fontSize: 10,
+    color: "#80cbc4",
     writingDirection: "ltr",
   },
   chipFieldBadge: {
@@ -542,13 +567,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
+  suggestionTextBlock: { flex: 1, gap: 2 },
   suggestionParam: {
-    flex: 1,
     fontSize: 14,
     color: colors.light.text,
     writingDirection: "ltr",
-    textAlign: "left",
-    lineHeight: 20,
+    lineHeight: 19,
+  },
+  suggestionProduct: {
+    fontSize: 11,
+    color: colors.light.mutedForeground,
+    writingDirection: "ltr",
+    lineHeight: 15,
   },
   suggestionFieldBadge: {
     borderRadius: 6,
@@ -660,15 +690,21 @@ const styles = StyleSheet.create({
   },
   checkIcon: { fontSize: 13, color: "#2e7d32", flexShrink: 0 },
   crossIcon: { fontSize: 13, color: "#c62828", flexShrink: 0 },
+  testTextBlock: { flex: 1, gap: 1 },
   testParam: {
-    flex: 1,
     fontSize: 12,
     color: colors.light.text,
     writingDirection: "ltr",
-    textAlign: "left",
     lineHeight: 17,
   },
+  testProduct: {
+    fontSize: 10,
+    color: colors.light.mutedForeground,
+    writingDirection: "ltr",
+    lineHeight: 14,
+  },
   testParamMissing: { color: "#c62828" },
+  testProductMissing: { color: "#e57373" },
   testFieldBadge: {
     borderRadius: 5,
     paddingHorizontal: 6,
