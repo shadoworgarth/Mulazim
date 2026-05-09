@@ -38,7 +38,8 @@ interface Section {
 
 export default function PrivateLabDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
+  // All fields collapsed by default
+  const [expandedFields, setExpandedFields] = useState<Set<LabField>>(new Set());
 
   const lab = useMemo(
     () => PRIVATE_LABS.find((l) => String(l.id) === id),
@@ -66,10 +67,10 @@ export default function PrivateLabDetailScreen() {
     return Array.from(grouped.values());
   }, [lab]);
 
-  const toggleProduct = (key: string) => {
-    setExpandedProducts((prev) => {
+  const toggleField = (field: LabField) => {
+    setExpandedFields((prev) => {
       const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
+      next.has(field) ? next.delete(field) : next.add(field);
       return next;
     });
   };
@@ -152,46 +153,59 @@ export default function PrivateLabDetailScreen() {
                 )}
               </View>
             )}
+
+            {/* Field toggle buttons rendered here in the header */}
+            <View style={styles.fieldTogglesWrap}>
+              {byField.map((g) => {
+                const fc = FIELD_COLORS[g.field];
+                const isExpanded = expandedFields.has(g.field);
+                const totalTests = g.sections.reduce((a, s) => a + s.data.length, 0);
+                return (
+                  <Pressable
+                    key={g.field}
+                    style={({ pressed }) => [
+                      styles.fieldToggle,
+                      { backgroundColor: isExpanded ? fc.badge : "#fff", borderColor: fc.badge },
+                      pressed && { opacity: 0.85 },
+                    ]}
+                    onPress={() => toggleField(g.field)}
+                  >
+                    <Text style={[styles.fieldToggleLabel, { color: isExpanded ? "#fff" : fc.badge }]}>
+                      {FIELD_LABELS[g.field]}
+                    </Text>
+                    <Text style={[styles.fieldToggleCount, { color: isExpanded ? "rgba(255,255,255,0.85)" : fc.text }]}>
+                      {totalTests} اختبار
+                    </Text>
+                    <Text style={[styles.fieldToggleChevron, { color: isExpanded ? "#fff" : fc.badge }]}>
+                      {isExpanded ? "▲" : "▼"}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
         );
       })()}
       renderSectionHeader={({ section }) => {
         const sec = section as Section & { key: string };
         const fc = FIELD_COLORS[sec.field];
-        const isExpanded = expandedProducts.has(sec.key);
-        const isFirstInField =
-          sections.findIndex((s) => s.field === sec.field) ===
-          sections.findIndex((s) => s.field === sec.field && s.product === sec.product);
-
+        const isFieldExpanded = expandedFields.has(sec.field);
+        if (!isFieldExpanded) return null;
         return (
-          <View>
-            {isFirstInField && (
-              <View style={[styles.fieldHeader, { backgroundColor: fc.badge }]}>
-                <Text style={styles.fieldHeaderText}>{FIELD_LABELS[sec.field]}</Text>
-                <Text style={styles.fieldHeaderCount}>
-                  {sections.filter((s) => s.field === sec.field).reduce((a, s) => a + s.data.length, 0)} اختبار
-                </Text>
-              </View>
-            )}
-            <Pressable
-              style={[styles.productRow, { backgroundColor: fc.light }]}
-              onPress={() => toggleProduct(sec.key)}
-            >
-              <Text style={styles.expandChevron}>{isExpanded ? "▲" : "▼"}</Text>
-              <View style={styles.productBody}>
-                <Text style={styles.productName}>{sec.product}</Text>
-                <Text style={[styles.productCount, { color: fc.text }]}>
-                  {sec.data.length} اختبار
-                </Text>
-              </View>
-            </Pressable>
+          <View style={[styles.productRow, { backgroundColor: fc.light }]}>
+            <View style={styles.productBody}>
+              <Text style={styles.productName}>{sec.product}</Text>
+              <Text style={[styles.productCount, { color: fc.text }]}>
+                {sec.data.length} اختبار
+              </Text>
+            </View>
           </View>
         );
       }}
       renderItem={({ item, section }) => {
         const sec = section as Section & { key: string };
-        const isExpanded = expandedProducts.has(sec.key);
-        if (!isExpanded) return null;
+        const isFieldExpanded = expandedFields.has(sec.field);
+        if (!isFieldExpanded) return null;
         const fc = FIELD_COLORS[sec.field];
         return (
           <View style={styles.testRow}>
@@ -270,27 +284,38 @@ const styles = StyleSheet.create({
   contactLink: { color: "#00695c", fontWeight: "500" },
   contactLtr: { writingDirection: "ltr", textAlign: "left" },
 
-  fieldHeader: {
+  fieldTogglesWrap: {
+    alignSelf: "stretch",
+    marginTop: 12,
+    gap: 8,
+  },
+  fieldToggle: {
     flexDirection: "row-reverse",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    gap: 8,
   },
-  fieldHeaderText: { fontSize: 14, fontWeight: "700", color: "#fff" },
-  fieldHeaderCount: { fontSize: 12, color: "rgba(255,255,255,0.85)" },
+  fieldToggleLabel: {
+    fontSize: 14,
+    fontWeight: "700",
+    flex: 1,
+    textAlign: "right",
+  },
+  fieldToggleCount: { fontSize: 12 },
+  fieldToggleChevron: { fontSize: 10 },
 
   productRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 11,
+    paddingVertical: 9,
     borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
-    gap: 10,
   },
-  expandChevron: { fontSize: 10, color: "#9ca3af", flexShrink: 0 },
   productBody: { flex: 1, alignItems: "flex-end", gap: 2 },
   productName: {
     fontSize: 13,
