@@ -38,8 +38,9 @@ interface Section {
 
 export default function PrivateLabDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  // All fields collapsed by default
+  // All fields and products collapsed by default
   const [expandedFields, setExpandedFields] = useState<Set<LabField>>(new Set());
+  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
 
   const lab = useMemo(
     () => PRIVATE_LABS.find((l) => String(l.id) === id),
@@ -71,6 +72,14 @@ export default function PrivateLabDetailScreen() {
     setExpandedFields((prev) => {
       const next = new Set(prev);
       next.has(field) ? next.delete(field) : next.add(field);
+      return next;
+    });
+  };
+
+  const toggleProduct = (key: string) => {
+    setExpandedProducts((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
   };
@@ -191,21 +200,30 @@ export default function PrivateLabDetailScreen() {
         const fc = FIELD_COLORS[sec.field];
         const isFieldExpanded = expandedFields.has(sec.field);
         if (!isFieldExpanded) return null;
+        const isProductExpanded = expandedProducts.has(sec.key);
         return (
-          <View style={[styles.productRow, { backgroundColor: fc.light }]}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.productRow,
+              { backgroundColor: fc.light, opacity: pressed ? 0.8 : 1 },
+            ]}
+            onPress={() => toggleProduct(sec.key)}
+          >
+            <Text style={styles.expandChevron}>{isProductExpanded ? "▲" : "▼"}</Text>
             <View style={styles.productBody}>
               <Text style={styles.productName}>{sec.product}</Text>
               <Text style={[styles.productCount, { color: fc.text }]}>
                 {sec.data.length} اختبار
               </Text>
             </View>
-          </View>
+          </Pressable>
         );
       }}
       renderItem={({ item, section }) => {
         const sec = section as Section & { key: string };
         const isFieldExpanded = expandedFields.has(sec.field);
-        if (!isFieldExpanded) return null;
+        const isProductExpanded = expandedProducts.has(sec.key);
+        if (!isFieldExpanded || !isProductExpanded) return null;
         const fc = FIELD_COLORS[sec.field];
         return (
           <View style={styles.testRow}>
@@ -315,7 +333,9 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
+    gap: 10,
   },
+  expandChevron: { fontSize: 10, color: "#9ca3af", flexShrink: 0 },
   productBody: { flex: 1, alignItems: "flex-end", gap: 2 },
   productName: {
     fontSize: 13,
