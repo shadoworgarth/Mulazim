@@ -16,17 +16,17 @@ import {
   FoodFineV2,
 } from "@/constants/food-fines-v2";
 
-const SECTION_COLORS: Record<number, { bg: string; text: string; header: string }> = {
-  1: { bg: "#e3f2fd", text: "#1565c0", header: "#1565c0" },
-  2: { bg: "#e8f5e9", text: "#2e7d32", header: "#2e7d32" },
-  3: { bg: "#fff3e0", text: "#e65100", header: "#e65100" },
-  4: { bg: "#f3e5f5", text: "#6a1b9a", header: "#6a1b9a" },
-  5: { bg: "#fce4ec", text: "#ad1457", header: "#ad1457" },
+const SECTION_COLORS: Record<number, { bg: string; badgeBg: string; text: string; header: string }> = {
+  1: { bg: "#e3f2fd", badgeBg: "#64b5f6", text: "#0d47a1", header: "#1565c0" },
+  2: { bg: "#e8f5e9", badgeBg: "#66bb6a", text: "#1b5e20", header: "#2e7d32" },
+  3: { bg: "#fff3e0", badgeBg: "#ffa726", text: "#bf360c", header: "#e65100" },
+  4: { bg: "#f3e5f5", badgeBg: "#ab47bc", text: "#4a148c", header: "#6a1b9a" },
+  5: { bg: "#fce4ec", badgeBg: "#ec407a", text: "#880e4f", header: "#ad1457" },
 };
 
 const SECTION_BG: Record<number, string> = {
-  1: "#dbeafe", 2: "#dcfce7", 3: "#ffedd5",
-  4: "#ede9fe", 5: "#fce7f3",
+  1: "#bbdefb", 2: "#c8e6c9", 3: "#ffe0b2",
+  4: "#e1bee7", 5: "#f8bbd0",
 };
 
 type SectionFilter = "all" | 1 | 2 | 3 | 4 | 5;
@@ -133,13 +133,13 @@ function FineCard({ item }: { item: FoodFineV2 }) {
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.card, { opacity: pressed ? 0.9 : 1 }]}
+      style={({ pressed }) => [styles.card, { backgroundColor: sc.bg, opacity: pressed ? 0.9 : 1 }]}
       onPress={() => setExpanded((e) => !e)}
     >
       <View style={styles.cardTop}>
         <View style={styles.topRight}>
-          <View style={[styles.codeBadge, { backgroundColor: sc.bg }]}>
-            <Text style={[styles.codeText, { color: sc.text }]}>
+          <View style={[styles.codeBadge, { backgroundColor: sc.badgeBg }]}>
+            <Text style={[styles.codeText, { color: "#ffffff" }]}>
               {item.articleCode}
             </Text>
           </View>
@@ -504,13 +504,12 @@ const styles = StyleSheet.create({
   },
   cardWrap: { marginBottom: 8 },
   card: {
-    backgroundColor: "#ffffff",
     borderRadius: 14,
     padding: 14,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
     elevation: 2,
     gap: 8,
   },
