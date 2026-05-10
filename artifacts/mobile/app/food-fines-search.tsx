@@ -221,6 +221,16 @@ const SECTION_SHORT: Record<number, string> = {
 export default function FoodFinesSearchScreen() {
   const [query, setQuery] = useState("");
   const [activeSection, setActiveSection] = useState<SectionFilter>("all");
+  const [collapsedChapters, setCollapsedChapters] = useState<Set<string>>(new Set());
+
+  const toggleChapter = (key: string) => {
+    setCollapsedChapters((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const q = query.trim();
 
@@ -237,8 +247,8 @@ export default function FoodFinesSearchScreen() {
     });
   }, [q, activeSection]);
 
-  const sections = useMemo<ListSection[]>(() => {
-    const map = new Map<string, ListSection>();
+  const rawSections = useMemo<(ListSection & { totalCount: number })[]>(() => {
+    const map = new Map<string, ListSection & { totalCount: number }>();
     for (const item of filtered) {
       const key = `${item.section}-${item.chapter}`;
       if (!map.has(key)) {
@@ -249,10 +259,13 @@ export default function FoodFinesSearchScreen() {
           chapter: item.chapter,
           chapterLabel: item.chapterLabel,
           showSectionHeader: false,
+          totalCount: 0,
           data: [],
         });
       }
-      map.get(key)!.data.push(item);
+      const entry = map.get(key)!;
+      entry.totalCount += 1;
+      entry.data.push(item);
     }
     const list = Array.from(map.values());
     let lastSec = -1;
@@ -264,6 +277,13 @@ export default function FoodFinesSearchScreen() {
     }
     return list;
   }, [filtered]);
+
+  const sections = useMemo<(ListSection & { totalCount: number; collapsed: boolean })[]>(() => {
+    return rawSections.map((s) => {
+      const collapsed = collapsedChapters.has(s.key);
+      return { ...s, collapsed, data: collapsed ? [] : s.data };
+    });
+  }, [rawSections, collapsedChapters]);
 
   const totalCount = filtered.length;
 
@@ -351,17 +371,31 @@ export default function FoodFinesSearchScreen() {
                 </Text>
               </View>
             )}
-            <View style={styles.chapterHeader}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.chapterHeader,
+                pressed && { opacity: 0.7 },
+              ]}
+              onPress={() => toggleChapter(section.key)}
+            >
+              <Text
+                style={[
+                  styles.chapterArrow,
+                  { color: SECTION_COLORS[section.section].header },
+                ]}
+              >
+                {section.collapsed ? "◀" : "▼"}
+              </Text>
+              <Text style={styles.chapterHeaderText} numberOfLines={2}>
+                {section.chapterLabel}
+              </Text>
               <View
                 style={[
                   styles.chapterAccent,
                   { backgroundColor: SECTION_COLORS[section.section].header },
                 ]}
               />
-              <Text style={styles.chapterHeaderText}>
-                {section.chapterLabel}
-              </Text>
-            </View>
+            </Pressable>
           </View>
         )}
         ListEmptyComponent={
@@ -443,14 +477,16 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     alignItems: "center",
     gap: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 2,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
     marginBottom: 6,
+    borderRadius: 8,
   },
   chapterAccent: {
     width: 3,
     height: 18,
     borderRadius: 2,
+    flexShrink: 0,
   },
   chapterHeaderText: {
     fontSize: 13,
@@ -458,6 +494,13 @@ const styles = StyleSheet.create({
     color: "#374151",
     textAlign: "right",
     flex: 1,
+  },
+  chapterArrow: {
+    fontSize: 11,
+    fontWeight: "700",
+    flexShrink: 0,
+    width: 16,
+    textAlign: "center",
   },
   cardWrap: { marginBottom: 8 },
   card: {
