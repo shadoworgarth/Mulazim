@@ -273,12 +273,12 @@ const sec = StyleSheet.create({
 const item = StyleSheet.create({
   row: { gap: 5 },
   label: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "Inter_700Bold",
     textAlign: "right",
   },
   body: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: "Inter_400Regular",
     color: colors.light.text,
     textAlign: "right",
