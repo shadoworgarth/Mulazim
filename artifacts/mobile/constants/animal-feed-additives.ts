@@ -219,12 +219,12 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   { id: "2-039", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "ملونات – أسماك الزينة والطيور", eNumber: "E 172", name: "Iron oxide, red", provisions: "[أسماك الزينة]" },
 
   // 2b – Flavouring compounds
-  { id: "2-040", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "E 954(iii)", name: "Sodium saccharin", provisions: "[صغار الخنازير]" },
+  { id: "2-040", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "E 954(iii)", name: "Sodium saccharin", provisions: "" },
   { id: "2-041", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "2b16058", name: "Naringin (CAS 10236-47-2 / FLAVIS 16.058)", provisions: "" },
   { id: "2-042", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "1j514ii", name: "Sodium bisulphate", provisions: "[الحيوانات الأليفة غير المنتجة للغذاء؛ القطط؛ المنك]" },
   { id: "2-043", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "2b957", name: "Thaumatin (Einecs: 258-822-2)", provisions: "" },
-  { id: "2-044", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "2b959", name: "Neohesperidine dihydrochalcone", provisions: "[صغار الخنازير وخنازير التسمين؛ العجول؛ الخراف؛ الأسماك؛ الكلاب]" },
-  { id: "2-045", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "E 959", name: "Neohesperidine dihydrochalcone", provisions: "[صغار الخنازير؛ الكلاب؛ العجول؛ الأغنام]" },
+  { id: "2-044", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "2b959", name: "Neohesperidine dihydrochalcone", provisions: "[العجول؛ الخراف؛ الأسماك؛ الكلاب]" },
+  { id: "2-045", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "E 959", name: "Neohesperidine dihydrochalcone", provisions: "[الكلاب؛ العجول؛ الأغنام]" },
   { id: "2-046", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة", eNumber: "2b0001", name: "Smoke flavouring extract", provisions: "[الكلاب والقطط]" },
 
   // 2b – Natural/synthetic chemically defined flavourings (CAS)
@@ -337,7 +337,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   // ═══════════════════════════════════════════════
 
   // 4a – Digestibility enhancers
-  { id: "4-001", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a1", name: "3-phytase", provisions: "[الدجاج اللاحم؛ البياض؛ صغار الخنازير؛ الخنازير للتسمين]" },
+  { id: "4-001", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a1", name: "3-phytase", provisions: "[الدجاج اللاحم؛ البياض]" },
   { id: "4-002", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a2", name: "Fermentation product of Aspergillus oryzae", provisions: "[أبقار الحليب]" },
   { id: "4-003", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a3", name: "Endo-1,4-beta-mannanase", provisions: "[الدجاج اللاحم]" },
   { id: "4-004", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a5/4a6", name: "6-phytase (from Pichia pastoris / Aspergillus oryzae)", provisions: "[الدجاج اللاحم؛ البط للتسمين؛ الرومي للتسمين؛ البياض؛ الدواجن]" },
@@ -348,7 +348,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   { id: "4-009", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a11", name: "Preparation of endo-1,4-beta-xylanase (from Trichoderma reesei)", provisions: "[الدجاج اللاحم؛ البياض؛ البط؛ الرومي؛ الدواجن الصغيرة ما عدا البط]" },
   { id: "4-010", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a12", name: "Preparation of 6-phytase (from Trichoderma reesei)", provisions: "[الدواجن للتسمين والتربية ما عدا الرومي؛ دواجن البيض؛ الرومي]" },
   { id: "4-011", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a13", name: "Serine protease (from Bacillus licheniformis)", provisions: "[الدجاج اللاحم]" },
-  { id: "4-012", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a14", name: "Preparation of endo-1,4-beta-xylanase, endo-1,3(4)-beta-glucanase and polygalacturonase (from Trichoderma reesei & Aspergillus aculeatus)", provisions: "[صغار الخنازير]" },
+  { id: "4-012", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a14", name: "Preparation of endo-1,4-beta-xylanase, endo-1,3(4)-beta-glucanase and polygalacturonase (from Trichoderma reesei & Aspergillus aculeatus)", provisions: "" },
   { id: "4-013", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a15", name: "Preparation of endo-1,4-beta-xylanase and endo-1,3(4)-beta-glucanase (from Trichoderma reesei) – solid and liquid", provisions: "[الرومي؛ البياض؛ الدواجن الأخرى]" },
   { id: "4-014", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a16", name: "Preparation of 6-phytase (from Komagataella pastoris)", provisions: "[الدجاج اللاحم؛ البياض؛ الدواجن الأخرى ما عدا الرومي]" },
   { id: "4-015", category: 4, categoryLabel: "الإضافات الحيوية", functionalGroup: "محسنات الهضم", eNumber: "4a17", name: "Preparation of alpha galactosidase and endo-1,4-beta-glucanase (from Saccharomyces cerevisiae & Aspergillus niger)", provisions: "[الدجاج اللاحم؛ البياض؛ الدواجن الصغيرة]" },
