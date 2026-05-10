@@ -266,7 +266,7 @@ const ANIMAL_FEED_ADDITIVES: FeedAdditive[] = [
   { id: "2-080", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة – مستخلصات نباتية", eNumber: "—", name: "Abies alba Mill. / Abies sibirica Ledeb.: Pine needle oil; Agathosma betulina; Allium cepa (Onion); Allium sativum (Garlic); Althaea officinalis; Amyris balsamifera; Anacardium occidentale; Andrographis paniculata; Anethum graveolens (Dill); Angelica sinensis; Anthemis nobilis (Chamomile); Apium graveolens (Celery seed); Arctium lappa; Armoracia rusticana (Horseradish); Artemisia absinthium (Wormwood); Artemisia annua; Artemisia cina; Artemisia dracunculus (Tarragon); Artemisia pallens (Davana); Artemisia vulgaris (Mugwort); Astragalus membranaceus; Zingiber officinale (Ginger)", provisions: "(للتحقق من الأرقام المرجعية: Council Directive 70/524/EEC)" },
 
   // 2b – Non-plant natural products
-  { id: "2-081", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة – مصدر غير نباتي", eNumber: "—", name: "Sus scrofa (extract from defatted porcine pancreatic glands)", provisions: "[القطط والكلاب والحيوانات آكلة اللحوم والقوارض الأليفة]" },
+  { id: "2-081", category: 2, categoryLabel: "الإضافات الحسية", functionalGroup: "مواد منكهة – مصدر غير نباتي", eNumber: "—", name: "Sus scrofa (extract from defatted pancreatic glands)", provisions: "[القطط والكلاب والحيوانات آكلة اللحوم والقوارض الأليفة]" },
 
   // ═══════════════════════════════════════════════
   // CATEGORY 3 – Nutritional Additives
