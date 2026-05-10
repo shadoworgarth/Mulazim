@@ -2670,7 +2670,6 @@ export const PRIVATE_LABS: PrivateLab[] = [
       { field: "Food", product: "Food powders", parameter: "Salmonella", price: "160*" },
       { field: "Food", product: "Food powders", parameter: "Staphylococcus aureus", price: "151*" },
       { field: "Food", product: "Food powders", parameter: "Bacillus cereus", price: "120*" },
-      { field: "Food", product: "Aromatic water", parameter: "Bacillus cereus", price: "120*" },
       { field: "Food", product: "Aromatic water", parameter: "Heavy Metals - All 4 Elements (As, Pb, Cd, Hg)", price: "520" },
       { field: "Food", product: "Aromatic water", parameter: "Heavy Metals - As", price: "130" },
       { field: "Food", product: "Aromatic water", parameter: "Heavy Metals - Pb", price: "130" },
