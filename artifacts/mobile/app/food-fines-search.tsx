@@ -221,7 +221,13 @@ const SECTION_SHORT: Record<number, string> = {
 export default function FoodFinesSearchScreen() {
   const [query, setQuery] = useState("");
   const [activeSection, setActiveSection] = useState<SectionFilter>("all");
-  const [collapsedChapters, setCollapsedChapters] = useState<Set<string>>(new Set());
+  const [collapsedChapters, setCollapsedChapters] = useState<Set<string>>(() => {
+    const keys = new Set<string>();
+    for (const item of FOOD_FINES_V2) {
+      keys.add(`${item.section}-${item.chapter}`);
+    }
+    return keys;
+  });
 
   const toggleChapter = (key: string) => {
     setCollapsedChapters((prev) => {
@@ -591,18 +597,18 @@ const styles = StyleSheet.create({
 
 const tableStyles = StyleSheet.create({
   container: {
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderWidth: 1.5,
+    borderColor: "#9ca3af",
     borderRadius: 8,
     overflow: "hidden",
   },
   row: {
     flexDirection: "row-reverse",
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: "#9ca3af",
   },
-  rowAlt: { backgroundColor: "#fafafa" },
-  headerCell: { backgroundColor: "#f3f4f6" },
+  rowAlt: { backgroundColor: "rgba(0,0,0,0.03)" },
+  headerCell: { backgroundColor: "rgba(0,0,0,0.07)" },
   sizeCell: {
     width: 52,
     paddingVertical: 6,
@@ -610,7 +616,7 @@ const tableStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-end",
     borderLeftWidth: 1,
-    borderLeftColor: "#e5e7eb",
+    borderLeftColor: "#9ca3af",
   },
   amtCell: {
     flex: 1,
@@ -619,7 +625,7 @@ const tableStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderLeftWidth: 1,
-    borderLeftColor: "#f0f0f0",
+    borderLeftColor: "#9ca3af",
   },
   headerText: {
     fontSize: 11,
