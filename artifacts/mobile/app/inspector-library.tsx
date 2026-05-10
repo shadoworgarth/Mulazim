@@ -73,7 +73,7 @@ const LIBRARY_CARDS: LibraryCard[] = [
     emojis: ["🍽️", "🍽️", "🍽️", "🍽️"],
     singleEmoji: true,
     bg: "#fff3e0",
-    route: "/food-fines-search",
+    route: "/food-fines",
     enabled: true,
   },
   {
