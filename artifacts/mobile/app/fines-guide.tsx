@@ -31,13 +31,14 @@ export default function FinesGuideScreen() {
               !cat.enabled && styles.cardDisabled,
               { opacity: pressed && cat.enabled ? 0.82 : 1 },
             ]}
-            onPress={() =>
-              cat.enabled &&
-              router.push({
-                pathname: "/fines-detail",
-                params: { categoryId: cat.id },
-              })
-            }
+            onPress={() => {
+              if (!cat.enabled) return;
+              if (cat.route) {
+                router.push(cat.route as any);
+              } else {
+                router.push({ pathname: "/fines-detail", params: { categoryId: cat.id } });
+              }
+            }}
           >
             <View style={[styles.emojiWrap, { backgroundColor: cat.bg }]}>
               <Text style={styles.emoji}>{cat.emoji}</Text>
@@ -55,10 +56,11 @@ export default function FinesGuideScreen() {
               {!cat.enabled && (
                 <Text style={styles.comingSoon}>قريباً</Text>
               )}
-              {cat.enabled && cat.pageCount && (
-                <Text style={styles.countLabel}>
-                  {cat.pageCount} صفحات
-                </Text>
+              {cat.enabled && cat.subtitle && (
+                <Text style={styles.countLabel}>{cat.subtitle}</Text>
+              )}
+              {cat.enabled && !cat.subtitle && cat.pageCount && (
+                <Text style={styles.countLabel}>{cat.pageCount} صفحات</Text>
               )}
             </View>
             <Text

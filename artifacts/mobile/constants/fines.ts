@@ -2,11 +2,13 @@ export interface FinesCategory {
   id: string;
   title: string;
   shortTitle: string;
+  subtitle?: string;
   emoji: string;
   bg: string;
   enabled: boolean;
   pageCount?: number;
   pageAspect?: number;
+  route?: string;
 }
 
 export const DEFAULT_PAGE_ASPECT = 2105 / 1490;
@@ -64,12 +66,12 @@ export const FINES_CATEGORIES: FinesCategory[] = [
   },
   {
     id: "food",
-    title: "جدول تصنيف المخالفات والعقوبات المقررة لها وفقاً لنظام الغذاء ولائحته التنفيذية",
+    title: "مخالفات نظام الغذاء ولائحته التنفيذية",
     shortTitle: "نظام الغذاء",
+    subtitle: "273 مخالفة · جدول + بنود عامة",
     emoji: "🍽️",
     bg: "#fff3e0",
     enabled: true,
-    pageCount: 9,
-    pageAspect: 2103 / 1488,
+    route: "/food-fines",
   },
 ];
