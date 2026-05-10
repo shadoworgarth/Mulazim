@@ -15,6 +15,9 @@ const SECTIONS = [
   {
     id: "first",
     title: "أولاً: تصنيف المخالفات والغرامات",
+    cardBg: "#fffbeb",
+    headerBg: "#fde68a",
+    accentColor: "#92400e",
     items: [
       {
         label: "١. حجم المنشأة",
@@ -37,6 +40,9 @@ const SECTIONS = [
   {
     id: "second",
     title: "ثانياً: آلية ضبط المخالفات وإيقاع العقوبات",
+    cardBg: "#eff6ff",
+    headerBg: "#bfdbfe",
+    accentColor: "#1e40af",
     items: [
       {
         label: "١. المخالفات الجسيمة",
@@ -51,6 +57,9 @@ const SECTIONS = [
   {
     id: "third",
     title: "ثالثاً: العقوبات غير المالية",
+    cardBg: "#fff1f2",
+    headerBg: "#fecdd3",
+    accentColor: "#9f1239",
     items: [
       {
         label: "",
@@ -109,34 +118,46 @@ const REGION_GROUPS = [
 function CollapsibleSection({
   title,
   children,
+  cardBg = "#ffffff",
+  headerBg = "#f3f4f6",
+  accentColor = colors.light.text,
   defaultOpen = true,
 }: {
   title: string;
   children: React.ReactNode;
+  cardBg?: string;
+  headerBg?: string;
+  accentColor?: string;
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <View style={sec.wrapper}>
+    <View style={[sec.wrapper, { backgroundColor: cardBg }]}>
       <Pressable
-        style={({ pressed }) => [sec.header, { opacity: pressed ? 0.85 : 1 }]}
+        style={({ pressed }) => [sec.header, { backgroundColor: headerBg, opacity: pressed ? 0.85 : 1 }]}
         onPress={() => setOpen((o) => !o)}
       >
-        <Text style={sec.arrow}>{open ? "▼" : "◀"}</Text>
-        <Text style={sec.title}>{title}</Text>
+        <Text style={[sec.arrow, { color: accentColor }]}>{open ? "▼" : "◀"}</Text>
+        <Text style={[sec.title, { color: accentColor }]}>{title}</Text>
       </Pressable>
       {open && <View style={sec.body}>{children}</View>}
     </View>
   );
 }
 
-function BulletItem({ label, body }: { label: string; body: string }) {
+function BulletItem({
+  label,
+  body,
+  accentColor = "#0e7c7c",
+}: {
+  label: string;
+  body: string;
+  accentColor?: string;
+}) {
   return (
     <View style={item.row}>
       {label ? (
-        <View style={item.labelWrap}>
-          <Text style={item.label}>{label}</Text>
-        </View>
+        <Text style={[item.label, { color: accentColor }]}>{label}</Text>
       ) : null}
       <Text style={item.body}>{body}</Text>
     </View>
@@ -153,42 +174,60 @@ export default function FoodFinesGuidelinesScreen() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── General sections ── */}
-      {SECTIONS.map((sec) => (
-        <CollapsibleSection key={sec.id} title={sec.title}>
-          {sec.items.map((it, idx) => (
-            <BulletItem key={idx} label={it.label} body={it.body} />
+      {SECTIONS.map((s) => (
+        <CollapsibleSection
+          key={s.id}
+          title={s.title}
+          cardBg={s.cardBg}
+          headerBg={s.headerBg}
+          accentColor={s.accentColor}
+        >
+          {s.items.map((it, idx) => (
+            <BulletItem
+              key={idx}
+              label={it.label}
+              body={it.body}
+              accentColor={s.accentColor}
+            />
           ))}
         </CollapsibleSection>
       ))}
 
       {/* ── Appendix 1: Size classification ── */}
-      <CollapsibleSection title="الملحق الأول: تصنيف المنشآت حسب الحجم">
+      <CollapsibleSection
+        title="الملحق الأول: تصنيف المنشآت حسب الحجم"
+        cardBg="#f0fdf4"
+        headerBg="#bbf7d0"
+        accentColor="#14532d"
+      >
         <View style={tbl.container}>
-          {/* header */}
           <View style={[tbl.row, tbl.headerRow]}>
             <Text style={[tbl.cell, tbl.headerCell, { flex: 1.4 }]}>حجم المنشأة</Text>
             <Text style={[tbl.cell, tbl.headerCell, { flex: 1 }]}>الموظفون</Text>
-            <Text style={[tbl.cell, tbl.headerCell, { flex: 1.1 }]}>الإيرادات</Text>
+            <Text style={[tbl.cell, tbl.headerCell, { flex: 1.2 }]}>الإيرادات</Text>
           </View>
           {SIZE_ROWS.map((r, i) => (
             <View key={i} style={[tbl.row, i % 2 === 1 && tbl.altRow]}>
-              <Text style={[tbl.cell, { flex: 1.4, fontFamily: "Inter_600SemiBold" }]}>
-                {r.size}
-              </Text>
+              <Text style={[tbl.cell, { flex: 1.4, fontFamily: "Inter_600SemiBold" }]}>{r.size}</Text>
               <Text style={[tbl.cell, { flex: 1 }]}>{r.employees}</Text>
-              <Text style={[tbl.cell, { flex: 1.1 }]}>{r.revenue}</Text>
+              <Text style={[tbl.cell, { flex: 1.2 }]}>{r.revenue}</Text>
             </View>
           ))}
         </View>
       </CollapsibleSection>
 
       {/* ── Appendix 2: Region classification ── */}
-      <CollapsibleSection title="الملحق الثاني: تصنيف المناطق والمدن">
+      <CollapsibleSection
+        title="الملحق الثاني: تصنيف المناطق والمدن"
+        cardBg="#faf5ff"
+        headerBg="#e9d5ff"
+        accentColor="#4c1d95"
+      >
         <View style={{ gap: 10 }}>
           {REGION_GROUPS.map((g) => (
-            <View key={g.label} style={[reg.card, { borderRightColor: g.color }]}>
-              <View style={[reg.badge, { backgroundColor: g.bg }]}>
-                <Text style={[reg.badgeText, { color: g.color }]}>{g.label}</Text>
+            <View key={g.label} style={[reg.card, { borderRightColor: g.color, backgroundColor: g.bg }]}>
+              <View style={[reg.badge, { backgroundColor: g.color }]}>
+                <Text style={reg.badgeText}>{g.label}</Text>
               </View>
               <Text style={reg.cities}>{g.cities.join(" • ")}</Text>
             </View>
@@ -207,12 +246,11 @@ const styles = StyleSheet.create({
 
 const sec = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#fff",
     borderRadius: 14,
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.07,
+    shadowOpacity: 0.08,
     shadowRadius: 3,
     elevation: 2,
   },
@@ -221,36 +259,30 @@ const sec = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     padding: 14,
-    backgroundColor: "#f8f9fa",
   },
   title: {
     flex: 1,
-    fontSize: 15,
-    fontFamily: "Inter_600SemiBold",
-    color: colors.light.text,
+    fontSize: 16,
+    fontFamily: "Inter_700Bold",
     textAlign: "right",
   },
-  arrow: { fontSize: 11, color: colors.light.mutedForeground },
-  body: { padding: 14, paddingTop: 4, gap: 12 },
+  arrow: { fontSize: 12 },
+  body: { padding: 14, paddingTop: 8, gap: 14 },
 });
 
 const item = StyleSheet.create({
-  row: { gap: 4 },
-  labelWrap: {
-    alignSelf: "flex-end",
-  },
+  row: { gap: 5 },
   label: {
-    fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-    color: "#0e7c7c",
+    fontSize: 14,
+    fontFamily: "Inter_700Bold",
     textAlign: "right",
   },
   body: {
-    fontSize: 13,
+    fontSize: 15,
     fontFamily: "Inter_400Regular",
     color: colors.light.text,
     textAlign: "right",
-    lineHeight: 22,
+    lineHeight: 26,
   },
 });
 
@@ -266,11 +298,11 @@ const tbl = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#9ca3af",
   },
-  headerRow: { backgroundColor: "rgba(0,0,0,0.07)" },
-  altRow: { backgroundColor: "rgba(0,0,0,0.03)" },
+  headerRow: { backgroundColor: "rgba(0,0,0,0.08)" },
+  altRow: { backgroundColor: "rgba(0,0,0,0.04)" },
   cell: {
-    padding: 8,
-    fontSize: 12,
+    padding: 10,
+    fontSize: 13,
     fontFamily: "Inter_400Regular",
     color: colors.light.text,
     textAlign: "right",
@@ -279,7 +311,7 @@ const tbl = StyleSheet.create({
   },
   headerCell: {
     fontFamily: "Inter_700Bold",
-    fontSize: 12,
+    fontSize: 13,
   },
 });
 
@@ -287,25 +319,25 @@ const reg = StyleSheet.create({
   card: {
     borderRightWidth: 4,
     borderRadius: 8,
-    backgroundColor: "#f9fafb",
     padding: 12,
-    gap: 6,
+    gap: 7,
   },
   badge: {
     alignSelf: "flex-end",
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: 20,
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "Inter_700Bold",
+    color: "#ffffff",
   },
   cities: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Inter_400Regular",
     color: colors.light.text,
     textAlign: "right",
-    lineHeight: 20,
+    lineHeight: 24,
   },
 });
