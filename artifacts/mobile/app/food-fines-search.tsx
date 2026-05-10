@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import {
-  FlatList,
   Platform,
   Pressable,
+  SectionList,
   StyleSheet,
   Text,
   TextInput,
@@ -16,15 +16,30 @@ import {
   FoodFineV2,
 } from "@/constants/food-fines-v2";
 
-const SECTION_COLORS: Record<number, { bg: string; text: string }> = {
-  1: { bg: "#e3f2fd", text: "#1565c0" },
-  2: { bg: "#e8f5e9", text: "#2e7d32" },
-  3: { bg: "#fff3e0", text: "#e65100" },
-  4: { bg: "#f3e5f5", text: "#6a1b9a" },
-  5: { bg: "#fce4ec", text: "#ad1457" },
+const SECTION_COLORS: Record<number, { bg: string; text: string; header: string }> = {
+  1: { bg: "#e3f2fd", text: "#1565c0", header: "#1565c0" },
+  2: { bg: "#e8f5e9", text: "#2e7d32", header: "#2e7d32" },
+  3: { bg: "#fff3e0", text: "#e65100", header: "#e65100" },
+  4: { bg: "#f3e5f5", text: "#6a1b9a", header: "#6a1b9a" },
+  5: { bg: "#fce4ec", text: "#ad1457", header: "#ad1457" },
+};
+
+const SECTION_BG: Record<number, string> = {
+  1: "#dbeafe", 2: "#dcfce7", 3: "#ffedd5",
+  4: "#ede9fe", 5: "#fce7f3",
 };
 
 type SectionFilter = "all" | 1 | 2 | 3 | 4 | 5;
+
+type ListSection = {
+  key: string;
+  section: number;
+  sectionLabel: string;
+  chapter: number;
+  chapterLabel: string;
+  showSectionHeader: boolean;
+  data: FoodFineV2[];
+};
 
 const SIZE_LABELS: { key: keyof EstablishmentFines; label: string }[] = [
   { key: "small", label: "صغيرة" },
@@ -41,19 +56,14 @@ function fmt(n: number | null): string {
 
 function allSame(fines: EstablishmentFines): boolean {
   const vals: (number | null)[] = [];
-  for (const size of SIZE_LABELS) {
-    for (const cat of CAT_KEYS) {
-      vals.push(fines[size.key][cat]);
-    }
-  }
+  for (const size of SIZE_LABELS)
+    for (const cat of CAT_KEYS) vals.push(fines[size.key][cat]);
   const nonNull = vals.filter((v) => v !== null) as number[];
   return nonNull.length > 0 && new Set(nonNull).size === 1;
 }
 
 function FineTable({
-  finesMin,
-  finesMax,
-  fineType,
+  finesMin, finesMax, fineType,
 }: {
   finesMin: EstablishmentFines;
   finesMax: EstablishmentFines;
@@ -61,7 +71,6 @@ function FineTable({
 }) {
   return (
     <View style={tableStyles.container}>
-      {/* Header row */}
       <View style={tableStyles.row}>
         <View style={[tableStyles.sizeCell, tableStyles.headerCell]}>
           <Text style={tableStyles.headerText}>الفئة</Text>
@@ -72,13 +81,8 @@ function FineTable({
           </View>
         ))}
       </View>
-
-      {/* Data rows */}
       {SIZE_LABELS.map(({ key, label }, si) => (
-        <View
-          key={key}
-          style={[tableStyles.row, si % 2 === 1 && tableStyles.rowAlt]}
-        >
+        <View key={key} style={[tableStyles.row, si % 2 === 1 && tableStyles.rowAlt]}>
           <View style={tableStyles.sizeCell}>
             <Text style={tableStyles.sizeText}>{label}</Text>
           </View>
@@ -110,7 +114,6 @@ function FineCard({ item }: { item: FoodFineV2 }) {
   const [expanded, setExpanded] = useState(false);
   const sc = SECTION_COLORS[item.section];
 
-  // Quick summary: overall min and max across all cells
   const allVals: number[] = [];
   for (const size of SIZE_LABELS) {
     for (const cat of CAT_KEYS) {
@@ -123,7 +126,6 @@ function FineCard({ item }: { item: FoodFineV2 }) {
   const overallMin = allVals.length ? Math.min(...allVals) : 0;
   const overallMax = allVals.length ? Math.max(...allVals) : 0;
   const uniformFines = allSame(item.finesMax) && allSame(item.finesMin);
-
   const summaryLabel =
     overallMin === overallMax
       ? `${fmt(overallMax)} ر.س`
@@ -134,7 +136,6 @@ function FineCard({ item }: { item: FoodFineV2 }) {
       style={({ pressed }) => [styles.card, { opacity: pressed ? 0.9 : 1 }]}
       onPress={() => setExpanded((e) => !e)}
     >
-      {/* Top row: code badge + violation text */}
       <View style={styles.cardTop}>
         <View style={styles.topRight}>
           <View style={[styles.codeBadge, { backgroundColor: sc.bg }]}>
@@ -151,32 +152,17 @@ function FineCard({ item }: { item: FoodFineV2 }) {
         </Text>
       </View>
 
-      {/* Meta row */}
-      <View style={styles.metaRow}>
-        {item.warningApplicable && (
+      {item.warningApplicable && (
+        <View style={styles.metaRow}>
           <View style={styles.warningBadge}>
             <Text style={styles.warningText}>إنذار</Text>
           </View>
-        )}
-        <Text style={styles.metaFine}>{summaryLabel}</Text>
-        <Text style={styles.metaDot}>·</Text>
-        <Text style={styles.metaChapter} numberOfLines={1}>
-          {item.chapterLabel.replace(/^الفصل [^:]+: /, "")}
-        </Text>
-      </View>
+        </View>
+      )}
 
-      {/* Expanded detail */}
       {expanded && (
         <View style={styles.expandedBlock}>
           <View style={styles.expandedMeta}>
-            <View style={styles.expandedMetaRow}>
-              <Text style={styles.expandedLabel}>القسم</Text>
-              <Text style={styles.expandedValue}>{item.sectionLabel}</Text>
-            </View>
-            <View style={styles.expandedMetaRow}>
-              <Text style={styles.expandedLabel}>الفصل</Text>
-              <Text style={styles.expandedValue}>{item.chapterLabel}</Text>
-            </View>
             <View style={styles.expandedMetaRow}>
               <Text style={styles.expandedLabel}>وحدة الغرامة</Text>
               <Text style={styles.expandedValue}>{item.unit || "—"}</Text>
@@ -226,6 +212,12 @@ function FineCard({ item }: { item: FoodFineV2 }) {
   );
 }
 
+const SECTION_NUMS = [1, 2, 3, 4, 5] as const;
+const SECTION_SHORT: Record<number, string> = {
+  1: "المصانع", 2: "المستودعات", 3: "المستوردون",
+  4: "المختبرات", 5: "المكاتب",
+};
+
 export default function FoodFinesSearchScreen() {
   const [query, setQuery] = useState("");
   const [activeSection, setActiveSection] = useState<SectionFilter>("all");
@@ -234,32 +226,53 @@ export default function FoodFinesSearchScreen() {
 
   const filtered = useMemo(() => {
     return FOOD_FINES_V2.filter((item) => {
-      if (activeSection !== "all" && item.section !== activeSection)
-        return false;
+      if (activeSection !== "all" && item.section !== activeSection) return false;
       if (!q) return true;
       return (
         item.violation.includes(q) ||
         item.articleCode.toLowerCase().includes(q.toLowerCase()) ||
-        item.chapterLabel.includes(q)
+        item.chapterLabel.includes(q) ||
+        item.sectionLabel.includes(q)
       );
     });
   }, [q, activeSection]);
 
-  const tabs: { label: string; value: SectionFilter }[] = [
-    { label: "الكل", value: "all" },
-    { label: "المصانع", value: 1 },
-    { label: "المستودعات", value: 2 },
-    { label: "المستوردون", value: 3 },
-    { label: "المختبرات", value: 4 },
-    { label: "المكاتب", value: 5 },
-  ];
+  const sections = useMemo<ListSection[]>(() => {
+    const map = new Map<string, ListSection>();
+    for (const item of filtered) {
+      const key = `${item.section}-${item.chapter}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          section: item.section,
+          sectionLabel: item.sectionLabel,
+          chapter: item.chapter,
+          chapterLabel: item.chapterLabel,
+          showSectionHeader: false,
+          data: [],
+        });
+      }
+      map.get(key)!.data.push(item);
+    }
+    const list = Array.from(map.values());
+    let lastSec = -1;
+    for (const s of list) {
+      if (s.section !== lastSec) {
+        s.showSectionHeader = true;
+        lastSec = s.section;
+      }
+    }
+    return list;
+  }, [filtered]);
+
+  const totalCount = filtered.length;
 
   return (
     <View style={styles.container}>
       <View style={styles.searchWrap}>
         <TextInput
           style={styles.searchInput}
-          placeholder="ابحث بوصف المخالفة أو رقم المادة (مثال: 3/2/1)"
+          placeholder="ابحث بوصف المخالفة أو رقم المادة (مثال: 1/1/1)"
           placeholderTextColor={colors.light.mutedForeground}
           value={query}
           onChangeText={setQuery}
@@ -270,59 +283,87 @@ export default function FoodFinesSearchScreen() {
       </View>
 
       <View style={styles.tabsWrap}>
-        <FlatList
-          horizontal
-          data={tabs}
-          keyExtractor={(t) => String(t.value)}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tabs}
-          renderItem={({ item: tab }) => {
-            const active = activeSection === tab.value;
-            const sc =
-              typeof tab.value === "number"
-                ? SECTION_COLORS[tab.value]
-                : { bg: "#0e7c7c", text: "#ffffff" };
+        <View style={styles.tabs}>
+          {(["all", ...SECTION_NUMS] as SectionFilter[]).map((val) => {
+            const active = activeSection === val;
+            const sc = typeof val === "number" ? SECTION_COLORS[val] : null;
             return (
               <Pressable
+                key={String(val)}
                 style={[
                   styles.tab,
                   active && {
-                    backgroundColor:
-                      typeof tab.value === "number" ? sc.bg : "#0e7c7c",
+                    backgroundColor: sc ? sc.bg : "#0e7c7c",
                   },
                 ]}
-                onPress={() => setActiveSection(tab.value)}
+                onPress={() => setActiveSection(val)}
               >
                 <Text
                   style={[
                     styles.tabText,
                     active && {
-                      color:
-                        typeof tab.value === "number" ? sc.text : "#ffffff",
+                      color: sc ? sc.text : "#ffffff",
                       fontWeight: "700",
                     },
                   ]}
                 >
-                  {tab.label}
+                  {val === "all" ? "الكل" : SECTION_SHORT[val]}
                 </Text>
               </Pressable>
             );
-          }}
-        />
+          })}
+        </View>
       </View>
 
       <View style={styles.resultsBar}>
-        <Text style={styles.resultsCount}>{filtered.length} مخالفة</Text>
+        <Text style={styles.resultsCount}>{totalCount} مخالفة</Text>
         <Text style={styles.tapHint}>اضغط على البطاقة لعرض جدول الغرامات</Text>
       </View>
 
-      <FlatList
-        data={filtered}
+      <SectionList
+        sections={sections}
         keyExtractor={(item) => `${item.articleCode}-${item.section}`}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        renderItem={({ item }) => <FineCard item={item} />}
+        stickySectionHeadersEnabled={false}
+        renderItem={({ item }) => (
+          <View style={styles.cardWrap}>
+            <FineCard item={item} />
+          </View>
+        )}
+        renderSectionHeader={({ section }) => (
+          <View style={styles.sectionHeaderWrap}>
+            {section.showSectionHeader && (
+              <View
+                style={[
+                  styles.sectionBanner,
+                  { backgroundColor: SECTION_BG[section.section] },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.sectionBannerText,
+                    { color: SECTION_COLORS[section.section].header },
+                  ]}
+                >
+                  {section.sectionLabel}
+                </Text>
+              </View>
+            )}
+            <View style={styles.chapterHeader}>
+              <View
+                style={[
+                  styles.chapterAccent,
+                  { backgroundColor: SECTION_COLORS[section.section].header },
+                ]}
+              />
+              <Text style={styles.chapterHeaderText}>
+                {section.chapterLabel}
+              </Text>
+            </View>
+          </View>
+        )}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyText}>لا توجد نتائج</Text>
@@ -334,7 +375,7 @@ export default function FoodFinesSearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.light.background },
+  container: { flex: 1, backgroundColor: "#f4f6f9" },
   searchWrap: { padding: 14, paddingBottom: 8 },
   searchInput: {
     backgroundColor: "#ffffff",
@@ -352,34 +393,31 @@ const styles = StyleSheet.create({
     elevation: 1,
     textAlign: "right",
   },
-  tabsWrap: { paddingBottom: 4 },
+  tabsWrap: { paddingBottom: 4, paddingHorizontal: 14 },
   tabs: {
-    paddingHorizontal: 14,
-    gap: 8,
     flexDirection: "row-reverse",
+    flexWrap: "wrap",
+    gap: 6,
   },
   tab: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 20,
     backgroundColor: "#f3f4f6",
   },
   tabText: {
-    fontSize: 13,
+    fontSize: 12,
     color: colors.light.mutedForeground,
     fontWeight: "500",
   },
   resultsBar: {
     paddingHorizontal: 16,
-    paddingBottom: 6,
+    paddingBottom: 8,
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  resultsCount: {
-    fontSize: 12,
-    color: colors.light.mutedForeground,
-  },
+  resultsCount: { fontSize: 12, color: colors.light.mutedForeground },
   tapHint: {
     fontSize: 11,
     color: colors.light.mutedForeground,
@@ -388,8 +426,40 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 14,
     paddingBottom: Platform.OS === "web" ? 40 : 28,
-    gap: 10,
   },
+  sectionHeaderWrap: { marginTop: 12 },
+  sectionBanner: {
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+  },
+  sectionBannerText: {
+    fontSize: 15,
+    fontWeight: "800",
+    textAlign: "right",
+  },
+  chapterHeader: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 2,
+    marginBottom: 6,
+  },
+  chapterAccent: {
+    width: 3,
+    height: 18,
+    borderRadius: 2,
+  },
+  chapterHeaderText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#374151",
+    textAlign: "right",
+    flex: 1,
+  },
+  cardWrap: { marginBottom: 8 },
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 14,
@@ -424,7 +494,6 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     alignItems: "center",
     gap: 6,
-    flexWrap: "wrap",
   },
   warningBadge: {
     backgroundColor: "#fff3e0",
@@ -433,14 +502,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   warningText: { fontSize: 11, color: "#e65100", fontWeight: "600" },
-  metaFine: { fontSize: 13, color: "#0e7c7c", fontWeight: "700" },
-  metaDot: { fontSize: 13, color: colors.light.mutedForeground },
-  metaChapter: {
-    flex: 1,
-    fontSize: 12,
-    color: colors.light.mutedForeground,
-    textAlign: "right",
-  },
   expandedBlock: {
     borderTopWidth: 1,
     borderTopColor: "#f0f0f0",
