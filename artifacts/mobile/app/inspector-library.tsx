@@ -68,6 +68,15 @@ const LIBRARY_CARDS: LibraryCard[] = [
     enabled: true,
   },
   {
+    id: "food-fines-v2",
+    title: "مخالفات نظام الغذاء (محدّث 2026)",
+    emojis: ["🍽️", "🍽️", "🍽️", "🍽️"],
+    singleEmoji: true,
+    bg: "#fff3e0",
+    route: "/food-fines-search",
+    enabled: true,
+  },
+  {
     id: "narcotics",
     title: "المخدرات والمؤثرات العقلية",
     emojis: ["💊", "💊", "💊", "💊"],

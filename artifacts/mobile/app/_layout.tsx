@@ -72,6 +72,7 @@ function AuthGate() {
       <Stack.Screen name="animal-feed-additives" options={{ title: "المضافات العلفية المسموح بتداولها" }} />
       <Stack.Screen name="fines-guide" options={{ title: "جداول المخالفات والعقوبات" }} />
       <Stack.Screen name="fines-detail" options={{ title: "تفاصيل المخالفات" }} />
+      <Stack.Screen name="food-fines-search" options={{ title: "مخالفات نظام الغذاء" }} />
       <Stack.Screen name="narcotics" options={{ title: "المخدرات والمؤثرات العقلية" }} />
       <Stack.Screen name="private-labs" options={{ title: "المختبرات الخاصة" }} />
       <Stack.Screen name="private-labs-list" options={{ title: "قائمة المختبرات" }} />
