@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import colors from "@/constants/colors";
+import { MandatoryEntry, MANDATORY_TESTS } from "@/constants/mandatory-tests";
 import { LabField, PRIVATE_LABS, PrivateLab } from "@/constants/private-labs";
 
 const ACCENT = "#00695c";
@@ -236,7 +237,7 @@ function computeLabResults(selected: SelectedTest[]): LabResult[] {
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
-type MainView = "empty" | "browse" | "suggestions" | "results";
+type MainView = "empty" | "browse" | "mandatory" | "suggestions" | "results";
 
 export default function LabTestSearchScreen() {
   const router = useRouter();
@@ -248,6 +249,10 @@ export default function LabTestSearchScreen() {
   const [browseField, setBrowseField] = useState<LabField | null>(null);
   const [browseQuery, setBrowseQuery] = useState("");
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
+  const [mandatoryMode, setMandatoryMode] = useState(false);
+  const [mandatoryField, setMandatoryField] = useState<"Food" | "Cosmetics" | null>(null);
+  const [mandatoryQuery, setMandatoryQuery] = useState("");
+  const [expandedMandatory, setExpandedMandatory] = useState<Set<string>>(new Set());
 
   // ── Derived state ──────────────────────────────────────────────────────────
   const showSuggestions = query.trim().length >= 2;
@@ -256,6 +261,8 @@ export default function LabTestSearchScreen() {
     ? "suggestions"
     : compareMode && selected.length > 0
     ? "results"
+    : mandatoryMode
+    ? "mandatory"
     : browsing
     ? "browse"
     : "empty";
@@ -280,6 +287,16 @@ export default function LabTestSearchScreen() {
         (q.length === 0 || p.product.toLowerCase().includes(q))
     );
   }, [mainView, browseField, browseQuery]);
+
+  const mandatoryEntries = useMemo<MandatoryEntry[]>(() => {
+    if (mainView !== "mandatory") return [];
+    const q = mandatoryQuery.trim().toLowerCase();
+    return MANDATORY_TESTS.filter(
+      (e) =>
+        (mandatoryField === null || e.field === mandatoryField) &&
+        (q.length === 0 || e.product.toLowerCase().includes(q))
+    );
+  }, [mainView, mandatoryField, mandatoryQuery]);
 
   const labResults = useMemo(
     () => (mainView === "results" ? computeLabResults(selected) : []),
@@ -312,12 +329,31 @@ export default function LabTestSearchScreen() {
     setQuery("");
     setCompareMode(false);
     setBrowsing(true);
+    setMandatoryMode(false);
     setBrowseQuery("");
     setExpandedProducts(new Set());
   }, []);
 
+  const handleMandatory = useCallback(() => {
+    setQuery("");
+    setCompareMode(false);
+    setBrowsing(false);
+    setMandatoryMode(true);
+    setMandatoryQuery("");
+    setMandatoryField(null);
+    setExpandedMandatory(new Set());
+  }, []);
+
   const toggleProduct = useCallback((id: string) => {
     setExpandedProducts((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleMandatory = useCallback((id: string) => {
+    setExpandedMandatory((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
@@ -361,9 +397,9 @@ export default function LabTestSearchScreen() {
     <View style={[styles.header, { paddingTop: Platform.OS === "web" ? 67 : insets.top + 12 }]}>
       <View style={styles.headerTitleRow}>
         <Text style={styles.headerTitle}>مقارنة الاختبارات وحساب التكلفة</Text>
-        {browsing && !showSuggestions && (
+        {(browsing || mandatoryMode) && !showSuggestions && (
           <Pressable
-            onPress={() => setBrowsing(false)}
+            onPress={() => { setBrowsing(false); setMandatoryMode(false); }}
             style={({ pressed }) => [styles.backBrowseBtn, { opacity: pressed ? 0.7 : 1 }]}
           >
             <Text style={styles.backBrowseBtnText}>← رجوع</Text>
@@ -373,6 +409,8 @@ export default function LabTestSearchScreen() {
       <Text style={styles.headerSubtitle}>
         {mainView === "browse"
           ? "اختر منتجاً لعرض الاختبارات المتاحة له وإضافتها إلى السلة"
+          : mainView === "mandatory"
+          ? "التحاليل الإلزامية حسب المنتج — اضغط على الاختبار للبحث عنه في المختبرات"
           : "أضف اختبار أو أكثر لمعرفة المختبرات المتاحة وحساب التكلفة"}
       </Text>
 
@@ -389,6 +427,7 @@ export default function LabTestSearchScreen() {
             if (t.trim().length >= 2) {
               setCompareMode(false);
               setBrowsing(false);
+              setMandatoryMode(false);
             }
           }}
           autoCapitalize="none"
@@ -517,6 +556,61 @@ export default function LabTestSearchScreen() {
     </View>
   );
 
+  // ── Mandatory tests header ─────────────────────────────────────────────────
+  const MandatoryHeader = (
+    <View>
+      <View style={styles.browseSearchBox}>
+        <Text style={{ fontSize: 15, color: "#80cbc4" }}>🔍</Text>
+        <TextInput
+          style={styles.browseSearchInput}
+          placeholder="Search product (e.g. Meat, Juice…)"
+          placeholderTextColor="#9bb0b0"
+          value={mandatoryQuery}
+          onChangeText={setMandatoryQuery}
+          autoCapitalize="none"
+          returnKeyType="search"
+          writingDirection="ltr"
+          textAlign="left"
+        />
+        {mandatoryQuery.length > 0 && (
+          <Pressable onPress={() => setMandatoryQuery("")} hitSlop={8}>
+            <Text style={{ fontSize: 17, color: "#b2d8d8" }}>✕</Text>
+          </Pressable>
+        )}
+      </View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.fieldTabs}
+        style={styles.fieldTabsScroll}
+      >
+        <Pressable
+          onPress={() => setMandatoryField(null)}
+          style={[styles.fieldTab, mandatoryField === null && styles.fieldTabActive]}
+        >
+          <Text style={[styles.fieldTabText, mandatoryField === null && styles.fieldTabTextActive]}>الكل</Text>
+        </Pressable>
+        {(["Food", "Cosmetics"] as const).map((f) => {
+          const isActive = mandatoryField === f;
+          const label = f === "Food" ? "الغذاء" : "التجميل";
+          const bg = f === "Food" ? "#2e7d32" : "#ad1457";
+          return (
+            <Pressable
+              key={f}
+              onPress={() => setMandatoryField(isActive ? null : f)}
+              style={[styles.fieldTab, isActive && { backgroundColor: bg, borderColor: bg }]}
+            >
+              <Text style={[styles.fieldTabText, isActive && { color: "#fff" }]}>{label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+      <Text style={styles.sectionLabel}>
+        {mandatoryEntries.length} منتج — التحاليل الإلزامية وفق اشتراطات هيئة الغذاء والدواء
+      </Text>
+    </View>
+  );
+
   // ──────────────────────────────────────────────────────────────────────────
   return (
     <View style={styles.container}>
@@ -617,6 +711,75 @@ export default function LabTestSearchScreen() {
               </View>
             );
           }}
+        />
+      )}
+
+      {/* ── Mandatory tests ───────────────────────────────────────────────── */}
+      {mainView === "mandatory" && (
+        <FlatList
+          data={mandatoryEntries}
+          keyExtractor={(e) => e.id}
+          contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={MandatoryHeader}
+          renderItem={({ item: e }) => {
+            const isExpanded = expandedMandatory.has(e.id);
+            const fieldColor = e.field === "Food"
+              ? { bg: "#e8f5e9", text: "#1b5e20", badge: "#2e7d32" }
+              : { bg: "#fce4ec", text: "#880e4f", badge: "#ad1457" };
+            const fieldLabel = e.field === "Food" ? "الغذاء" : "التجميل";
+            return (
+              <View style={styles.productCard}>
+                <Pressable
+                  style={({ pressed }) => [styles.productRow, { opacity: pressed ? 0.82 : 1 }]}
+                  onPress={() => toggleMandatory(e.id)}
+                >
+                  <Text style={styles.expandChevron}>{isExpanded ? "▲" : "▼"}</Text>
+                  <View style={styles.productRowBody}>
+                    <Text style={styles.productName} numberOfLines={2}>{e.product}</Text>
+                    <View style={styles.productRowMeta}>
+                      <View style={[styles.productFieldBadge, { backgroundColor: fieldColor.bg }]}>
+                        <Text style={[styles.productFieldText, { color: fieldColor.text }]}>{fieldLabel}</Text>
+                      </View>
+                      <Text style={styles.productTestCount}>{e.tests.length} تحليل إلزامي</Text>
+                    </View>
+                  </View>
+                </Pressable>
+                {isExpanded && (
+                  <View style={styles.productTests}>
+                    {e.tests.map((t, idx) => (
+                      <Pressable
+                        key={idx}
+                        style={({ pressed }) => [styles.mandatoryTestRow, { opacity: pressed ? 0.75 : 1 }]}
+                        onPress={() => {
+                          setQuery(t.name);
+                          setMandatoryMode(false);
+                        }}
+                      >
+                        <View style={styles.mandatorySearchIcon}>
+                          <Text style={{ fontSize: 12, color: "#004d40" }}>🔍</Text>
+                        </View>
+                        <View style={{ flex: 1, gap: 2 }}>
+                          <Text style={styles.mandatoryTestName} numberOfLines={2}>{t.name}</Text>
+                          {t.notes ? (
+                            <Text style={styles.mandatoryTestNotes} numberOfLines={2}>{t.notes}</Text>
+                          ) : null}
+                        </View>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
+              </View>
+            );
+          }}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={{ fontSize: 36 }}>📋</Text>
+              <Text style={styles.emptyTitle}>لا توجد نتائج</Text>
+              <Text style={styles.emptySubtitle}>جرب البحث بكلمة مختلفة</Text>
+            </View>
+          }
         />
       )}
 
@@ -789,6 +952,12 @@ export default function LabTestSearchScreen() {
               >
                 <Text style={styles.browseAllBtnText}>📦 تصفح المنتجات</Text>
               </Pressable>
+              <Pressable
+                onPress={handleMandatory}
+                style={({ pressed }) => [styles.mandatoryBtn, { opacity: pressed ? 0.85 : 1 }]}
+              >
+                <Text style={styles.browseAllBtnText}>📋 التحاليل الإلزامية</Text>
+              </Pressable>
             </>
           ) : (
             <>
@@ -808,6 +977,12 @@ export default function LabTestSearchScreen() {
                 style={({ pressed }) => [styles.browseOutlineBtn, { opacity: pressed ? 0.75 : 1 }]}
               >
                 <Text style={styles.browseOutlineBtnText}>📦 تصفح المنتجات وإضافة اختبارات</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleMandatory}
+                style={({ pressed }) => [styles.browseOutlineBtn, styles.mandatoryOutlineBtn, { opacity: pressed ? 0.75 : 1 }]}
+              >
+                <Text style={[styles.browseOutlineBtnText, { color: "#b45309" }]}>📋 التحاليل الإلزامية</Text>
               </Pressable>
             </>
           )}
@@ -1236,6 +1411,56 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: ACCENT,
     textAlign: "center",
+  },
+  mandatoryBtn: {
+    backgroundColor: "#b45309",
+    borderRadius: 14,
+    paddingHorizontal: 22,
+    paddingVertical: 13,
+    marginTop: 4,
+    alignItems: "center",
+  },
+  mandatoryOutlineBtn: {
+    borderColor: "#b45309",
+    marginTop: 4,
+  },
+
+  // Mandatory test rows
+  mandatoryTestRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+    gap: 10,
+    backgroundColor: "#fffbf5",
+  },
+  mandatorySearchIcon: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "#fef3c7",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    marginTop: 1,
+  },
+  mandatoryTestName: {
+    fontSize: 13,
+    color: "#1c1917",
+    writingDirection: "ltr",
+    textAlign: "left",
+    lineHeight: 18,
+    fontWeight: "500",
+  },
+  mandatoryTestNotes: {
+    fontSize: 11,
+    color: "#92400e",
+    writingDirection: "ltr",
+    textAlign: "left",
+    lineHeight: 15,
+    fontStyle: "italic",
   },
 
   // Browse product search
