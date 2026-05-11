@@ -944,21 +944,25 @@ export default function LabTestSearchScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
-            labResults.length > 0 ? (
+            <View>
               <View style={styles.resultCountRow}>
                 <Pressable
                   onPress={() => setCompareMode(false)}
                   style={({ pressed }) => [styles.backToBasketBtn, { opacity: pressed ? 0.7 : 1 }]}
                 >
-                  <Text style={styles.backToBasketText}>← إضافة المزيد</Text>
+                  <Text style={styles.backToBasketText}>
+                    {mandatoryMode ? "← التحاليل الإلزامية" : "← إضافة المزيد"}
+                  </Text>
                 </Pressable>
                 <Text style={styles.resultCountText}>
-                  {fullMatchCount > 0
+                  {labResults.length === 0
+                    ? "لا توجد نتائج مطابقة"
+                    : fullMatchCount > 0
                     ? `${fullMatchCount} مختبر بجميع الاختبارات · ${labResults.length} إجمالاً`
                     : `لا يوجد مختبر بجميع الاختبارات · ${labResults.length} جزئياً`}
                 </Text>
               </View>
-            ) : null
+            </View>
           }
           renderItem={({ item: r }) => {
             const isFullMatch = r.missing.length === 0;
