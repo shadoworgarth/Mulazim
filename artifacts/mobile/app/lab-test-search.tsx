@@ -158,19 +158,23 @@ function extractKeywords(testName: string): string[] {
     .filter((w) => w.length > 2);
 }
 
+// Key is `${MandatoryField}::${testName}` so Food tests only match Food-field lab suggestions
 function buildMandatoryMatchMap(): Map<string, string[]> {
   const map = new Map<string, string[]>();
   for (const entry of MANDATORY_TESTS) {
     for (const t of entry.tests) {
-      if (map.has(t.name)) continue;
+      const key = `${entry.field}::${t.name}`;
+      if (map.has(key)) continue;
       const keywords = extractKeywords(t.name);
       const matched = ALL_SUGGESTIONS.filter((s) => {
+        // Strict field match: Food mandatory test → Food lab suggestions only
+        if (s.field !== entry.field) return false;
         const param = s.parameter.toLowerCase();
         return keywords.some((kw) => param.includes(kw));
       });
       // Prefer base suggestions (no product-specific variant) for generic tests
       const bases = matched.filter((s) => !s.product);
-      map.set(t.name, (bases.length > 0 ? bases : matched).slice(0, 5).map((s) => s.id));
+      map.set(key, (bases.length > 0 ? bases : matched).slice(0, 5).map((s) => s.id));
     }
   }
   return map;
@@ -393,8 +397,8 @@ export default function LabTestSearchScreen() {
   }, []);
 
   // Add/remove mandatory test — adds matched suggestions, or falls back to query search
-  const toggleMandatoryTest = useCallback((testName: string) => {
-    const matchIds = MANDATORY_MATCH_MAP.get(testName) ?? [];
+  const toggleMandatoryTest = useCallback((testName: string, mandField: MandatoryField) => {
+    const matchIds = MANDATORY_MATCH_MAP.get(`${mandField}::${testName}`) ?? [];
     if (matchIds.length === 0) {
       // No lab match — fall back to search
       setQuery(testName);
@@ -537,7 +541,7 @@ export default function LabTestSearchScreen() {
             >
               <Text style={{ fontSize: 16, color: "#b2d8d8" }}>🗑</Text>
             </Pressable>
-            {!showSuggestions && (
+            {!showSuggestions && !mandatoryMode && (
               <Pressable
                 onPress={handleCompare}
                 style={({ pressed }) => [styles.compareBtn, { opacity: pressed ? 0.85 : 1 }]}
@@ -808,7 +812,7 @@ export default function LabTestSearchScreen() {
                 {isExpanded && (
                   <View style={styles.productTests}>
                     {e.tests.map((t, idx) => {
-                      const matchIds = MANDATORY_MATCH_MAP.get(t.name) ?? [];
+                      const matchIds = MANDATORY_MATCH_MAP.get(`${e.field}::${t.name}`) ?? [];
                       const hasMatch = matchIds.length > 0;
                       const isAdded = hasMatch && matchIds.every((id) => selected.some((s) => s.id === id));
                       const someAdded = hasMatch && matchIds.some((id) => selected.some((s) => s.id === id));
@@ -820,7 +824,7 @@ export default function LabTestSearchScreen() {
                             (isAdded || someAdded) && styles.mandatoryTestRowAdded,
                             { opacity: pressed ? 0.75 : 1 },
                           ]}
-                          onPress={() => toggleMandatoryTest(t.name)}
+                          onPress={() => toggleMandatoryTest(t.name, e.field)}
                         >
                           <View style={[
                             styles.addRemoveBtn,
