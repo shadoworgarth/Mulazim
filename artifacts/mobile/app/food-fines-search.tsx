@@ -763,14 +763,12 @@ const styles = StyleSheet.create({
   ctxPrompt: {
     marginHorizontal: 14,
     marginBottom: 8,
-    backgroundColor: "#fff7ed",
-    borderWidth: 1,
-    borderColor: "#fed7aa",
+    backgroundColor: "#dc2626",
     borderRadius: 10,
     paddingHorizontal: 14,
-    paddingVertical: 9,
+    paddingVertical: 11,
   },
-  ctxPromptText: { fontSize: 13, color: "#9a3412", textAlign: "right", fontWeight: "600" },
+  ctxPromptText: { fontSize: 14, color: "#ffffff", textAlign: "right", fontWeight: "700" },
 
   /* context banner */
   ctxBanner: {
