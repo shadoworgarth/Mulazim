@@ -146,6 +146,38 @@ function buildSuggestions(): TestSuggestion[] {
 
 const ALL_SUGGESTIONS = buildSuggestions();
 
+// ─── Pre-compute mandatory test name → matching suggestion ids ────────────────
+// Strips common prefixes and parentheticals, then keyword-matches against suggestions.
+
+function extractKeywords(testName: string): string[] {
+  return testName
+    .toLowerCase()
+    .replace(/^(determination of|detection of|microbiological)\s+/i, "")
+    .replace(/\s*\([^)]*\)/g, "") // strip parenthetical
+    .split(/[\s,&./]+/)
+    .filter((w) => w.length > 2);
+}
+
+function buildMandatoryMatchMap(): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  for (const entry of MANDATORY_TESTS) {
+    for (const t of entry.tests) {
+      if (map.has(t.name)) continue;
+      const keywords = extractKeywords(t.name);
+      const matched = ALL_SUGGESTIONS.filter((s) => {
+        const param = s.parameter.toLowerCase();
+        return keywords.some((kw) => param.includes(kw));
+      });
+      // Prefer base suggestions (no product-specific variant) for generic tests
+      const bases = matched.filter((s) => !s.product);
+      map.set(t.name, (bases.length > 0 ? bases : matched).slice(0, 5).map((s) => s.id));
+    }
+  }
+  return map;
+}
+
+const MANDATORY_MATCH_MAP = buildMandatoryMatchMap();
+
 // ─── Build product index (unique product+field combos with their tests) ────────
 
 type ProductEntry = {
@@ -357,6 +389,32 @@ export default function LabTestSearchScreen() {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
+    });
+  }, []);
+
+  // Add/remove mandatory test — adds matched suggestions, or falls back to query search
+  const toggleMandatoryTest = useCallback((testName: string) => {
+    const matchIds = MANDATORY_MATCH_MAP.get(testName) ?? [];
+    if (matchIds.length === 0) {
+      // No lab match — fall back to search
+      setQuery(testName);
+      setMandatoryMode(false);
+      return;
+    }
+    setSelected((prev) => {
+      const alreadyAllAdded = matchIds.every((id) => prev.some((s) => s.id === id));
+      if (alreadyAllAdded) {
+        // Remove all matched
+        return prev.filter((s) => !matchIds.includes(s.id));
+      }
+      // Add any not yet in basket
+      const toAdd = matchIds
+        .filter((id) => !prev.some((s) => s.id === id))
+        .map((id) => {
+          const sugg = ALL_SUGGESTIONS.find((s) => s.id === id)!;
+          return { id: sugg.id, parameter: sugg.parameter, baseParam: sugg.baseParam, field: sugg.field, product: sugg.product };
+        });
+      return [...prev, ...toAdd];
     });
   }, []);
 
@@ -716,6 +774,7 @@ export default function LabTestSearchScreen() {
 
       {/* ── Mandatory tests ───────────────────────────────────────────────── */}
       {mainView === "mandatory" && (
+        <View style={{ flex: 1 }}>
         <FlatList
           data={mandatoryEntries}
           keyExtractor={(e) => e.id}
@@ -748,26 +807,58 @@ export default function LabTestSearchScreen() {
                 </Pressable>
                 {isExpanded && (
                   <View style={styles.productTests}>
-                    {e.tests.map((t, idx) => (
-                      <Pressable
-                        key={idx}
-                        style={({ pressed }) => [styles.mandatoryTestRow, { opacity: pressed ? 0.75 : 1 }]}
-                        onPress={() => {
-                          setQuery(t.name);
-                          setMandatoryMode(false);
-                        }}
-                      >
-                        <View style={styles.mandatorySearchIcon}>
-                          <Text style={{ fontSize: 12, color: "#004d40" }}>🔍</Text>
-                        </View>
-                        <View style={{ flex: 1, gap: 2 }}>
-                          <Text style={styles.mandatoryTestName} numberOfLines={2}>{t.name}</Text>
-                          {t.notes ? (
-                            <Text style={styles.mandatoryTestNotes} numberOfLines={2}>{t.notes}</Text>
-                          ) : null}
-                        </View>
-                      </Pressable>
-                    ))}
+                    {e.tests.map((t, idx) => {
+                      const matchIds = MANDATORY_MATCH_MAP.get(t.name) ?? [];
+                      const hasMatch = matchIds.length > 0;
+                      const isAdded = hasMatch && matchIds.every((id) => selected.some((s) => s.id === id));
+                      const someAdded = hasMatch && matchIds.some((id) => selected.some((s) => s.id === id));
+                      return (
+                        <Pressable
+                          key={idx}
+                          style={({ pressed }) => [
+                            styles.mandatoryTestRow,
+                            (isAdded || someAdded) && styles.mandatoryTestRowAdded,
+                            { opacity: pressed ? 0.75 : 1 },
+                          ]}
+                          onPress={() => toggleMandatoryTest(t.name)}
+                        >
+                          <View style={[
+                            styles.addRemoveBtn,
+                            isAdded && styles.addRemoveBtnAdded,
+                            !hasMatch && styles.mandatoryNoMatchBtn,
+                          ]}>
+                            <Text style={[
+                              styles.addRemoveIcon,
+                              isAdded && styles.addRemoveIconAdded,
+                              !hasMatch && { color: "#9ca3af" },
+                            ]}>
+                              {isAdded ? "✓" : hasMatch ? "+" : "🔍"}
+                            </Text>
+                          </View>
+                          <View style={{ flex: 1, gap: 2 }}>
+                            <Text style={styles.mandatoryTestName} numberOfLines={2}>{t.name}</Text>
+                            {t.notes ? (
+                              <Text style={styles.mandatoryTestNotes} numberOfLines={2}>{t.notes}</Text>
+                            ) : null}
+                            {!hasMatch && (
+                              <Text style={styles.mandatoryNoMatchHint}>اضغط للبحث في المختبرات</Text>
+                            )}
+                          </View>
+                          {someAdded && !isAdded && (
+                            <View style={styles.someAddedBadge}>
+                              <Text style={styles.someAddedText}>جزئي</Text>
+                            </View>
+                          )}
+                          {hasMatch && (
+                            <View style={styles.mandatoryLabCount}>
+                              <Text style={styles.mandatoryLabCountText}>
+                                {ALL_SUGGESTIONS.find((s) => s.id === matchIds[0])?.labCount ?? "–"}
+                              </Text>
+                            </View>
+                          )}
+                        </Pressable>
+                      );
+                    })}
                   </View>
                 )}
               </View>
@@ -781,6 +872,20 @@ export default function LabTestSearchScreen() {
             </View>
           }
         />
+        {selected.length > 0 && (
+          <View style={styles.mandatoryCompareBar}>
+            <Pressable
+              onPress={handleCompare}
+              style={({ pressed }) => [styles.mandatoryCompareBtn, { opacity: pressed ? 0.85 : 1 }]}
+            >
+              <Text style={styles.mandatoryCompareBtnText}>قارن ({selected.length}) ›</Text>
+            </Pressable>
+            <Text style={styles.mandatoryCompareBarText}>
+              {selected.length} اختبار في السلة
+            </Text>
+          </View>
+        )}
+        </View>
       )}
 
       {/* ── Lab results ───────────────────────────────────────────────────── */}
@@ -1428,7 +1533,7 @@ const styles = StyleSheet.create({
   // Mandatory test rows
   mandatoryTestRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderBottomWidth: 1,
@@ -1436,6 +1541,8 @@ const styles = StyleSheet.create({
     gap: 10,
     backgroundColor: "#fffbf5",
   },
+  mandatoryTestRowAdded: { backgroundColor: "#f1f8e9" },
+  mandatoryNoMatchBtn: { backgroundColor: "#f3f4f6" },
   mandatorySearchIcon: {
     width: 26,
     height: 26,
@@ -1462,6 +1569,47 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     fontStyle: "italic",
   },
+  mandatoryNoMatchHint: {
+    fontSize: 10,
+    color: "#9ca3af",
+    writingDirection: "ltr",
+    textAlign: "left",
+  },
+  mandatoryLabCount: {
+    backgroundColor: "#e0f2f1",
+    borderRadius: 9,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 24,
+    alignItems: "center",
+    flexShrink: 0,
+  },
+  mandatoryLabCountText: { fontSize: 10, fontWeight: "700", color: ACCENT },
+  someAddedBadge: {
+    backgroundColor: "#fff3cd",
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    flexShrink: 0,
+  },
+  someAddedText: { fontSize: 10, fontWeight: "600", color: "#92400e" },
+  mandatoryCompareBar: {
+    backgroundColor: "#004d40",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  mandatoryCompareBarText: { fontSize: 12, color: "#80cbc4" },
+  mandatoryCompareBtn: {
+    backgroundColor: "#1565c0",
+    borderRadius: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+  },
+  mandatoryCompareBtnText: { fontSize: 13, fontWeight: "700", color: "#fff" },
 
   // Browse product search
   browseSearchBox: {
