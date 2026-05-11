@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
+  Linking,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -66,6 +68,17 @@ const extractStandardNumberStr = (standard: string): string =>
 
 const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
 
+const MWASFAH_BASE = "https://mwasfah.sfda.gov.sa/Standard/Search";
+
+function openInMwasfah(item: Regulation) {
+  // Use Arabic title when available; fall back to English or the standard code
+  const searchTerm = item.arabic || item.english || item.standard;
+  const url = `${MWASFAH_BASE}?StandardName=${encodeURIComponent(searchTerm)}`;
+  Linking.openURL(url).catch(() => {
+    Linking.openURL(MWASFAH_BASE);
+  });
+}
+
 export default function FoodStandardsScreen() {
   const [query, setQuery] = useState("");
 
@@ -102,21 +115,32 @@ export default function FoodStandardsScreen() {
           autoCorrect={false}
           autoCapitalize="none"
         />
-        <Text style={styles.countText}>
-          {query
-            ? `${results.length} نتيجة من ${ALL.length}`
-            : `إجمالي: ${ALL.length} مواصفة`}
-        </Text>
+        <View style={styles.searchFooter}>
+          <Text style={styles.countText}>
+            {query
+              ? `${results.length} نتيجة من ${ALL.length}`
+              : `إجمالي: ${ALL.length} مواصفة`}
+          </Text>
+          <Text style={styles.tapHint}>اضغط على أي مواصفة للبحث في المتجر</Text>
+        </View>
       </View>
 
       <FlatList
         data={results}
         keyExtractor={(item, idx) => `${item.standard}-${idx}`}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.standard} numberOfLines={2}>
-              {item.standard}
-            </Text>
+          <Pressable
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            onPress={() => openInMwasfah(item)}
+          >
+            <View style={styles.cardHeader}>
+              <Text style={styles.standard} numberOfLines={2}>
+                {item.standard}
+              </Text>
+              <View style={styles.linkBadge}>
+                <Text style={styles.linkBadgeText}>🔗 المتجر</Text>
+              </View>
+            </View>
             {item.arabic ? (
               <Text style={styles.arabic} numberOfLines={4}>
                 {item.arabic}
@@ -127,7 +151,7 @@ export default function FoodStandardsScreen() {
                 {item.english}
               </Text>
             ) : null}
-          </View>
+          </Pressable>
         )}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
@@ -161,11 +185,21 @@ const styles = StyleSheet.create({
     color: colors.light.text,
     textAlign: "right",
   },
-  countText: {
+  searchFooter: {
     marginTop: 8,
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  countText: {
     fontSize: 12,
     color: colors.light.mutedForeground,
     textAlign: "right",
+  },
+  tapHint: {
+    fontSize: 11,
+    color: "#0e7c7c",
+    textAlign: "left",
   },
   listContent: {
     padding: 14,
@@ -183,11 +217,34 @@ const styles = StyleSheet.create({
     elevation: 2,
     gap: 6,
   },
+  cardPressed: {
+    backgroundColor: "#f0fafa",
+    shadowOpacity: 0.02,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
   standard: {
     fontSize: 12,
     fontWeight: "700",
     color: "#0e7c7c",
     textAlign: "left",
+    flex: 1,
+  },
+  linkBadge: {
+    backgroundColor: "#e0f2f1",
+    borderRadius: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    flexShrink: 0,
+  },
+  linkBadgeText: {
+    fontSize: 10,
+    color: "#00695c",
+    fontWeight: "600",
   },
   arabic: {
     fontSize: 14,
