@@ -584,7 +584,7 @@ export default function LabTestSearchScreen() {
             >
               <Text style={{ fontSize: 16, color: "#b2d8d8" }}>🗑</Text>
             </Pressable>
-            {!showSuggestions && !mandatoryMode && (
+            {!showSuggestions && (
               <Pressable
                 onPress={handleCompare}
                 style={({ pressed }) => [styles.compareBtn, { opacity: pressed ? 0.85 : 1 }]}
@@ -919,19 +919,6 @@ export default function LabTestSearchScreen() {
             </View>
           }
         />
-        {selected.length > 0 && (
-          <View style={styles.mandatoryCompareBar}>
-            <Pressable
-              onPress={handleCompare}
-              style={({ pressed }) => [styles.mandatoryCompareBtn, { opacity: pressed ? 0.85 : 1 }]}
-            >
-              <Text style={styles.mandatoryCompareBtnText}>قارن ({selected.length}) ›</Text>
-            </Pressable>
-            <Text style={styles.mandatoryCompareBarText}>
-              {selected.length} اختبار في السلة
-            </Text>
-          </View>
-        )}
         </View>
       )}
 
