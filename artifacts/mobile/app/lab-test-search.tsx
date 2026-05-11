@@ -155,7 +155,9 @@ function extractKeywords(testName: string): string[] {
     .replace(/^(determination of|detection of|microbiological)\s+/i, "")
     .replace(/\s*\([^)]*\)/g, "") // strip parenthetical
     .split(/[\s,&./]+/)
-    .filter((w) => w.length > 2);
+    .filter((w) => w.length > 2)
+    // Basic plural stemming so "Pesticides" matches "Pesticide Residues", etc.
+    .map((w) => (w.length > 4 && w.endsWith("s") ? w.slice(0, -1) : w));
 }
 
 // Abbreviated/full element names → lab parameter suffix used in PRIVATE_LABS
