@@ -158,6 +158,38 @@ function extractKeywords(testName: string): string[] {
     .filter((w) => w.length > 2);
 }
 
+// Abbreviated/full element names → lab parameter suffix used in PRIVATE_LABS
+const ELEMENT_ABBREV: Record<string, string> = {
+  as: "As", arsenic: "As",
+  pb: "Pb", lead: "Pb",
+  cd: "Cd", cadmium: "Cd",
+  hg: "Hg", mercury: "Hg",
+};
+
+/**
+ * Special resolver for "Heavy Metals (As, Pb, Cd)" style mandatory tests.
+ * Parses the parenthetical element list and returns the specific per-element
+ * suggestion IDs rather than the generic keyword match that would grab all
+ * variants (Single, Multi, All-4-Elements).
+ * Returns [] when the test name doesn't match the pattern.
+ */
+function resolveHeavyMetals(testName: string, field: string): string[] {
+  const m = testName.match(/^Heavy\s+Metals?\s*\(([^)]+)\)$/i);
+  if (!m) return [];
+  const ids: string[] = [];
+  for (const token of m[1].split(/[,\s]+/)) {
+    const el = token.trim().toLowerCase();
+    if (!el) continue;
+    const suffix = ELEMENT_ABBREV[el];
+    if (!suffix) continue;
+    const suggId = `${field}||Heavy Metals - ${suffix}`;
+    if (ALL_SUGGESTIONS.some((s) => s.id === suggId) && !ids.includes(suggId)) {
+      ids.push(suggId);
+    }
+  }
+  return ids;
+}
+
 // Key is `${MandatoryField}::${testName}` so Food tests only match Food-field lab suggestions
 function buildMandatoryMatchMap(): Map<string, string[]> {
   const map = new Map<string, string[]>();
@@ -165,6 +197,15 @@ function buildMandatoryMatchMap(): Map<string, string[]> {
     for (const t of entry.tests) {
       const key = `${entry.field}::${t.name}`;
       if (map.has(key)) continue;
+
+      // ── 1. Try specialised resolvers first ─────────────────────────────────
+      const heavyMetalIds = resolveHeavyMetals(t.name, entry.field);
+      if (heavyMetalIds.length > 0) {
+        map.set(key, heavyMetalIds);
+        continue;
+      }
+
+      // ── 2. General keyword fallback ────────────────────────────────────────
       const keywords = extractKeywords(t.name);
       const matched = ALL_SUGGESTIONS.filter((s) => {
         // Strict field match: Food mandatory test → Food lab suggestions only
