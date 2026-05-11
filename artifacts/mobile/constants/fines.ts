@@ -15,6 +15,16 @@ export const DEFAULT_PAGE_ASPECT = 2105 / 1490;
 
 export const FINES_CATEGORIES: FinesCategory[] = [
   {
+    id: "food",
+    title: "مخالفات نظام الغذاء ولائحته التنفيذية",
+    shortTitle: "نظام الغذاء",
+    subtitle: "273 مخالفة · جدول + بنود عامة",
+    emoji: "🍽️",
+    bg: "#fff3e0",
+    enabled: true,
+    route: "/food-fines",
+  },
+  {
     id: "veterinary",
     title: "تصنيف المخالفات والعقوبات المقررة لها في نظام المستحضرات البيطرية",
     shortTitle: "المستحضرات البيطرية",
@@ -63,15 +73,5 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     enabled: true,
     pageCount: 27,
     pageAspect: 2105 / 1490,
-  },
-  {
-    id: "food",
-    title: "مخالفات نظام الغذاء ولائحته التنفيذية",
-    shortTitle: "نظام الغذاء",
-    subtitle: "273 مخالفة · جدول + بنود عامة",
-    emoji: "🍽️",
-    bg: "#fff3e0",
-    enabled: true,
-    route: "/food-fines",
   },
 ];
