@@ -149,7 +149,6 @@
     field: "Food",
     tests: [
     { name: "Heavy Metals (Pb)" },
-    { name: "Patulin (Apple juice only)" },
     ],
   },
   {
