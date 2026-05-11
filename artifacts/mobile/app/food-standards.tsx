@@ -1,5 +1,7 @@
+import * as Clipboard from "expo-clipboard";
 import React, { useMemo, useState } from "react";
 import {
+  Alert,
   FlatList,
   Linking,
   Platform,
@@ -68,15 +70,25 @@ const extractStandardNumberStr = (standard: string): string =>
 
 const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
 
-const MWASFAH_BASE = "https://mwasfah.sfda.gov.sa/Standard/Search";
+const MWASFAH_URL = "https://mwasfah.sfda.gov.sa/Standard/Search";
 
-function openInMwasfah(item: Regulation) {
-  // Use Arabic title when available; fall back to English or the standard code
+async function openInMwasfah(item: Regulation) {
   const searchTerm = item.arabic || item.english || item.standard;
-  const url = `${MWASFAH_BASE}?StandardName=${encodeURIComponent(searchTerm)}`;
-  Linking.openURL(url).catch(() => {
-    Linking.openURL(MWASFAH_BASE);
-  });
+  await Clipboard.setStringAsync(searchTerm);
+
+  Alert.alert(
+    "فتح المتجر",
+    `تم نسخ اسم المواصفة:\n\n"${searchTerm}"\n\nالصقه في خانة البحث بعد فتح الصفحة.`,
+    [
+      { text: "إلغاء", style: "cancel" },
+      {
+        text: "فتح المتجر 🔗",
+        onPress: () =>
+          Linking.openURL(MWASFAH_URL).catch(() => {}),
+      },
+    ],
+    { cancelable: true }
+  );
 }
 
 export default function FoodStandardsScreen() {
@@ -121,7 +133,7 @@ export default function FoodStandardsScreen() {
               ? `${results.length} نتيجة من ${ALL.length}`
               : `إجمالي: ${ALL.length} مواصفة`}
           </Text>
-          <Text style={styles.tapHint}>اضغط على أي مواصفة للبحث في المتجر</Text>
+          <Text style={styles.tapHint}>اضغط للبحث في المتجر</Text>
         </View>
       </View>
 
@@ -187,9 +199,9 @@ const styles = StyleSheet.create({
   },
   searchFooter: {
     marginTop: 8,
-    flexDirection: "row-reverse",
-    justifyContent: "space-between",
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   countText: {
     fontSize: 12,
@@ -199,7 +211,6 @@ const styles = StyleSheet.create({
   tapHint: {
     fontSize: 11,
     color: "#0e7c7c",
-    textAlign: "left",
   },
   listContent: {
     padding: 14,
