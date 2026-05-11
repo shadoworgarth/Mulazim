@@ -246,6 +246,7 @@ export default function LabTestSearchScreen() {
   const [compareMode, setCompareMode] = useState(false);
   const [browsing, setBrowsing] = useState(false);
   const [browseField, setBrowseField] = useState<LabField | null>(null);
+  const [browseQuery, setBrowseQuery] = useState("");
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
 
   // ── Derived state ──────────────────────────────────────────────────────────
@@ -272,10 +273,13 @@ export default function LabTestSearchScreen() {
 
   const browseProducts = useMemo<ProductEntry[]>(() => {
     if (mainView !== "browse") return [];
+    const q = browseQuery.trim().toLowerCase();
     return ALL_PRODUCTS.filter(
-      (p) => browseField === null || p.field === browseField
+      (p) =>
+        (browseField === null || p.field === browseField) &&
+        (q.length === 0 || p.product.toLowerCase().includes(q))
     );
-  }, [mainView, browseField]);
+  }, [mainView, browseField, browseQuery]);
 
   const labResults = useMemo(
     () => (mainView === "results" ? computeLabResults(selected) : []),
@@ -308,6 +312,7 @@ export default function LabTestSearchScreen() {
     setQuery("");
     setCompareMode(false);
     setBrowsing(true);
+    setBrowseQuery("");
     setExpandedProducts(new Set());
   }, []);
 
@@ -452,6 +457,27 @@ export default function LabTestSearchScreen() {
   // ── Browse field filter tabs header ──────────────────────────────────────
   const BrowseHeader = (
     <View>
+      {/* Product search input */}
+      <View style={styles.browseSearchBox}>
+        <Text style={{ fontSize: 15, color: "#80cbc4" }}>🔍</Text>
+        <TextInput
+          style={styles.browseSearchInput}
+          placeholder="Search product (e.g. Meat, Juice…)"
+          placeholderTextColor="#9bb0b0"
+          value={browseQuery}
+          onChangeText={setBrowseQuery}
+          autoCapitalize="none"
+          returnKeyType="search"
+          writingDirection="ltr"
+          textAlign="left"
+        />
+        {browseQuery.length > 0 && (
+          <Pressable onPress={() => setBrowseQuery("")} hitSlop={8}>
+            <Text style={{ fontSize: 17, color: "#b2d8d8" }}>✕</Text>
+          </Pressable>
+        )}
+      </View>
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -1210,6 +1236,30 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: ACCENT,
     textAlign: "center",
+  },
+
+  // Browse product search
+  browseSearchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0fafa",
+    borderRadius: 10,
+    marginHorizontal: 14,
+    marginTop: 10,
+    marginBottom: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#b2d8d8",
+  },
+  browseSearchInput: {
+    flex: 1,
+    fontSize: 13,
+    color: "#1a3a3a",
+    paddingVertical: 0,
+    writingDirection: "ltr",
+    textAlign: "left",
   },
 
   // Product browse cards
