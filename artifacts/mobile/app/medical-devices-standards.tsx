@@ -1,7 +1,11 @@
+import * as Clipboard from "expo-clipboard";
 import React, { useMemo, useState } from "react";
 import {
+  Alert,
   FlatList,
+  Linking,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -35,8 +39,7 @@ const extractStandardToken = (standard: string): string => {
 
 const extractStandardKey = (standard: string): [number, number, number] => {
   const stdToken = extractStandardToken(standard);
-  if (!stdToken)
-    return [Number.MAX_SAFE_INTEGER, 0, 0];
+  if (!stdToken) return [Number.MAX_SAFE_INTEGER, 0, 0];
   const parts = stdToken.split("-").map((p) => parseInt(p, 10));
   return [parts[0], parts[1] || 0, parts[2] || 0];
 };
@@ -66,6 +69,26 @@ const extractStandardNumberStr = (standard: string): string =>
   extractStandardToken(standard);
 
 const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
+
+const MWASFAH_URL = "https://mwasfah.sfda.gov.sa/Standard/Search";
+
+async function openInMwasfah(item: Regulation) {
+  const searchTerm = item.arabic || item.english || item.standard;
+  await Clipboard.setStringAsync(searchTerm);
+
+  Alert.alert(
+    "فتح المتجر",
+    `تم نسخ اسم المواصفة:\n\n"${searchTerm}"\n\nالصقه في خانة البحث بعد فتح الصفحة.`,
+    [
+      { text: "إلغاء", style: "cancel" },
+      {
+        text: "فتح المتجر 🔗",
+        onPress: () => Linking.openURL(MWASFAH_URL).catch(() => {}),
+      },
+    ],
+    { cancelable: true }
+  );
+}
 
 export default function MedicalDevicesStandardsScreen() {
   const [query, setQuery] = useState("");
@@ -103,21 +126,32 @@ export default function MedicalDevicesStandardsScreen() {
           autoCorrect={false}
           autoCapitalize="none"
         />
-        <Text style={styles.countText}>
-          {query
-            ? `${results.length} نتيجة من ${ALL.length}`
-            : `إجمالي: ${ALL.length} مواصفة`}
-        </Text>
+        <View style={styles.searchFooter}>
+          <Text style={styles.countText}>
+            {query
+              ? `${results.length} نتيجة من ${ALL.length}`
+              : `إجمالي: ${ALL.length} مواصفة`}
+          </Text>
+          <Text style={styles.tapHint}>اضغط للبحث في المتجر</Text>
+        </View>
       </View>
 
       <FlatList
         data={results}
         keyExtractor={(item, idx) => `${item.standard}-${idx}`}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.standard} numberOfLines={2}>
-              {item.standard}
-            </Text>
+          <Pressable
+            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+            onPress={() => openInMwasfah(item)}
+          >
+            <View style={styles.cardHeader}>
+              <Text style={styles.standard} numberOfLines={2}>
+                {item.standard}
+              </Text>
+              <View style={styles.linkBadge}>
+                <Text style={styles.linkBadgeText}>🔗 المتجر</Text>
+              </View>
+            </View>
             {item.arabic ? (
               <Text style={styles.arabic} numberOfLines={4}>
                 {item.arabic}
@@ -128,7 +162,7 @@ export default function MedicalDevicesStandardsScreen() {
                 {item.english}
               </Text>
             ) : null}
-          </View>
+          </Pressable>
         )}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
@@ -162,11 +196,20 @@ const styles = StyleSheet.create({
     color: colors.light.text,
     textAlign: "right",
   },
-  countText: {
+  searchFooter: {
     marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  countText: {
     fontSize: 12,
     color: colors.light.mutedForeground,
     textAlign: "right",
+  },
+  tapHint: {
+    fontSize: 11,
+    color: "#0e7c7c",
   },
   listContent: {
     padding: 14,
@@ -184,11 +227,34 @@ const styles = StyleSheet.create({
     elevation: 2,
     gap: 6,
   },
+  cardPressed: {
+    backgroundColor: "#f0fafa",
+    shadowOpacity: 0.02,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
   standard: {
     fontSize: 12,
     fontWeight: "700",
     color: "#0e7c7c",
     textAlign: "left",
+    flex: 1,
+  },
+  linkBadge: {
+    backgroundColor: "#e0f2f1",
+    borderRadius: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    flexShrink: 0,
+  },
+  linkBadgeText: {
+    fontSize: 10,
+    color: "#00695c",
+    fontWeight: "600",
   },
   arabic: {
     fontSize: 14,
