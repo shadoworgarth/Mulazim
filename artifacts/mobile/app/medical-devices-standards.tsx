@@ -74,12 +74,17 @@ const MWASFAH_URL = "https://mwasfah.sfda.gov.sa/Standard/Search";
 
 function handleCardPress(item: Regulation) {
   const searchTerm = item.arabic || item.english || item.standard;
-  Linking.openURL(MWASFAH_URL).catch(() => {});
   Clipboard.setStringAsync(searchTerm).catch(() => {});
   Alert.alert(
-    "✓ تم النسخ — فُتح المتجر",
-    `تم نسخ اسم المواصفة:\n\n"${searchTerm}"\n\nالصقه في خانة البحث في الصفحة التي فُتحت.`,
-    [{ text: "حسناً" }],
+    "تم نسخ اسم المواصفة",
+    `"${searchTerm}"\n\nيمكنك لصقه في خانة البحث في متجر المواصفات.`,
+    [
+      { text: "حسناً", style: "cancel" },
+      {
+        text: "فتح المتجر 🔗",
+        onPress: () => Linking.openURL(MWASFAH_URL).catch(() => {}),
+      },
+    ],
     { cancelable: true }
   );
 }
