@@ -1,7 +1,6 @@
 import * as Clipboard from "expo-clipboard";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-  Alert,
   FlatList,
   Linking,
   Platform,
@@ -72,26 +71,10 @@ const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
 
 const MWASFAH_URL = "https://mwasfah.sfda.gov.sa/Standard/Search";
 
-async function openInMwasfah(item: Regulation) {
-  const searchTerm = item.arabic || item.english || item.standard;
-  await Clipboard.setStringAsync(searchTerm);
-
-  Alert.alert(
-    "فتح المتجر",
-    `تم نسخ اسم المواصفة:\n\n"${searchTerm}"\n\nالصقه في خانة البحث بعد فتح الصفحة.`,
-    [
-      { text: "إلغاء", style: "cancel" },
-      {
-        text: "فتح المتجر 🔗",
-        onPress: () => Linking.openURL(MWASFAH_URL).catch(() => {}),
-      },
-    ],
-    { cancelable: true }
-  );
-}
-
 export default function MedicalDevicesStandardsScreen() {
   const [query, setQuery] = useState("");
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const normalizedAll = useMemo(
     () =>
@@ -113,6 +96,15 @@ export default function MedicalDevicesStandardsScreen() {
       )
     );
   }, [query, normalizedAll]);
+
+  const handlePress = useCallback((item: Regulation, key: string) => {
+    Linking.openURL(MWASFAH_URL).catch(() => {});
+    const searchTerm = item.arabic || item.english || item.standard;
+    Clipboard.setStringAsync(searchTerm).catch(() => {});
+    setCopiedKey(key);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setCopiedKey(null), 2000);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -139,31 +131,40 @@ export default function MedicalDevicesStandardsScreen() {
       <FlatList
         data={results}
         keyExtractor={(item, idx) => `${item.standard}-${idx}`}
-        renderItem={({ item }) => (
-          <Pressable
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-            onPress={() => openInMwasfah(item)}
-          >
-            <View style={styles.cardHeader}>
-              <Text style={styles.standard} numberOfLines={2}>
-                {item.standard}
-              </Text>
-              <View style={styles.linkBadge}>
-                <Text style={styles.linkBadgeText}>🔗 المتجر</Text>
+        renderItem={({ item, index }) => {
+          const key = `${item.standard}-${index}`;
+          const copied = copiedKey === key;
+          return (
+            <Pressable
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.cardPressed,
+              ]}
+              onPress={() => handlePress(item, key)}
+            >
+              <View style={styles.cardHeader}>
+                <Text style={styles.standard} numberOfLines={2}>
+                  {item.standard}
+                </Text>
+                <View style={[styles.linkBadge, copied && styles.linkBadgeCopied]}>
+                  <Text style={[styles.linkBadgeText, copied && styles.linkBadgeTextCopied]}>
+                    {copied ? "✓ تم النسخ" : "🔗 المتجر"}
+                  </Text>
+                </View>
               </View>
-            </View>
-            {item.arabic ? (
-              <Text style={styles.arabic} numberOfLines={4}>
-                {item.arabic}
-              </Text>
-            ) : null}
-            {item.english ? (
-              <Text style={styles.english} numberOfLines={4}>
-                {item.english}
-              </Text>
-            ) : null}
-          </Pressable>
-        )}
+              {item.arabic ? (
+                <Text style={styles.arabic} numberOfLines={4}>
+                  {item.arabic}
+                </Text>
+              ) : null}
+              {item.english ? (
+                <Text style={styles.english} numberOfLines={4}>
+                  {item.english}
+                </Text>
+              ) : null}
+            </Pressable>
+          );
+        }}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <Text style={styles.empty}>لا توجد نتائج مطابقة</Text>
@@ -251,10 +252,16 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     flexShrink: 0,
   },
+  linkBadgeCopied: {
+    backgroundColor: "#c8e6c9",
+  },
   linkBadgeText: {
     fontSize: 10,
     color: "#00695c",
     fontWeight: "600",
+  },
+  linkBadgeTextCopied: {
+    color: "#2e7d32",
   },
   arabic: {
     fontSize: 14,
