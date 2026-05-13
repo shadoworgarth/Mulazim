@@ -1,9 +1,9 @@
 import * as Clipboard from "expo-clipboard";
 import React, { useMemo, useState } from "react";
 import {
-  Alert,
   FlatList,
   Linking,
+  Modal,
   Platform,
   Pressable,
   StyleSheet,
@@ -72,25 +72,9 @@ const isNumericToken = (t: string) => /^[\d][\d\-]*$/.test(t);
 
 const MWASFAH_URL = "https://mwasfah.sfda.gov.sa/Standard/Search";
 
-function handleCardPress(item: Regulation) {
-  const searchTerm = item.arabic || item.english || item.standard;
-  Clipboard.setStringAsync(searchTerm).catch(() => {});
-  Alert.alert(
-    "تم نسخ اسم المواصفة",
-    `"${searchTerm}"\n\nيمكنك لصقه في خانة البحث في متجر المواصفات.`,
-    [
-      { text: "حسناً", style: "cancel" },
-      {
-        text: "فتح المتجر 🔗",
-        onPress: () => Linking.openURL(MWASFAH_URL).catch(() => {}),
-      },
-    ],
-    { cancelable: true }
-  );
-}
-
 export default function MedicalDevicesStandardsScreen() {
   const [query, setQuery] = useState("");
+  const [copiedItem, setCopiedItem] = useState<Regulation | null>(null);
 
   const normalizedAll = useMemo(
     () =>
@@ -113,8 +97,56 @@ export default function MedicalDevicesStandardsScreen() {
     );
   }, [query, normalizedAll]);
 
+  const handleCardPress = (item: Regulation) => {
+    const searchTerm = item.arabic || item.english || item.standard;
+    Clipboard.setStringAsync(searchTerm).catch(() => {});
+    setCopiedItem(item);
+  };
+
+  const closeModal = () => setCopiedItem(null);
+
+  const openStore = () => {
+    Linking.openURL(MWASFAH_URL).catch(() => {});
+    closeModal();
+  };
+
+  const searchTerm = copiedItem
+    ? copiedItem.arabic || copiedItem.english || copiedItem.standard
+    : "";
+
   return (
     <View style={styles.container}>
+      <Modal
+        visible={copiedItem !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={closeModal}
+      >
+        <Pressable style={styles.overlay} onPress={closeModal}>
+          <Pressable style={styles.dialog} onPress={() => {}}>
+            <Text style={styles.dialogTitle}>تم نسخ اسم المواصفة</Text>
+            <Text style={styles.dialogName}>"{searchTerm}"</Text>
+            <Text style={styles.dialogBody}>
+              يمكنك لصقه في خانة البحث في متجر المواصفات.
+            </Text>
+            <View style={styles.dialogButtons}>
+              <Pressable
+                style={[styles.dialogBtn, styles.dialogBtnSecondary]}
+                onPress={closeModal}
+              >
+                <Text style={styles.dialogBtnSecondaryText}>حسناً</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.dialogBtn, styles.dialogBtnPrimary]}
+                onPress={openStore}
+              >
+                <Text style={styles.dialogBtnPrimaryText}>فتح المتجر 🔗</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       <View style={styles.searchWrap}>
         <TextInput
           style={styles.input}
@@ -179,6 +211,75 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.light.background,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  dialog: {
+    backgroundColor: "#ffffff",
+    borderRadius: 18,
+    padding: 24,
+    width: "100%",
+    maxWidth: 360,
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  dialogTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: colors.light.text,
+    textAlign: "right",
+  },
+  dialogName: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#0e7c7c",
+    textAlign: "right",
+    lineHeight: 22,
+    backgroundColor: "#f0fafa",
+    borderRadius: 10,
+    padding: 10,
+  },
+  dialogBody: {
+    fontSize: 14,
+    color: colors.light.mutedForeground,
+    textAlign: "right",
+    lineHeight: 22,
+  },
+  dialogButtons: {
+    flexDirection: "row-reverse",
+    gap: 10,
+    marginTop: 4,
+  },
+  dialogBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  dialogBtnPrimary: {
+    backgroundColor: "#0e7c7c",
+  },
+  dialogBtnPrimaryText: {
+    color: "#ffffff",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  dialogBtnSecondary: {
+    backgroundColor: "#f0f4f4",
+  },
+  dialogBtnSecondaryText: {
+    color: colors.light.text,
+    fontWeight: "600",
+    fontSize: 14,
   },
   searchWrap: {
     padding: 14,
