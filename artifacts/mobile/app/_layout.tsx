@@ -75,6 +75,9 @@ function AuthGate() {
       <Stack.Screen name="food-fines" options={{ title: "مخالفات نظام الغذاء (2026)" }} />
       <Stack.Screen name="food-fines-search" options={{ title: "جدول المخالفات والعقوبات" }} />
       <Stack.Screen name="food-fines-guidelines" options={{ title: "البنود العامة والملاحق" }} />
+      <Stack.Screen name="veterinary-fines-search" options={{ title: "مخالفات المستحضرات البيطرية" }} />
+      <Stack.Screen name="cosmetics-fines-search" options={{ title: "مخالفات منتجات التجميل" }} />
+      <Stack.Screen name="pharma-fines-search" options={{ title: "مخالفات المستحضرات الصيدلانية والعشبية" }} />
       <Stack.Screen name="narcotics" options={{ title: "المخدرات والمؤثرات العقلية" }} />
       <Stack.Screen name="private-labs" options={{ title: "المختبرات الخاصة" }} />
       <Stack.Screen name="private-labs-list" options={{ title: "قائمة المختبرات" }} />

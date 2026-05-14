@@ -31,8 +31,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     emoji: "🐾",
     bg: "#e8f5e9",
     enabled: true,
-    pageCount: 5,
-    pageAspect: 2103 / 1485,
+    route: "/veterinary-fines-search",
   },
   {
     id: "medical-devices",
@@ -51,8 +50,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     emoji: "💄",
     bg: "#fce4ec",
     enabled: true,
-    pageCount: 14,
-    pageAspect: 2105 / 1490,
+    route: "/cosmetics-fines-search",
   },
   {
     id: "pharma",
@@ -61,8 +59,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     emoji: "💊",
     bg: "#f3e5f5",
     enabled: true,
-    pageCount: 23,
-    pageAspect: 2113 / 1483,
+    route: "/pharma-fines-search",
   },
   {
     id: "animal-feed",
