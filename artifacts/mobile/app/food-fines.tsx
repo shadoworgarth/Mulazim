@@ -14,20 +14,11 @@ const SUBCATEGORIES = [
   {
     id: "table",
     title: "جدول المخالفات والعقوبات",
-    subtitle: "273 مخالفة مصنفة حسب القطاع والنشاط",
+    subtitle: "274 مخالفة مصنفة حسب القطاع والنشاط",
     emoji: "📋",
     bg: "#fde8e8",
     accent: "#c0392b",
     route: "/food-fines-search",
-  },
-  {
-    id: "guidelines",
-    title: "البنود العامة والملاحق",
-    subtitle: "آلية الضبط · العقوبات غير المالية · تصنيف المنشآت والمناطق",
-    emoji: "📖",
-    bg: "#e8f0fe",
-    accent: "#1a56db",
-    route: "/food-fines-guidelines",
   },
 ];
 
