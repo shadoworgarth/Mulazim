@@ -48,7 +48,7 @@ export const FINES_CATEGORIES: FinesCategory[] = [
     id: "cosmetics",
     title: "جدول مخالفات نظام منتجات التجميل ولائحته التنفيذية والعقوبات المقررة لها",
     shortTitle: "منتجات التجميل",
-    subtitle: "115 مخالفة",
+    subtitle: "136 مخالفة",
     emoji: "💄",
     bg: "#fce4ec",
     enabled: true,
