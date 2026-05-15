@@ -180,7 +180,7 @@ export default function MedicalDevicesStandardsScreen() {
                 {item.standard}
               </Text>
               <View style={styles.linkBadge}>
-                <Text style={styles.linkBadgeText}>🔗 المتجر</Text>
+                <Text style={styles.linkBadgeText}>المتجر</Text>
               </View>
             </View>
             {item.arabic ? (
@@ -352,9 +352,10 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   linkBadgeText: {
-    fontSize: 10,
+    fontSize: 12,
     color: "#00695c",
     fontWeight: "600",
+    textAlign: "center",
   },
   arabic: {
     fontSize: 14,
