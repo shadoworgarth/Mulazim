@@ -33,7 +33,7 @@ const FIELD_ORDER: LabField[] = ["Food", "Cosmetics", "Feed", "Tobacco"];
 interface Section {
   field: LabField;
   product: string;
-  data: { parameter: string; price?: string }[];
+  data: { parameter: string; price?: string; notes?: string }[];
 }
 
 export default function PrivateLabDetailScreen() {
@@ -62,7 +62,7 @@ export default function PrivateLabDetailScreen() {
       if (!grouped.has(key)) {
         grouped.set(key, { field: t.field, product: t.product, data: [] });
       }
-      grouped.get(key)!.data.push({ parameter: t.parameter, price: t.price });
+      grouped.get(key)!.data.push({ parameter: t.parameter, price: t.price, notes: t.notes });
     });
 
     return Array.from(grouped.values());
@@ -229,6 +229,9 @@ export default function PrivateLabDetailScreen() {
           <View style={styles.testRow}>
             <View style={styles.testLeft}>
               <Text style={styles.testParam}>{item.parameter}</Text>
+              {item.notes ? (
+                <Text style={styles.testNotes}>{item.notes}</Text>
+              ) : null}
             </View>
             {item.price ? (
               <View style={styles.priceWrap}>
@@ -362,6 +365,13 @@ const styles = StyleSheet.create({
     color: colors.light.text,
     textAlign: "left",
     writingDirection: "ltr",
+  },
+  testNotes: {
+    fontSize: 11,
+    color: "#6b7280",
+    textAlign: "left",
+    lineHeight: 17,
+    marginTop: 3,
   },
   priceWrap: { alignItems: "flex-end", gap: 3, flexShrink: 0 },
   priceBadge: {

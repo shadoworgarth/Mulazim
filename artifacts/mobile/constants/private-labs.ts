@@ -5,6 +5,7 @@ export interface LabTest {
   product: string;
   parameter: string;
   price?: string;
+  notes?: string;
 }
 
 export interface PrivateLab {
@@ -310,7 +311,7 @@ export const PRIVATE_LABS: PrivateLab[] = [
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Ni", price: "130" },
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Pb", price: "130" },
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Sn", price: "130" },
-      { field: "Tobacco", product: "E-Cigarettes", parameter: "Microbiological contamination" },
+      { field: "Tobacco", product: "E-Cigarettes", parameter: "Microbiological contamination", price: "591", notes: "• Total aerobic microbial count — 120 ر.س/تكرار\n• Total yeast/moulds count — 120 ر.س/تكرار\n• Staphylococcus aureus — 151 ر.س/تكرار\n• Pseudomonas aeruginosa — 200 ر.س/تكرار" },
       { field: "Tobacco", product: "Inverted molases liquer used in tobacco industry", parameter: "Moisture %", price: "80" },
       { field: "Tobacco", product: "Inverted molases liquer used in tobacco industry", parameter: "Additives (Colours)", price: "435" },
       { field: "Feed", product: "poultry feed", parameter: "Microbiological Tests (Clostridum)", price: "185" },
@@ -1485,6 +1486,7 @@ export const PRIVATE_LABS: PrivateLab[] = [
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Ni", price: "130" },
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Pb", price: "130" },
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Sn", price: "130" },
+      { field: "Tobacco", product: "E-Cigarettes", parameter: "Microbiological contamination", price: "591", notes: "• Total aerobic microbial count — 120 ر.س/تكرار\n• Total yeast/moulds count — 120 ر.س/تكرار\n• Staphylococcus aureus — 151 ر.س/تكرار\n• Pseudomonas aeruginosa — 200 ر.س/تكرار" },
     ],
   },
   {
@@ -2318,7 +2320,7 @@ export const PRIVATE_LABS: PrivateLab[] = [
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Ni", price: "130" },
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Pb", price: "130" },
       { field: "Tobacco", product: "E-Cigarettes", parameter: "Heavy Metals - Sn", price: "130" },
-      { field: "Tobacco", product: "E-Cigarettes", parameter: "Microbiological contamination" },
+      { field: "Tobacco", product: "E-Cigarettes", parameter: "Microbiological contamination", price: "591", notes: "• Total aerobic microbial count — 120 ر.س/تكرار\n• Total yeast/moulds count — 120 ر.س/تكرار\n• Staphylococcus aureus — 151 ر.س/تكرار\n• Pseudomonas aeruginosa — 200 ر.س/تكرار" },
     ],
   },
   {
