@@ -1490,7 +1490,7 @@ export const PRIVATE_LABS: PrivateLab[] = [
   },
   {
     id: 6,
-    name: "مختبر التأكيد للمواد الغذائية",
+    name: "شركة التأكيد للمختبرات",
     tests: [
       { field: "Food", product: "Milk and milk products", parameter: "Aerobic plate count", price: "120*" },
       { field: "Food", product: "Milk and milk products", parameter: "Enterobacteriaceae", price: "120*" },
@@ -2863,7 +2863,7 @@ export const PRIVATE_LABS: PrivateLab[] = [
   },
   {
     id: 12,
-    name: "مختبر ألفا لاب الطبي",
+    name: "مختبر ألفا لاب للمختبرات",
     tests: [
       { field: "Food", product: "Milk and milk products", parameter: "Aerobic plate count", price: "120*" },
       { field: "Food", product: "Milk and milk products", parameter: "Enterobacteriaceae", price: "120*" },
