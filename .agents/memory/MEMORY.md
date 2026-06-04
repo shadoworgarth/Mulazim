@@ -1,0 +1,1 @@
+- [Suspended Private Labs](suspended-labs.md) — جودة العسل and ايداك removed 2026-06-04 (license suspension); full test data stored for quick re-adding.
