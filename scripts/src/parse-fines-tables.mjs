@@ -34,6 +34,13 @@ const ORDINAL_TO_NUM = {
   'الحادي عشر': 11, 'الثاني عشر': 12,
 };
 
+// Number → Arabic ordinal for chapter labels (الفصل الأول, الفصل الثاني...)
+const NUM_TO_CHAPTER_ORDINAL = {
+  1: 'الأول', 2: 'الثاني', 3: 'الثالث', 4: 'الرابع', 5: 'الخامس',
+  6: 'السادس', 7: 'السابع', 8: 'الثامن', 9: 'التاسع', 10: 'العاشر',
+  11: 'الحادي عشر', 12: 'الثاني عشر',
+};
+
 function detectSectionNum(line) {
   // Check multi-word ordinals first (الحادي عشر before الحادي)
   for (const [k, v] of Object.entries(ORDINAL_TO_NUM).sort((a, b) => b[0].length - a[0].length)) {
@@ -136,8 +143,10 @@ function parseFinesText(text) {
       const codeChapter = parseInt(codeParts[1], 10);
       if (!isNaN(codeChapter) && codeChapter !== currentChapter) {
         currentChapter = codeChapter;
-        if (!currentChapterLabel.includes(`${codeChapter}`)) {
-          currentChapterLabel = `الفصل ${codeChapter}`;
+        // Only reset label if current label doesn't belong to this chapter number
+        const ordinal = NUM_TO_CHAPTER_ORDINAL[codeChapter] ?? String(codeChapter);
+        if (!currentChapterLabel.includes(ordinal) && !currentChapterLabel.includes(String(codeChapter))) {
+          currentChapterLabel = `الفصل ${ordinal}`;
         }
       }
     }
