@@ -173,6 +173,7 @@ const REGION_LABEL: Record<RegionKey, string> = { a: "الفئة (أ)", b: "ال
 
 export default function CosmeticsFinesSearchScreen() {
   const [query, setQuery] = useState("");
+  const [tagsExpanded, setTagsExpanded] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionFilter>("all");
   const [collapsedChapters, setCollapsedChapters] = useState<Set<string>>(() => {
     const keys = new Set<string>();
@@ -201,9 +202,14 @@ export default function CosmeticsFinesSearchScreen() {
     <View style={styles.container}>
       <View style={styles.searchWrap}><TextInput style={styles.searchInput} placeholder="ابحث بوصف المخالفة أو رقم المادة (مثال: 1/1/1)" placeholderTextColor={colors.light.mutedForeground} value={query} onChangeText={setQuery} clearButtonMode="while-editing" textAlign="right" returnKeyType="search" /></View>
       <View style={styles.tabsWrap}>
-        <View style={styles.tabs}>
-          {(["all", ...SECTION_NUMS] as SectionFilter[]).map((val) => { const active = activeSection === val; const scc = typeof val === "number" ? sc(val) : null; return (<Pressable key={String(val)} style={[styles.tab, active && { backgroundColor: scc ? scc.bg : "#0e7c7c" }]} onPress={() => setActiveSection(val)}><Text style={[styles.tabText, active && { color: scc ? scc.text : "#ffffff", fontWeight: "700" }]}>{val === "all" ? "الكل" : SECTION_SHORT[val]}</Text></Pressable>); })}
+        <View style={[styles.tabsClip, tagsExpanded ? styles.tabsClipOpen : styles.tabsClipClosed]}>
+          <View style={styles.tabs}>
+            {(["all", ...SECTION_NUMS] as SectionFilter[]).map((val) => { const active = activeSection === val; const scc = typeof val === "number" ? sc(val) : null; return (<Pressable key={String(val)} style={[styles.tab, active && { backgroundColor: scc ? scc.bg : "#0e7c7c" }]} onPress={() => setActiveSection(val)}><Text style={[styles.tabText, active && { color: scc ? scc.text : "#ffffff", fontWeight: "700" }]}>{val === "all" ? "الكل" : SECTION_SHORT[val]}</Text></Pressable>); })}
+          </View>
         </View>
+        <Pressable style={styles.expandBtn} onPress={() => setTagsExpanded(e => !e)}>
+          <Text style={styles.expandBtnText}>{tagsExpanded ? "▲ إخفاء" : "▼ كل الأقسام"}</Text>
+        </Pressable>
       </View>
       {hasCtx ? (
         <View style={styles.ctxBanner}>
@@ -244,8 +250,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f4f6f9" },
   searchWrap: { padding: 14, paddingBottom: 8 },
   searchInput: { backgroundColor: "#ffffff", borderRadius: 12, paddingHorizontal: 14, paddingVertical: Platform.OS === "ios" ? 12 : 10, fontSize: 14, color: colors.light.text, borderWidth: 1, borderColor: "#e5e7eb", shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1, textAlign: "right" },
-  tabsWrap: { paddingBottom: 4, paddingHorizontal: 14 },
+  tabsWrap: { paddingHorizontal: 14, paddingBottom: 2 },
+  tabsClip: { overflow: "hidden" },
+  tabsClipClosed: { maxHeight: 36 },
+  tabsClipOpen: {},
   tabs: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 6 },
+  expandBtn: { alignSelf: "flex-end", marginTop: 4 },
+  expandBtnText: { fontSize: 11, color: colors.light.mutedForeground, fontWeight: "600" },
   tab: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: "#f3f4f6" },
   tabText: { fontSize: 12, color: colors.light.mutedForeground, fontWeight: "500" },
   ctxPrompt: { marginHorizontal: 14, marginBottom: 8, backgroundColor: "#dc2626", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 },

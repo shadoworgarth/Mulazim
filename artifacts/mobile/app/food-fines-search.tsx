@@ -550,6 +550,7 @@ const REGION_LABEL: Record<RegionKey, string> = {
 
 export default function FoodFinesSearchScreen() {
   const [query, setQuery] = useState("");
+  const [tagsExpanded, setTagsExpanded] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionFilter>("all");
   const [collapsedChapters, setCollapsedChapters] = useState<Set<string>>(() => {
     const keys = new Set<string>();
@@ -634,23 +635,28 @@ export default function FoodFinesSearchScreen() {
 
       {/* Section tabs */}
       <View style={styles.tabsWrap}>
-        <View style={styles.tabs}>
-          {(["all", ...SECTION_NUMS] as SectionFilter[]).map((val) => {
-            const active = activeSection === val;
-            const sc = typeof val === "number" ? SECTION_COLORS[val] : null;
-            return (
-              <Pressable
-                key={String(val)}
-                style={[styles.tab, active && { backgroundColor: sc ? sc.bg : "#0e7c7c" }]}
-                onPress={() => setActiveSection(val)}
-              >
-                <Text style={[styles.tabText, active && { color: sc ? sc.text : "#ffffff", fontWeight: "700" }]}>
-                  {val === "all" ? "الكل" : SECTION_SHORT[val]}
-                </Text>
-              </Pressable>
-            );
-          })}
+        <View style={[styles.tabsClip, tagsExpanded ? styles.tabsClipOpen : styles.tabsClipClosed]}>
+          <View style={styles.tabs}>
+            {(["all", ...SECTION_NUMS] as SectionFilter[]).map((val) => {
+              const active = activeSection === val;
+              const sc = typeof val === "number" ? SECTION_COLORS[val] : null;
+              return (
+                <Pressable
+                  key={String(val)}
+                  style={[styles.tab, active && { backgroundColor: sc ? sc.bg : "#0e7c7c" }]}
+                  onPress={() => setActiveSection(val)}
+                >
+                  <Text style={[styles.tabText, active && { color: sc ? sc.text : "#ffffff", fontWeight: "700" }]}>
+                    {val === "all" ? "الكل" : SECTION_SHORT[val]}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
+        <Pressable style={styles.expandBtn} onPress={() => setTagsExpanded(e => !e)}>
+          <Text style={styles.expandBtnText}>{tagsExpanded ? "▲ إخفاء" : "▼ كل الأقسام"}</Text>
+        </Pressable>
       </View>
 
       {/* Inspector context banner */}
@@ -754,8 +760,13 @@ const styles = StyleSheet.create({
     elevation: 1,
     textAlign: "right",
   },
-  tabsWrap: { paddingBottom: 4, paddingHorizontal: 14 },
+  tabsWrap: { paddingHorizontal: 14, paddingBottom: 2 },
+  tabsClip: { overflow: "hidden" },
+  tabsClipClosed: { maxHeight: 36 },
+  tabsClipOpen: {},
   tabs: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 6 },
+  expandBtn: { alignSelf: "flex-end", marginTop: 4 },
+  expandBtnText: { fontSize: 11, color: colors.light.mutedForeground, fontWeight: "600" },
   tab: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: "#f3f4f6" },
   tabText: { fontSize: 12, color: colors.light.mutedForeground, fontWeight: "500" },
 
