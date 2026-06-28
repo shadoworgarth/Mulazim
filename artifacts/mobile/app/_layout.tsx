@@ -78,6 +78,8 @@ function AuthGate() {
       <Stack.Screen name="veterinary-fines-search" options={{ title: "مخالفات المستحضرات البيطرية" }} />
       <Stack.Screen name="cosmetics-fines-search" options={{ title: "مخالفات منتجات التجميل" }} />
       <Stack.Screen name="pharma-fines-search" options={{ title: "مخالفات المستحضرات الصيدلانية والعشبية" }} />
+      <Stack.Screen name="medical-devices-fines-search" options={{ title: "مخالفات الأجهزة والمستلزمات الطبية" }} />
+      <Stack.Screen name="animal-feed-fines-search" options={{ title: "مخالفات نظام الأعلاف" }} />
       <Stack.Screen name="narcotics" options={{ title: "المخدرات والمؤثرات العقلية" }} />
       <Stack.Screen name="private-labs" options={{ title: "المختبرات الخاصة" }} />
       <Stack.Screen name="private-labs-list" options={{ title: "قائمة المختبرات" }} />
