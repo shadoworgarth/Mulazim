@@ -261,17 +261,19 @@ export default function AnimalFeedFinesSearchScreen() {
       <View style={styles.searchWrap}>
         <TextInput style={styles.searchInput} placeholder="ابحث بوصف المخالفة أو رقم المادة (مثال: 1/1/1)" placeholderTextColor={colors.light.mutedForeground} value={query} onChangeText={setQuery} clearButtonMode="while-editing" textAlign="right" returnKeyType="search" />
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsWrap} contentContainerStyle={styles.tabs}>
-        {(["all", ...SECTION_NUMS] as SectionFilter[]).map((val) => {
-          const active = activeSection === val;
-          const sc = typeof val === "number" ? getSectionColor(val) : null;
-          return (
-            <Pressable key={String(val)} style={[styles.tab, active && { backgroundColor: sc ? sc.bg : "#6d4c41" }]} onPress={() => setActiveSection(val)}>
-              <Text style={[styles.tabText, active && { color: sc ? sc.text : "#ffffff", fontWeight: "700" }]}>{val === "all" ? "الكل" : (SECTION_SHORT[val as number] ?? `قسم ${val}`)}</Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+      <View style={styles.tabsWrap}>
+        <View style={styles.tabs}>
+          {(["all", ...SECTION_NUMS] as SectionFilter[]).map((val) => {
+            const active = activeSection === val;
+            const sc = typeof val === "number" ? getSectionColor(val) : null;
+            return (
+              <Pressable key={String(val)} style={[styles.tab, active && { backgroundColor: sc ? sc.bg : "#6d4c41" }]} onPress={() => setActiveSection(val)}>
+                <Text style={[styles.tabText, active && { color: sc ? sc.text : "#ffffff", fontWeight: "700" }]}>{val === "all" ? "الكل" : (SECTION_SHORT[val as number] ?? `قسم ${val}`)}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
       {hasCtx ? (
         <View style={styles.ctxBanner}>
           <Pressable onPress={() => setCtx({ size: null, region: null, cityLabel: null })} style={styles.ctxClear}><Text style={styles.ctxClearTxt}>✕</Text></Pressable>
@@ -318,8 +320,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f4f6f9" },
   searchWrap: { padding: 14, paddingBottom: 8 },
   searchInput: { backgroundColor: "#ffffff", borderRadius: 12, paddingHorizontal: 14, paddingVertical: Platform.OS === "ios" ? 12 : 10, fontSize: 14, color: colors.light.text, borderWidth: 1, borderColor: "#e5e7eb", shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1, textAlign: "right" },
-  tabsWrap: { paddingBottom: 4, paddingHorizontal: 14, flexGrow: 0 },
-  tabs: { flexDirection: "row-reverse", gap: 6, paddingBottom: 4 },
+  tabsWrap: { paddingBottom: 4, paddingHorizontal: 14 },
+  tabs: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 6 },
   tab: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: "#f3f4f6" },
   tabText: { fontSize: 12, color: colors.light.mutedForeground, fontWeight: "500" },
   ctxPrompt: { marginHorizontal: 14, marginBottom: 8, backgroundColor: "#6d4c41", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 },
