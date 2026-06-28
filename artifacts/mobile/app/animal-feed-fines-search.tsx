@@ -54,9 +54,14 @@ const SIZE_LABELS: { key: SizeKey; label: string }[] = [
 const CAT_KEYS = ["a", "b", "c", "d"] as const;
 const CAT_LABELS = ["أ", "ب", "ج", "د"];
 
-const SECTION_NUMS = Array.from(new Set(ANIMAL_FEED_FINES.map(e => e.section))).sort();
+const SECTION_NUMS = Array.from(new Set(ANIMAL_FEED_FINES.map(e => e.section))).sort((a, b) => a - b);
 const SECTION_SHORT: Record<number, string> = {
-  1: "المصانع", 2: "المستودعات", 3: "الموزعون", 4: "تجار الجملة", 5: "المزارع", 6: "منافذ البيع",
+  1: "المصانع",
+  2: "المستودعات والتوزيع",
+  3: "المستوردون",
+  4: "المختبرات الخاصة",
+  5: "المكاتب الاستشارية",
+  6: "منافذ البيع",
 };
 const SIZE_SHORT: Record<SizeKey, string> = { large: "كبيرة", medium: "متوسطة", small: "صغيرة" };
 const REGION_LABEL: Record<RegionKey, string> = { a: "الفئة (أ)", b: "الفئة (ب)", c: "الفئة (ج)", d: "الفئة (د)" };

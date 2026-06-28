@@ -17,18 +17,22 @@ import { EstablishmentFines, FoodFineV2 } from "@/constants/food-fines-v2";
 import { MEDICAL_DEVICES_FINES } from "@/constants/medical-devices-fines";
 
 const SECTION_COLORS: Record<number, { bg: string; badgeBg: string; text: string; header: string }> = {
-  1: { bg: "#e3f2fd", badgeBg: "#64b5f6", text: "#0d47a1", header: "#1565c0" },
-  2: { bg: "#e8f5e9", badgeBg: "#66bb6a", text: "#1b5e20", header: "#2e7d32" },
-  3: { bg: "#fff3e0", badgeBg: "#ffa726", text: "#bf360c", header: "#e65100" },
-  4: { bg: "#f3e5f5", badgeBg: "#ab47bc", text: "#4a148c", header: "#6a1b9a" },
-  5: { bg: "#fce4ec", badgeBg: "#ec407a", text: "#880e4f", header: "#ad1457" },
-  6: { bg: "#e0f2f1", badgeBg: "#26a69a", text: "#004d40", header: "#00695c" },
-  7: { bg: "#fafafa", badgeBg: "#78909c", text: "#263238", header: "#37474f" },
-  8: { bg: "#fff8e1", badgeBg: "#ffca28", text: "#5d4037", header: "#6d4c41" },
+  1:  { bg: "#e3f2fd", badgeBg: "#64b5f6", text: "#0d47a1", header: "#1565c0" },
+  2:  { bg: "#e8f5e9", badgeBg: "#66bb6a", text: "#1b5e20", header: "#2e7d32" },
+  3:  { bg: "#fff3e0", badgeBg: "#ffa726", text: "#bf360c", header: "#e65100" },
+  4:  { bg: "#f3e5f5", badgeBg: "#ab47bc", text: "#4a148c", header: "#6a1b9a" },
+  5:  { bg: "#fce4ec", badgeBg: "#ec407a", text: "#880e4f", header: "#ad1457" },
+  6:  { bg: "#e0f2f1", badgeBg: "#26a69a", text: "#004d40", header: "#00695c" },
+  7:  { bg: "#fafafa", badgeBg: "#78909c", text: "#263238", header: "#37474f" },
+  8:  { bg: "#fff8e1", badgeBg: "#ffca28", text: "#5d4037", header: "#6d4c41" },
+  9:  { bg: "#ede7f6", badgeBg: "#7e57c2", text: "#311b92", header: "#4527a0" },
+  10: { bg: "#e0f7fa", badgeBg: "#26c6da", text: "#006064", header: "#00838f" },
+  11: { bg: "#f1f8e9", badgeBg: "#9ccc65", text: "#1b5e20", header: "#33691e" },
 };
 const SECTION_BG: Record<number, string> = {
   1: "#bbdefb", 2: "#c8e6c9", 3: "#ffe0b2", 4: "#e1bee7",
   5: "#f8bbd0", 6: "#b2dfdb", 7: "#eceff1", 8: "#fff9c4",
+  9: "#d1c4e9", 10: "#b2ebf2", 11: "#dcedc8",
 };
 
 const REVENUE_SIZES = [
@@ -57,10 +61,19 @@ const SIZE_LABELS: { key: SizeKey; label: string }[] = [
 const CAT_KEYS = ["a", "b", "c", "d"] as const;
 const CAT_LABELS = ["أ", "ب", "ج", "د"];
 
-const SECTION_NUMS = Array.from(new Set(MEDICAL_DEVICES_FINES.map(e => e.section))).sort();
+const SECTION_NUMS = Array.from(new Set(MEDICAL_DEVICES_FINES.map(e => e.section))).sort((a, b) => a - b);
 const SECTION_SHORT: Record<number, string> = {
-  1: "المصانع", 2: "المستودعات", 3: "الموزعون", 4: "الصيانة",
-  5: "المستشفيات", 6: "الصيدليات", 7: "التحقق", 8: "توكيد الجودة",
+  1:  "المصانع",
+  2:  "المستودعات",
+  3:  "المستوردون",
+  4:  "الموزعون",
+  5:  "المثلون المعتمدون",
+  6:  "خدمات الفحص",
+  7:  "التحقق من المطابقة",
+  8:  "توكيد الجودة",
+  9:  "الخدمات الاستشارية",
+  10: "الدراسات السريرية",
+  11: "خدمات الصيانة",
 };
 const SIZE_SHORT: Record<SizeKey, string> = { large: "كبيرة", medium: "متوسطة", small: "صغيرة" };
 const REGION_LABEL: Record<RegionKey, string> = { a: "الفئة (أ)", b: "الفئة (ب)", c: "الفئة (ج)", d: "الفئة (د)" };

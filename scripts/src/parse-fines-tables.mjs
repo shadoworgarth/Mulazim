@@ -13,9 +13,7 @@ function parseNum(s) {
 }
 
 function parseCells(line) {
-  // Split pipe-separated cells
   const parts = line.split('|').map(c => c.trim());
-  // Remove first and last empty strings from leading/trailing |
   return parts.slice(1, parts.length - 1);
 }
 
@@ -26,70 +24,77 @@ function isSeparatorRow(line) {
 }
 
 function isChapterRow(cells) {
-  // Chapter rows: first cell contains "الفصل" and spans everything
   return cells[0] && cells[0].includes('الفصل') && cells.slice(1).every(c => c === '');
 }
 
-function isSectionHeader(line) {
-  return line.startsWith('## ') || line.startsWith('# ');
-}
-
-const SECTION_NAMES = {
-  'أولاً': 1, 'ثانياً': 2, 'ثالثاً': 3, 'رابعاً': 4,
-  'خامساً': 5, 'سادساً': 6, 'سابعاً': 7, 'ثامناً': 8,
+// Arabic ordinals → section number (includes up to 11)
+const ORDINAL_TO_NUM = {
+  'أولاً': 1, 'ثانياً': 2, 'ثالثاً': 3, 'رابعاً': 4, 'خامساً': 5,
+  'سادساً': 6, 'سابعاً': 7, 'ثامناً': 8, 'تاسعاً': 9, 'عاشراً': 10,
+  'الحادي عشر': 11, 'الثاني عشر': 12,
 };
 
-function detectSection(line) {
-  for (const [k, v] of Object.entries(SECTION_NAMES)) {
+function detectSectionNum(line) {
+  // Check multi-word ordinals first (الحادي عشر before الحادي)
+  for (const [k, v] of Object.entries(ORDINAL_TO_NUM).sort((a, b) => b[0].length - a[0].length)) {
     if (line.includes(k)) return v;
   }
   return null;
 }
 
+function extractSectionLabel(line) {
+  // Strip markdown heading markers and bold markers
+  return line.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
+}
+
 /**
  * Parse a fines table from extracted OCR text.
- * @param {string} text - The full OCR output text
- * @param {Object} sectionLabels - Map of section number -> Arabic label
- * @returns {Array} - Array of FoodFineV2-compatible objects
+ * Section labels are derived directly from the headings in the text.
  */
-function parseFinesText(text, sectionLabels) {
+function parseFinesText(text) {
   const lines = text.split('\n');
   const entries = [];
 
   let currentSection = 1;
-  let currentSectionLabel = sectionLabels[1] || '';
+  let currentSectionLabel = '';
   let currentChapter = 1;
   let currentChapterLabel = '';
 
-  let pendingEntry = null; // waiting for الحد الأدنى row
+  let pendingEntry = null;
+
+  // We keep a map of section number -> label as we discover them
+  const discoveredSections = {};
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
 
-    // Page marker — skip
     if (line.startsWith('=== PAGE')) continue;
 
-    // Section headers (## أولاً: ...)
-    if (isSectionHeader(line)) {
-      const secNum = detectSection(line);
+    // Section heading: # or ## followed by ordinal word
+    if (line.startsWith('#')) {
+      const secNum = detectSectionNum(line);
       if (secNum !== null) {
         currentSection = secNum;
-        currentSectionLabel = sectionLabels[secNum] || line.replace(/^#+\s*/, '').trim();
+        // Strip the ordinal prefix (e.g. "أولاً: ") to get the entity name
+        let label = extractSectionLabel(line);
+        // Remove the ordinal prefix pattern like "أولاً: " or "ثانياً : "
+        label = label.replace(/^(الحادي عشر|الثاني عشر|أولاً|ثانياً|ثالثاً|رابعاً|خامساً|سادساً|سابعاً|ثامناً|تاسعاً|عاشراً)\s*[:\-]\s*/u, '').trim();
+        discoveredSections[secNum] = label;
+        currentSectionLabel = label;
         currentChapter = 1;
         currentChapterLabel = '';
+        pendingEntry = null;
       }
-      pendingEntry = null;
       continue;
     }
 
-    // Skip non-table lines and separators
     if (!line.startsWith('|')) continue;
     if (isSeparatorRow(line)) continue;
 
     const cells = parseCells(line);
     if (cells.length < 5) continue;
 
-    // Chapter header row (cell[0] contains الفصل and rest empty)
+    // Chapter header rows within table
     if (isChapterRow(cells)) {
       const chapterText = cells[0].replace(/\*\*/g, '').trim();
       const chNum = parseInt(chapterText.match(/\d+/)?.[0] ?? '1', 10);
@@ -99,7 +104,6 @@ function parseFinesText(text, sectionLabels) {
       continue;
     }
 
-    // Also catch chapter labels inside bold-marked cells like "**الفصل الأول...**"
     const boldChapter = cells[0].replace(/\*\*/g, '').trim();
     if (boldChapter.startsWith('الفصل') && cells.slice(1).every(c => !c || c === '')) {
       const chNum = parseInt(boldChapter.match(/\d+/)?.[0] ?? '1', 10);
@@ -109,12 +113,11 @@ function parseFinesText(text, sectionLabels) {
       continue;
     }
 
-    // Header rows (no article code in cell[0])
+    // Header rows or continuation rows with no article code
     const articleCode = cells[0].trim();
     if (!ARTICLE_RE.test(articleCode)) {
-      // But check if cell[2] is الحد الأدنى (min row continuation)
+      // Min row continuation (الحد الأدنى without an article code)
       if (pendingEntry && (cells[2] === 'الحد الأدنى' || cells[2] === 'الحد الأدنى ')) {
-        // Parse min row: large a,b,c,d | medium a,b,c,d | small a,b,c,d
         pendingEntry.finesMin = parseSizesFines(cells);
         entries.push(pendingEntry);
         pendingEntry = null;
@@ -122,34 +125,30 @@ function parseFinesText(text, sectionLabels) {
       continue;
     }
 
-    // Violation row
+    // Use last segment of article code to determine section
+    const codeParts = articleCode.split('/');
+    if (codeParts.length === 3) {
+      const codeSection = parseInt(codeParts[2], 10);
+      if (!isNaN(codeSection) && discoveredSections[codeSection]) {
+        currentSection = codeSection;
+        currentSectionLabel = discoveredSections[codeSection];
+      }
+      const codeChapter = parseInt(codeParts[1], 10);
+      if (!isNaN(codeChapter) && codeChapter !== currentChapter) {
+        currentChapter = codeChapter;
+        if (!currentChapterLabel.includes(`${codeChapter}`)) {
+          currentChapterLabel = `الفصل ${codeChapter}`;
+        }
+      }
+    }
+
     const violation = cells[1].replace(/\*\*/g, '').trim();
     const limitType = cells[2].trim();
     const warningCell = cells[15] || cells[14] || '';
     const warningApplicable = warningCell.includes('ينطبق') && !warningCell.includes('لا ينطبق');
     const unit = (cells[16] || cells[15] || '').replace(/\*\*/g, '').trim();
 
-    // Determine chapter from article code if possible
-    // Article code: violation/chapter/section
-    const codeParts = articleCode.split('/');
-    if (codeParts.length === 3) {
-      const codeChapter = parseInt(codeParts[1], 10);
-      if (!isNaN(codeChapter) && codeChapter !== currentChapter) {
-        // Try to find chapter label in recent context - just use what we have
-        currentChapter = codeChapter;
-        if (!currentChapterLabel.includes(`${codeChapter}`)) {
-          currentChapterLabel = `الفصل ${codeChapter}`;
-        }
-      }
-      const codeSection = parseInt(codeParts[2], 10);
-      if (!isNaN(codeSection) && sectionLabels[codeSection]) {
-        currentSection = codeSection;
-        currentSectionLabel = sectionLabels[codeSection];
-      }
-    }
-
     if (limitType === 'قيمة ثابتة') {
-      // Fixed fine - single row
       const fines = parseFixedFines(cells);
       entries.push({
         articleCode,
@@ -166,7 +165,6 @@ function parseFinesText(text, sectionLabels) {
       });
       pendingEntry = null;
     } else if (limitType.includes('الأعلى') || limitType.includes('أعلى')) {
-      // Range fine, max row — wait for min
       const finesMax = parseSizesFines(cells);
       pendingEntry = {
         articleCode,
@@ -182,7 +180,6 @@ function parseFinesText(text, sectionLabels) {
         finesMin: null,
       };
     } else if (limitType.includes('الأدنى') || limitType.includes('أدنى')) {
-      // Sometimes الحد الأدنى appears in main code row (edge case)
       if (pendingEntry) {
         pendingEntry.finesMin = parseSizesFines(cells);
         entries.push(pendingEntry);
@@ -191,16 +188,14 @@ function parseFinesText(text, sectionLabels) {
     }
   }
 
-  // Flush any pending
   if (pendingEntry) {
     pendingEntry.finesMin = pendingEntry.finesMax;
     entries.push(pendingEntry);
   }
 
-  return entries;
+  return { entries, discoveredSections };
 }
 
-/** Parse fixed fine: large=col[3], medium=col[7], small=col[11] */
 function parseFixedFines(cells) {
   const largeVal = parseNum(cells[3]) ?? parseNum(cells[4]) ?? parseNum(cells[5]) ?? parseNum(cells[6]);
   const medVal   = parseNum(cells[7]) ?? parseNum(cells[8]) ?? parseNum(cells[9]) ?? parseNum(cells[10]);
@@ -212,7 +207,6 @@ function parseFixedFines(cells) {
   };
 }
 
-/** Parse range row: cols 3-6=large a,b,c,d | 7-10=medium | 11-14=small */
 function parseSizesFines(cells) {
   return {
     large:  { a: parseNum(cells[3]),  b: parseNum(cells[4]),  c: parseNum(cells[5]),  d: parseNum(cells[6])  },
@@ -236,17 +230,9 @@ function toTsArray(entries, varName) {
 // ── MEDICAL DEVICES ──────────────────────────────────────────────────────────
 
 const medText = fs.readFileSync('/tmp/medical_devices_fines.txt', 'utf8');
-const medSections = {
-  1: 'مصانع الأجهزة والمستلزمات الطبية',
-  2: 'مستودعات الأجهزة والمستلزمات الطبية',
-  3: 'موزعي الأجهزة والمستلزمات الطبية',
-  4: 'مراكز الصيانة والمعالجة',
-  5: 'المستشفيات والمنشآت الصحية',
-  6: 'الصيدليات',
-};
-
-const medEntries = parseFinesText(medText, medSections);
+const { entries: medEntries, discoveredSections: medSections } = parseFinesText(medText);
 console.log(`Medical devices: ${medEntries.length} violations parsed`);
+console.log('Discovered sections:', medSections);
 
 const medTs = `import { FoodFineV2 } from "./food-fines-v2";
 
@@ -258,16 +244,9 @@ console.log('Written: artifacts/mobile/constants/medical-devices-fines.ts');
 // ── ANIMAL FEED ───────────────────────────────────────────────────────────────
 
 const feedText = fs.readFileSync('/tmp/feed_fines.txt', 'utf8');
-const feedSections = {
-  1: 'مصانع الأعلاف',
-  2: 'مستودعات الأعلاف',
-  3: 'موزعي الأعلاف',
-  4: 'تجار الجملة والتجزئة',
-  5: 'المزارع',
-};
-
-const feedEntries = parseFinesText(feedText, feedSections);
+const { entries: feedEntries, discoveredSections: feedSections } = parseFinesText(feedText);
 console.log(`Animal feed: ${feedEntries.length} violations parsed`);
+console.log('Discovered sections:', feedSections);
 
 const feedTs = `import { FoodFineV2 } from "./food-fines-v2";
 
@@ -277,10 +256,12 @@ fs.writeFileSync('artifacts/mobile/constants/animal-feed-fines.ts', feedTs, 'utf
 console.log('Written: artifacts/mobile/constants/animal-feed-fines.ts');
 
 // ── SUMMARY ───────────────────────────────────────────────────────────────────
-console.log('\n=== Summary ===');
-const medSec = {};
-for (const e of medEntries) { medSec[e.sectionLabel] = (medSec[e.sectionLabel] || 0) + 1; }
-console.log('Medical devices by section:', medSec);
-const feedSec = {};
-for (const e of feedEntries) { feedSec[e.sectionLabel] = (feedSec[e.sectionLabel] || 0) + 1; }
-console.log('Animal feed by section:', feedSec);
+console.log('\n=== Medical devices by section ===');
+const medBySec = {};
+for (const e of medEntries) { medBySec[e.sectionLabel] = (medBySec[e.sectionLabel] || 0) + 1; }
+console.log(medBySec);
+
+console.log('\n=== Animal feed by section ===');
+const feedBySec = {};
+for (const e of feedEntries) { feedBySec[e.sectionLabel] = (feedBySec[e.sectionLabel] || 0) + 1; }
+console.log(feedBySec);
