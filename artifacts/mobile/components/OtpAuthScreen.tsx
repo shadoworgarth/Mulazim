@@ -255,12 +255,13 @@ export default function OtpAuthScreen() {
           )}
         </View>
 
-        {/* Admin login link — subtle, at the very bottom */}
+        {/* Admin login — invisible tap zone, bottom-right corner only */}
         {step === "email" && (
-          <Pressable onPress={() => { setStep("admin"); setError(""); }} style={styles.adminLink}>
-            <Feather name="settings" size={12} color="#6a9f9f" />
-            <Text style={styles.adminLinkText}>admin login</Text>
-          </Pressable>
+          <Pressable
+            onPress={() => { setStep("admin"); setError(""); }}
+            style={styles.adminLink}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          />
         )}
       </ScrollView>
     </KeyboardAvoidingView>
@@ -311,8 +312,11 @@ const styles = StyleSheet.create({
     fontSize: 12, color: "#b2d8d8", textAlign: "center", lineHeight: 18, paddingHorizontal: 8,
   },
   adminLink: {
-    flexDirection: "row", alignItems: "center", justifyContent: "center",
-    gap: 5, paddingVertical: 8,
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    width: 36,
+    height: 36,
+    opacity: 0,
   },
-  adminLinkText: { fontSize: 12, color: "#6a9f9f" },
 });
