@@ -216,8 +216,7 @@ export default function OtpAuthScreen() {
                 <Text style={styles.backText}>رجوع</Text>
               </Pressable>
 
-              <Text style={styles.cardTitle}>دخول المشرف</Text>
-              <Text style={styles.cardDesc}>أدخل كلمة مرور المشرف للدخول مباشرةً</Text>
+              <Text style={styles.cardTitle}>admin login</Text>
 
               <View style={styles.inputWrap}>
                 <Pressable onPress={() => setShowAdminPass(p => !p)} style={styles.inputIcon}>
