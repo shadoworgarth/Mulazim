@@ -170,6 +170,7 @@ function FineCard({ item, ctx }: { item: FoodFineV2; ctx: InspectorCtx }) {
             <View style={styles.expandedMetaRow}><Text style={styles.expandedLabel}>وحدة الغرامة</Text><Text style={styles.expandedValue}>{item.unit || "—"}</Text></View>
             <View style={styles.expandedMetaRow}><Text style={styles.expandedLabel}>نوع العقوبة</Text><Text style={styles.expandedValue}>{item.fineType === "fixed" ? "قيمة ثابتة" : "حد أدنى / أعلى"}</Text></View>
             {item.warningApplicable && (<View style={styles.expandedMetaRow}><Text style={styles.expandedLabel}>الإنذار</Text><Text style={[styles.expandedValue, { color: "#e65100" }]}>ينطبق</Text></View>)}
+            {item.legalBasis ? (<View style={styles.expandedMetaRow}><Text style={styles.expandedLabel}>السند النظامي</Text><Text style={styles.expandedValue}>{item.legalBasis}</Text></View>) : null}
           </View>
           <View style={styles.tableSection}>
             <Text style={styles.tableTitle}>{item.fineType === "range" ? "قيمة الغرامة (الحد الأدنى – الأعلى) بالريال" : "قيمة الغرامة بالريال"}</Text>

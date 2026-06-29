@@ -7,10 +7,14 @@
     "hello": "tsx ./src/hello.ts",
     "fix-fines": "node ./src/fix-fines-violations.mjs",
     "patch-from-docx": "node ./src/patch-from-docx.mjs",
+    "patch-from-excel": "node ./src/patch-from-excel.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "tsx": "catalog:"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }

@@ -338,6 +338,12 @@ function FineCard({ item, ctx }: { item: FoodFineV2; ctx: InspectorCtx }) {
                 </Text>
               </View>
             )}
+            {item.legalBasis ? (
+              <View style={styles.expandedMetaRow}>
+                <Text style={styles.expandedLabel}>السند النظامي</Text>
+                <Text style={styles.expandedValue}>{item.legalBasis}</Text>
+              </View>
+            ) : null}
           </View>
 
           <View style={styles.tableSection}>
