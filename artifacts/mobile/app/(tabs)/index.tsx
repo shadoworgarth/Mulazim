@@ -63,6 +63,17 @@ const FEATURE_CARDS: FeatureCard[] = [
     enabled: true,
   },
   {
+    id: "circulars",
+    title: "التعاميم",
+    subtitle: "",
+    emojis: ["📢", "📢", "📢", "📢"],
+    singleEmoji: true,
+    color: "#0a5f5f",
+    bg: "#e0eef0",
+    route: "/circulars",
+    enabled: true,
+  },
+  {
     id: "narcotics",
     title: "المخدرات والمؤثرات العقلية",
     subtitle: "",
