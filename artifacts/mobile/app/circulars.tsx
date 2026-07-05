@@ -29,6 +29,7 @@ const CAT_COLOR: Record<string, { bg: string; text: string; badge: string }> = {
   "مختبرات": { bg: "#e0f7fa", text: "#00695c", badge: "#00897b" },
   "أعلاف": { bg: "#fff8e1", text: "#ff6f00", badge: "#ffa000" },
   "تبغ": { bg: "#efebe9", text: "#3e2723", badge: "#5d4037" },
+  "التغذية": { bg: "#e1f5fe", text: "#01579b", badge: "#0277bd" },
 };
 
 const DEFAULT_COLOR = { bg: "#e0eef0", text: "#0a5f5f", badge: ACCENT };
@@ -38,9 +39,34 @@ function catColor(cat: string) {
   return CAT_COLOR[firstTag] ?? CAT_COLOR[cat.trim()] ?? DEFAULT_COLOR;
 }
 
-// ─── Unique categories in order of frequency ────────────────────────────────
+// ─── Category order (matches sfda.gov.sa/ar/circulars filter order) ────────
 
-const ALL_CATS = Array.from(new Set(CIRCULARS.map((c) => c.category)));
+const CATEGORY_ORDER = [
+  "الهيئة",
+  "الغذاء",
+  "الدواء",
+  "أجهزة طبية",
+  "أعلاف",
+  "تبغ",
+  "المبيدات",
+  "مختبرات",
+  "مستحضرات التجميل",
+  "حلال",
+  "التغذية",
+];
+
+const ALL_CAT = "الكل";
+
+const COLLAPSED_CAT_COUNT = 2;
+
+function entryCategories(c: CircularEntry): string[] {
+  return c.category.split(",").map((s) => s.trim());
+}
+
+function matchesCategory(c: CircularEntry, cat: string | null): boolean {
+  if (!cat) return true;
+  return entryCategories(c).includes(cat);
+}
 
 function matches(c: CircularEntry, q: string): boolean {
   return c.title.includes(q) || c.category.includes(q);
@@ -77,11 +103,16 @@ const CircularCard = React.memo(function CircularCard({ entry }: { entry: Circul
 export default function CircularsScreen() {
   const [query, setQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
+  const [showAllCats, setShowAllCats] = useState(false);
+
+  const visibleCats = showAllCats
+    ? CATEGORY_ORDER
+    : CATEGORY_ORDER.slice(0, COLLAPSED_CAT_COUNT);
 
   const filtered = useMemo(() => {
     const q = query.trim();
     return CIRCULARS.filter((c) => {
-      const matchesCat = !selectedCat || c.category === selectedCat;
+      const matchesCat = matchesCategory(c, selectedCat);
       const matchesText = !q || matches(c, q);
       return matchesCat && matchesText;
     });
@@ -103,12 +134,26 @@ export default function CircularsScreen() {
         />
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipsRow}
-      >
-        {ALL_CATS.map((cat) => {
+      <View style={styles.chipsWrap}>
+        <Pressable
+          style={[
+            styles.chip,
+            {
+              backgroundColor: !selectedCat ? ACCENT : DEFAULT_COLOR.bg,
+              borderColor: ACCENT,
+            },
+          ]}
+          onPress={() => setSelectedCat(null)}
+        >
+          <Text
+            style={[styles.chipText, { color: !selectedCat ? "#fff" : DEFAULT_COLOR.text }]}
+            numberOfLines={1}
+          >
+            {ALL_CAT}
+          </Text>
+        </Pressable>
+
+        {visibleCats.map((cat) => {
           const active = selectedCat === cat;
           const cc = catColor(cat);
           return (
@@ -129,7 +174,16 @@ export default function CircularsScreen() {
             </Pressable>
           );
         })}
-      </ScrollView>
+
+        <Pressable
+          style={styles.showAllChip}
+          onPress={() => setShowAllCats((p) => !p)}
+        >
+          <Text style={styles.showAllChipText}>
+            {showAllCats ? "إخفاء ▲" : "عرض الكل ▾"}
+          </Text>
+        </Pressable>
+      </View>
 
       {isFiltering ? (
         <View style={styles.filterRow}>
@@ -189,7 +243,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e5e7eb",
   },
-  chipsRow: { gap: 8, paddingBottom: 10, paddingRight: 4 },
+  chipsWrap: {
+    flexDirection: "row-reverse",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingBottom: 10,
+  },
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -198,6 +257,15 @@ const styles = StyleSheet.create({
     maxWidth: 220,
   },
   chipText: { fontSize: 12, fontWeight: "600" },
+  showAllChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    backgroundColor: "#f3f4f6",
+  },
+  showAllChipText: { fontSize: 12, fontWeight: "600", color: "#4b5563" },
   filterRow: {
     flexDirection: "row-reverse",
     justifyContent: "space-between",
