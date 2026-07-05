@@ -1,1 +1,2 @@
 - [Suspended Private Labs](suspended-labs.md) — جودة العسل and ايداك removed 2026-06-04 (license suspension); full test data stored for quick re-adding.
+- [SFDA circulars scraping quirks](sfda-circulars-scraping.md) — parse per-article chunk, not one global regex; status/PDF link extraction gotchas.

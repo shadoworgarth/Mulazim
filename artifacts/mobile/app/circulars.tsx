@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
-  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -10,6 +9,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
 import colors from "@/constants/colors";
 import { CIRCULARS, CIRCULARS_SNAPSHOT_DATE, CircularEntry } from "@/constants/circulars";
@@ -54,7 +54,7 @@ const CircularCard = React.memo(function CircularCard({ entry }: { entry: Circul
   return (
     <Pressable
       style={({ pressed }) => [styles.card, { opacity: pressed ? 0.88 : 1 }]}
-      onPress={() => Linking.openURL(entry.url)}
+      onPress={() => WebBrowser.openBrowserAsync(entry.pdfUrl || entry.url)}
     >
       <View style={styles.cardTopRow}>
         <Text style={styles.dateText}>{entry.date}</Text>
@@ -66,7 +66,7 @@ const CircularCard = React.memo(function CircularCard({ entry }: { entry: Circul
       </View>
       <Text style={styles.titleText}>{entry.title}</Text>
       <View style={styles.viewRow}>
-        <Text style={[styles.viewText, { color: cc.badge }]}>عرض التعميم ←</Text>
+        <Text style={[styles.viewText, { color: cc.badge }]}>عرض التعميم (PDF) ←</Text>
       </View>
     </Pressable>
   );
