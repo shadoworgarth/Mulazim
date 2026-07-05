@@ -117,6 +117,17 @@ const FEATURE_CARDS: FeatureCard[] = [
     route: "/animal-feed",
     enabled: true,
   },
+  {
+    id: "circulars",
+    title: "التعاميم",
+    subtitle: "",
+    emojis: ["📢", "📢", "📢", "📢"],
+    singleEmoji: true,
+    color: "#0a5f5f",
+    bg: "#e0eef0",
+    route: "/circulars",
+    enabled: true,
+  },
 ];
 
 export default function HomeScreen() {
