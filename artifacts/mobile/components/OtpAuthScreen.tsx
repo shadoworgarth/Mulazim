@@ -18,11 +18,16 @@ const ALLOWED_DOMAIN = "sfda.gov.sa";
 
 type Step = "email" | "otp" | "admin";
 
+const ADMIN_TAP_COUNT = 3;
+const ADMIN_TAP_WINDOW_MS = 1500;
+
 export default function OtpAuthScreen() {
   const insets = useSafeAreaInsets();
   const { requestOtp, verifyOtp, adminLogin } = useOtpAuth();
 
   const [step, setStep] = useState<Step>("email");
+  const tapCountRef = useRef(0);
+  const lastTapRef = useRef(0);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [adminPass, setAdminPass] = useState("");
@@ -92,6 +97,20 @@ export default function OtpAuthScreen() {
     setAdminPass("");
     setError("");
     setSuccess("");
+  }
+
+  function handleCornerTap() {
+    const now = Date.now();
+    if (now - lastTapRef.current > ADMIN_TAP_WINDOW_MS) {
+      tapCountRef.current = 0;
+    }
+    tapCountRef.current += 1;
+    lastTapRef.current = now;
+    if (tapCountRef.current >= ADMIN_TAP_COUNT) {
+      tapCountRef.current = 0;
+      setStep("admin");
+      setError("");
+    }
   }
 
   return (
@@ -254,10 +273,10 @@ export default function OtpAuthScreen() {
           )}
         </View>
 
-        {/* Admin login — invisible tap zone, bottom-right corner only */}
+        {/* Admin login — invisible tap zone, bottom-right corner only, requires 3 consecutive taps */}
         {step === "email" && (
           <Pressable
-            onPress={() => { setStep("admin"); setError(""); }}
+            onPress={handleCornerTap}
             style={styles.adminLink}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           />

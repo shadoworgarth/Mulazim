@@ -85,6 +85,15 @@ const LIBRARY_CARDS: LibraryCard[] = [
     route: "/private-labs",
     enabled: true,
   },
+  {
+    id: "circulars",
+    title: "التعاميم",
+    emojis: ["📢", "📢", "📢", "📢"],
+    singleEmoji: true,
+    bg: "#e0eef0",
+    route: "/circulars",
+    enabled: true,
+  },
 ];
 
 export default function InspectorLibraryScreen() {
