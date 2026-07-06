@@ -77,12 +77,12 @@ router.post("/auth/request-otp", async (req, res) => {
 
     const transporter = createMailTransporter();
     await transporter.sendMail({
-      from: `دليل المضافات الغذائية <${GMAIL_USER}>`,
+      from: `ملازم <${GMAIL_USER}>`,
       to: normalizedEmail,
-      subject: "رمز التحقق - دليل المضافات الغذائية",
+      subject: "رمز التحقق - ملازم",
       html: `
         <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f2f6f8; border-radius: 12px;">
-          <h2 style="color: #0e7c7c; text-align: right; margin-bottom: 8px;">دليل المضافات الغذائية - SFDA</h2>
+          <h2 style="color: #0e7c7c; text-align: right; margin-bottom: 8px;">ملازم - SFDA</h2>
           <p style="color: #444; text-align: right; margin-bottom: 24px;">رمز التحقق الخاص بك لتفعيل التطبيق:</p>
           <div style="background: #fff; border-radius: 10px; padding: 24px; text-align: center; border: 2px solid #0e7c7c22;">
             <span style="font-size: 40px; font-weight: bold; letter-spacing: 8px; color: #0e7c7c;">${otp}</span>
