@@ -85,6 +85,7 @@ function AuthGate() {
       <Stack.Screen name="private-labs-list" options={{ title: "قائمة المختبرات" }} />
       <Stack.Screen name="private-lab-detail" options={{ title: "تفاصيل المختبر" }} />
       <Stack.Screen name="lab-test-search" options={{ title: "مقارنة الاختبارات وحساب التكلفة" }} />
+      <Stack.Screen name="circular-viewer" options={{ title: "عرض التعميم" }} />
     </Stack>
   );
 }
