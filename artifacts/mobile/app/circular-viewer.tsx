@@ -103,7 +103,7 @@ export default function CircularViewerScreen() {
   const ext = CIRCULAR_FILE_EXTENSIONS[numericId];
 
   const [localUri, setLocalUri] = useState<string | null>(null);
-  const [androidHtml, setAndroidHtml] = useState<string | null>(null);
+  const [androidHtmlUri, setAndroidHtmlUri] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -135,7 +135,11 @@ export default function CircularViewerScreen() {
             encoding: FileSystem.EncodingType.Base64,
           });
           if (cancelled) return;
-          setAndroidHtml(buildAndroidPdfHtml(base64));
+          const html = buildAndroidPdfHtml(base64);
+          const htmlUri = `${FileSystem.cacheDirectory}circular-${numericId}.html`;
+          await FileSystem.writeAsStringAsync(htmlUri, html);
+          if (cancelled) return;
+          setAndroidHtmlUri(htmlUri);
         }
         clearTimeout(timeoutId);
       } catch (e: any) {
@@ -219,7 +223,7 @@ export default function CircularViewerScreen() {
   }
 
   // Android: render via bundled pdf.js while html is being prepared
-  if (!androidHtml) {
+  if (!androidHtmlUri) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={ACCENT} />
@@ -231,11 +235,13 @@ export default function CircularViewerScreen() {
   return (
     <View style={styles.container}>
       <WebView
-        source={{ html: androidHtml, baseUrl: "" }}
+        source={{ uri: androidHtmlUri }}
         style={styles.webview}
         originWhitelist={["*"]}
         javaScriptEnabled
         domStorageEnabled
+        allowFileAccess
+        allowingReadAccessToURL={FileSystem.cacheDirectory ?? undefined}
       />
     </View>
   );
