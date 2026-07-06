@@ -108,9 +108,20 @@ export default function CircularViewerScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) {
+        cancelled = true;
+        setError(
+          "تعذر تحميل الملف خلال الوقت المتوقع. إذا كنت تختبر التطبيق عبر Expo Go، فإن الملفات يتم جلبها عبر الشبكة وليس من داخل التطبيق مباشرة؛ في النسخة النهائية المنشورة سيتم تحميل الملف فوراً من داخل التطبيق بدون إنترنت."
+        );
+      }
+    }, 20000);
 
     async function load() {
-      if (!fileModule) return;
+      if (!fileModule) {
+        clearTimeout(timeoutId);
+        return;
+      }
       try {
         const asset = Asset.fromModule(fileModule);
         await asset.downloadAsync();
@@ -126,7 +137,9 @@ export default function CircularViewerScreen() {
           if (cancelled) return;
           setAndroidHtml(buildAndroidPdfHtml(base64));
         }
+        clearTimeout(timeoutId);
       } catch (e: any) {
+        clearTimeout(timeoutId);
         if (!cancelled) setError(e?.message ?? "تعذر تحميل الملف");
       }
     }
@@ -134,6 +147,7 @@ export default function CircularViewerScreen() {
     load();
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
   }, [fileModule, ext]);
 
