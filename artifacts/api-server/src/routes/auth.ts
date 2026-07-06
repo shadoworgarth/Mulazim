@@ -10,7 +10,7 @@ const router: IRouter = Router();
 const ALLOWED_DOMAIN = "sfda.gov.sa";
 const OTP_EXPIRY_MINUTES = 10;
 const MAX_ATTEMPTS = 5;
-const GMAIL_USER = "2500otp@gmail.com";
+const GMAIL_USER = "mulazimservices@gmail.com";
 
 function hashOtp(otp: string): string {
   return crypto.createHash("sha256").update(otp).digest("hex");
