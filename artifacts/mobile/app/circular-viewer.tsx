@@ -23,10 +23,7 @@ const ACCENT = "#0e7c7c";
 
 function buildAndroidPdfHtml(base64Pdf: string) {
   const safeLib = PDF_JS_LIB_SOURCE.replace(/<\/script/gi, "<\\/script");
-  const safeWorker = PDF_WORKER_SOURCE.replace(/<\/script/gi, "<\\/script").replace(
-    /`/g,
-    "\\`"
-  );
+  const safeWorker = PDF_WORKER_SOURCE.replace(/<\/script/gi, "<\\/script");
 
   return `<!DOCTYPE html>
 <html dir="rtl">
@@ -41,16 +38,62 @@ function buildAndroidPdfHtml(base64Pdf: string) {
 </style>
 </head>
 <body>
-<div id="status">جاري تحميل الملف...</div>
+<div id="status">جاري تحضير العارض...</div>
 <div id="viewer"></div>
 <script>${safeLib}</script>
+<script>${safeWorker}</script>
 <script>
 (function () {
+  var statusEl = document.getElementById("status");
+  var settled = false;
+
+  function post(payload) {
+    try {
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+      }
+    } catch (e) {}
+  }
+
+  function showError(message) {
+    if (settled) return;
+    settled = true;
+    statusEl.innerText = "تعذر عرض الملف: " + message;
+    statusEl.style.display = "block";
+    post({ type: "error", message: String(message) });
+  }
+
+  function showSuccess() {
+    settled = true;
+    statusEl.style.display = "none";
+    post({ type: "success" });
+  }
+
+  window.onerror = function (message) {
+    showError(message);
+    return true;
+  };
+  window.addEventListener("unhandledrejection", function (event) {
+    var reason = event && event.reason;
+    showError((reason && reason.message) || String(reason));
+  });
+
+  var watchdog = setTimeout(function () {
+    showError("انتهت مهلة تجهيز الملف");
+  }, 18000);
+
   try {
-    var workerSource = \`${safeWorker}\`;
-    var workerBlob = new Blob([workerSource], { type: "application/javascript" });
-    var workerUrl = URL.createObjectURL(workerBlob);
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+    if (!window.pdfjsWorker) {
+      showError("تعذر تحميل محرك عرض الملف");
+      return;
+    }
+    // No real Worker/Blob is used here on purpose: file:// pages in Android
+    // WebViews can silently fail to spin up a Worker from a blob: URL, which
+    // hangs forever with no error. Instead we rely on pdf.js's documented
+    // "fake worker" fallback: since window.pdfjsWorker is already defined
+    // (from the script above) and GlobalWorkerOptions.workerSrc/workerPort
+    // are left unset, pdf.js runs parsing on the main thread directly.
+    statusEl.innerText = "جاري تحميل الملف...";
 
     var b64 = "${base64Pdf}";
     var binary = atob(b64);
@@ -58,11 +101,12 @@ function buildAndroidPdfHtml(base64Pdf: string) {
     for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 
     window.pdfjsLib.getDocument({ data: bytes }).promise.then(function (pdf) {
-      var statusEl = document.getElementById("status");
+      clearTimeout(watchdog);
       var viewer = document.getElementById("viewer");
-      statusEl.style.display = "none";
+      showSuccess();
 
       function renderPage(pageNum) {
+        statusEl.innerText = "جاري عرض الصفحة " + pageNum + " من " + pdf.numPages;
         return pdf.getPage(pageNum).then(function (page) {
           var viewport = page.getViewport({ scale: 2 });
           var canvas = document.createElement("canvas");
@@ -80,13 +124,16 @@ function buildAndroidPdfHtml(base64Pdf: string) {
         chain = chain.then(function () { return renderPage(n); });
       };
       for (var n = 1; n <= pdf.numPages; n++) _loop(n);
+      chain.catch(function (err) {
+        post({ type: "error", message: "render: " + ((err && err.message) || err) });
+      });
     }).catch(function (err) {
-      document.getElementById("status").innerText = "تعذر عرض الملف: " + (err && err.message ? err.message : err);
-      document.getElementById("status").style.display = "block";
+      clearTimeout(watchdog);
+      showError((err && err.message) || err);
     });
   } catch (e) {
-    document.getElementById("status").innerText = "تعذر عرض الملف: " + e.message;
-    document.getElementById("status").style.display = "block";
+    clearTimeout(watchdog);
+    showError(e && e.message ? e.message : e);
   }
 })();
 </script>
@@ -105,6 +152,7 @@ export default function CircularViewerScreen() {
   const [localUri, setLocalUri] = useState<string | null>(null);
   const [androidHtmlUri, setAndroidHtmlUri] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [androidRenderSettled, setAndroidRenderSettled] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -154,6 +202,20 @@ export default function CircularViewerScreen() {
       clearTimeout(timeoutId);
     };
   }, [fileModule, ext]);
+
+  useEffect(() => {
+    if (!androidHtmlUri || Platform.OS !== "android") return;
+    setAndroidRenderSettled(false);
+    const watchdogId = setTimeout(() => {
+      setAndroidRenderSettled((settled) => {
+        if (!settled) {
+          setError("انتهت مهلة عرض الملف داخل التطبيق");
+        }
+        return settled;
+      });
+    }, 22000);
+    return () => clearTimeout(watchdogId);
+  }, [androidHtmlUri]);
 
   if (!entry) {
     return (
@@ -242,6 +304,19 @@ export default function CircularViewerScreen() {
         domStorageEnabled
         allowFileAccess
         allowingReadAccessToURL={FileSystem.cacheDirectory ?? undefined}
+        onMessage={(event) => {
+          try {
+            const data = JSON.parse(event.nativeEvent.data);
+            if (data?.type === "success") {
+              setAndroidRenderSettled(true);
+            } else if (data?.type === "error") {
+              setAndroidRenderSettled(true);
+              setError(data.message ? `تعذر عرض الملف: ${data.message}` : "تعذر عرض الملف");
+            }
+          } catch {
+            // ignore malformed messages
+          }
+        }}
       />
     </View>
   );
