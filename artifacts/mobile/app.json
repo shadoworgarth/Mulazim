@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Mulazim 2",
+    "name": "Mulazim",
     "slug": "mulazim2",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,9 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1a5c3a"
     },
     "ios": {
       "supportsTablet": false,
@@ -19,7 +19,11 @@
     },
     "android": {
       "package": "com.mulazim2.app",
-      "versionCode": 1
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#1a5c3a"
+      }
     },
     "web": {
       "favicon": "./assets/images/icon.png"

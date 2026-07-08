@@ -5,7 +5,7 @@ outputs = []
 id = "_668LUsgjfxNzbyjItJxP"
 uri = "file://artifacts/mobile/assets/images/icon.png"
 type = "image"
-title = "plain shield icon"
+title = "sfda inspector app icon"
 
 [[generated]]
 id = "tcXVRvJ9xbeFW2Wa6yl1N"
@@ -30,3 +30,15 @@ id = "ptUJgwLDDTUEaICUG_leq"
 uri = "file://attached_assets/icon_option_4.png"
 type = "image"
 title = "clipboard hand inspector icon"
+
+[[generated]]
+id = "UW-oTqeKpEMOQd3WGkqeV"
+uri = "file://artifacts/mobile/assets/images/adaptive-icon.png"
+type = "image"
+title = "sfda adaptive icon foreground"
+
+[[generated]]
+id = "rbCRY1LVZ6FzvbIrVbr8o"
+uri = "file://artifacts/mobile/assets/images/splash-icon.png"
+type = "image"
+title = "sfda splash screen icon"
