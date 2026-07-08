@@ -128,13 +128,34 @@ The app is signed using a keystore managed remotely by EAS (Expo Application Ser
 - Secondary backup: **DONE** — the keystore is base64-encoded and stored as the Replit secret `ANDROID_KEYSTORE_BASE64`
 - Passwords: stored as Replit secrets `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD` (both currently identical, 31 chars)
 
-**Restore the keystore from the secret backup (disaster recovery):**
+**Restore the keystore from the secret backup (disaster recovery) — DRILL VERIFIED 2026-07-08:**
+
+This full restore path has been exercised end-to-end and confirmed: the `ANDROID_KEYSTORE_BASE64` secret alone (plus the two password secrets) is sufficient to keep publishing updates under `com.sfda.maktabah` even if the Expo/EAS account is lost. Steps below are the exact commands that were run and passed.
+
 ```bash
-# Decodes the secondary backup into a usable keystore file
+# JDK / keytool is already available in this environment (graalvm ships keytool + jarsigner).
+# If missing on a fresh machine, install the java-graalvm22.3 module (or any JDK 17+).
+
+# 1. Decode the secondary backup into a usable keystore file
 echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.keystore
-# Verify it (needs a JDK / keytool):
+
+# 2. Verify it opens with the stored password and reports the expected alias + SHA1
 keytool -list -v -keystore release.keystore -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias mulazim2-upload
+#   -> Alias name: mulazim2-upload
+#   -> SHA1: 4B:5F:B5:D5:A1:E2:16:28:70:5F:54:68:A5:5A:52:E1:D3:ED:1A:B6  (must match)
+
+# 3. Prove the restored key can actually sign. Sign any APK/JAR and verify the
+#    embedded signing certificate SHA1 equals the value Google/EAS expects.
+jarsigner -keystore release.keystore -storepass "$ANDROID_KEYSTORE_PASSWORD" \
+  -keypass "$ANDROID_KEY_PASSWORD" -sigalg SHA256withRSA -digestalg SHA-256 \
+  some.apk mulazim2-upload
+jarsigner -verify some.apk                 # -> "jar verified."
+keytool -printcert -jarfile some.apk       # -> SHA1 must equal 4B:5F:B5:D5:...:1A:B6
 ```
+
+Drill result (2026-07-08): keystore decoded cleanly, opened with the stored passwords, reported alias `mulazim2-upload` with the expected SHA1, and a sample APK signed with the restored key verified successfully — the signing certificate on the signed APK matched the expected SHA1 `4B:5F:B5:D5:A1:E2:16:28:70:5F:54:68:A5:5A:52:E1:D3:ED:1A:B6` exactly (SHA256 `7A:68:AC:03:4D:5C:D1:0E:C2:4A:5F:EE:97:0A:BF:AC:9C:12:C4:47:BE:D5:55:72:F2:17:39:FD:93:4F:8B:4B`).
+
+To rebuild the real app with the restored key instead of EAS remote credentials, set `credentialsSource: "local"` in `artifacts/mobile/eas.json` and point a `credentials.json` at the restored `release.keystore` (keystore path + `ANDROID_KEYSTORE_PASSWORD` / `ANDROID_KEY_PASSWORD` / alias `mulazim2-upload`), then run the EAS build.
 
 **Re-create the secondary backup from EAS (if ever needed again):**
 ```bash
