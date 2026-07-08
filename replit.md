@@ -113,6 +113,32 @@ Arabic-language Expo React Native app "Food Additives / مكتبة المفتش"
 - `constants/animal-feed-guide.ts` — ANIMAL_FEED_GUIDE sections from livestock/poultry guide document
 - `constants/narcotics.ts` — 482 NarcoticEntry items from SFDA narcotics Excel (3 sheets)
 
+### Android signing keystore — DO NOT lose this
+
+The app is signed using a keystore managed remotely by EAS (Expo Application Services). The `eas.json` production build uses `credentialsSource: "remote"`, which means EAS holds the keystore on their servers. **If this keystore is ever lost and the app is already on the Play Store, Google cannot recover it — the package name (`com.mulazim2.app`) would be permanently blocked from receiving updates.**
+
+**Current backup state:**
+- Primary backup: EAS remote credentials storage (do not delete the EAS project or account)
+- Passwords: stored as Replit secrets `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`
+- Secondary backup (recommended): export the keystore from EAS, base64-encode it, and store as the Replit secret `ANDROID_KEYSTORE_BASE64`
+
+**How to create the secondary backup:**
+```bash
+# 1. Export the keystore from EAS (requires eas-cli and login)
+eas credentials --platform android
+# Choose: Download credentials as a keystore file
+
+# 2. Base64-encode it
+base64 -w 0 release.keystore
+
+# 3. Paste the output into Replit Secrets as ANDROID_KEYSTORE_BASE64
+```
+
+**Rules:**
+- Never delete the keystore from EAS without first verifying you have a working local backup
+- Never rotate the keystore password without updating all CI/CD secrets and the EAS credential store
+- Never upload a different keystore for an app already live on the Play Store — Google rejects APKs signed with a different key
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
