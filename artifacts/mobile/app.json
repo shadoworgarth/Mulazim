@@ -10,10 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.mulazim2.app"
+      "bundleIdentifier": "com.sfda.maktabah"
     },
     "android": {
-      "package": "com.mulazim2.app",
+      "package": "com.sfda.maktabah",
       "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
