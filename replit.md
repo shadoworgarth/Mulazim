@@ -115,16 +115,30 @@ Arabic-language Expo React Native app "Food Additives / مكتبة المفتش"
 
 ### Android signing keystore — DO NOT lose this
 
-The app is signed using a keystore managed remotely by EAS (Expo Application Services). The `eas.json` production build uses `credentialsSource: "remote"`, which means EAS holds the keystore on their servers. **If this keystore is ever lost and the app is already on the Play Store, Google cannot recover it — the package name (`com.mulazim2.app`) would be permanently blocked from receiving updates.**
+The app is signed using a keystore managed remotely by EAS (Expo Application Services). The `eas.json` production build uses `credentialsSource: "remote"`, which means EAS holds the keystore on their servers. **If this keystore is ever lost and the app is already on the Play Store, Google cannot recover it — the package name (`com.sfda.maktabah`, per `artifacts/mobile/app.json`) would be permanently blocked from receiving updates.**
 
-**Current backup state:**
+**Keystore facts:**
+- EAS project: `@shadoworgarth/mulazim` (projectId `d003632f-e001-4d26-85ce-d36fadbe1141`)
+- Android credentials bound to applicationIdentifier `com.sfda.maktabah`, build credential named "Google Play Store" (isDefault)
+- Keystore type PKCS12, key alias `mulazim2-upload`, SHA1 `4B:5F:B5:D5:A1:E2:16:28:70:5F:54:68:A5:5A:52:E1:D3:ED:1A:B6`
+- The keystore was generated with `keytool` and registered to EAS via the EAS GraphQL API (no production build had run yet, so EAS had no auto-generated keystore). The same key is used for production builds.
+
+**Current backup state (both copies verified identical, same SHA1 as above):**
 - Primary backup: EAS remote credentials storage (do not delete the EAS project or account)
-- Passwords: stored as Replit secrets `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`
-- Secondary backup (recommended): export the keystore from EAS, base64-encode it, and store as the Replit secret `ANDROID_KEYSTORE_BASE64`
+- Secondary backup: **DONE** — the keystore is base64-encoded and stored as the Replit secret `ANDROID_KEYSTORE_BASE64`
+- Passwords: stored as Replit secrets `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD` (both currently identical, 31 chars)
 
-**How to create the secondary backup:**
+**Restore the keystore from the secret backup (disaster recovery):**
 ```bash
-# 1. Export the keystore from EAS (requires eas-cli and login)
+# Decodes the secondary backup into a usable keystore file
+echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.keystore
+# Verify it (needs a JDK / keytool):
+keytool -list -v -keystore release.keystore -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias mulazim2-upload
+```
+
+**Re-create the secondary backup from EAS (if ever needed again):**
+```bash
+# 1. Export the keystore from EAS (requires eas-cli and login, or use EXPO_TOKEN + EAS GraphQL)
 eas credentials --platform android
 # Choose: Download credentials as a keystore file
 

@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "_668LUsgjfxNzbyjItJxP"
@@ -42,3 +41,9 @@ id = "rbCRY1LVZ6FzvbIrVbr8o"
 uri = "file://artifacts/mobile/assets/images/splash-icon.png"
 type = "image"
 title = "sfda splash screen icon"
+
+[[outputs]]
+id = "d_dp1W7zjvtWPHkBS5jVJ"
+uri = "file://.local/ANDROID_KEYSTORE_BASE64.txt"
+type = "text"
+title = "ANDROID_KEYSTORE_BASE64 (signing key backup)"
