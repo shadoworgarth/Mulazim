@@ -6,7 +6,7 @@ import { API_BASE } from "@/constants/api";
 const DEVICE_TOKEN_KEY = "sfda_device_token";
 
 // Set to true to re-enable OTP / admin-password authentication.
-const AUTH_ENABLED = true;
+const AUTH_ENABLED = false;
 
 type OtpAuthContextType = {
   isVerified: boolean;
