@@ -1,3 +1,4 @@
 - [Suspended Private Labs](suspended-labs.md) — جودة العسل and ايداك removed 2026-06-04 (license suspension); full test data stored for quick re-adding.
 - [SFDA circulars scraping quirks](sfda-circulars-scraping.md) — parse per-article chunk, not one global regex; status/PDF link extraction gotchas.
 - [Metro bundled JPG image-size failure](metro-bundled-jpg-imagesize-failure.md) — scanned JPEGs with huge ICC/Photoshop metadata fail Metro's path-string image-size call even when buffer-read tests pass.
+- [EAS build query API](eas-build-api.md) — /download resolves latest APK via EAS GraphQL (not the non-existent v2/builds REST endpoint); needs EXPO_TOKEN.

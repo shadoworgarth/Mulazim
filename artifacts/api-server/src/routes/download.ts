@@ -1,14 +1,14 @@
 import { Router, type IRouter } from "express";
+import { resolveApkUrl } from "../lib/eas";
 
 const router: IRouter = Router();
 
-router.get("/download", (req, res) => {
-  const apkUrl =
-    process.env.APK_URL ||
-    "https://expo.dev/accounts/[account]/projects/mulazim2/builds";
+router.get("/download", async (req, res): Promise<void> => {
+  const resolved = await resolveApkUrl();
+  const apkUrl = resolved.url;
 
   const appName = process.env.APP_NAME || "مُلازِم";
-  const appVersion = process.env.APP_VERSION || "";
+  const appVersion = process.env.APP_VERSION || resolved.appVersion || "";
 
   const html = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
