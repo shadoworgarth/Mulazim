@@ -8,11 +8,6 @@
     "scheme": "mulazim2",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#1a5c3a"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.mulazim2.app"
@@ -29,6 +24,24 @@
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#1a5c3a",
+          "image": "./assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "ios": {
+            "backgroundColor": "#1a5c3a",
+            "image": "./assets/images/splash-icon.png",
+            "resizeMode": "contain"
+          },
+          "android": {
+            "backgroundColor": "#1a5c3a",
+            "image": "./assets/images/splash-icon.png",
+            "resizeMode": "contain"
+          }
+        }
+      ],
       [
         "expo-router",
         {
