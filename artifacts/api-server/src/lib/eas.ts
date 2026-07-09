@@ -3,7 +3,7 @@ import { logger } from "./logger";
 const EAS_APP_ID = "d003632f-e001-4d26-85ce-d36fadbe1141";
 const EAS_GRAPHQL_ENDPOINT = "https://api.expo.dev/graphql";
 const EAS_DASHBOARD_FALLBACK =
-  "https://expo.dev/accounts/[account]/projects/mulazim2/builds";
+  "https://expo.dev/accounts/shadoworgarth/projects/mulazim/builds";
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
