@@ -1,5 +1,6 @@
 - [Suspended Private Labs](suspended-labs.md) — جودة العسل and ايداك removed 2026-06-04 (license suspension); full test data stored for quick re-adding.
 - [SFDA circulars scraping quirks](sfda-circulars-scraping.md) — parse per-article chunk, not one global regex; status/PDF link extraction gotchas.
+- [Circulars PDF Arabic garble on Android](circulars-pdf-arabic-rendering.md) — bundled pdf.js v3.11 mangles embedded Arabic CID fonts; fix = rasterize font-bearing circular PDFs to image-only PDFs.
 - [Metro bundled JPG image-size failure](metro-bundled-jpg-imagesize-failure.md) — scanned JPEGs with huge ICC/Photoshop metadata fail Metro's path-string image-size call even when buffer-read tests pass.
 - [Pushing to GitHub from Replit](github-push-from-replit.md) — only the Git pane's "Active" connection has write; shell/PAT are read-only; clear stale .git/config.lock (user Shell), set upstream, then "Sync changes".
 - [EAS build query API](eas-build-api.md) — /download resolves latest APK via EAS GraphQL (not the non-existent v2/builds REST endpoint); needs EXPO_TOKEN.
